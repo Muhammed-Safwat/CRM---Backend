@@ -18,7 +18,7 @@ public class ProjectDTO {
 
     @NotNull
     @NotBlank
-    private String projectName;
+    private String name;
 
     @NotNull
     private Region region;

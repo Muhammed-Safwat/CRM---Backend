@@ -1,5 +1,7 @@
 package com.gws.crm.core.lockups.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.gws.crm.core.admin.entity.Admin;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -20,7 +22,7 @@ public class Project {
     private long id;
 
     @Column(nullable = false)
-    private String projectName;
+    private String name;
 
     @ManyToOne(fetch = FetchType.EAGER,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
@@ -36,4 +38,14 @@ public class Project {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE,
+            CascadeType.DETACH,
+            CascadeType.REFRESH
+    })
+    @JoinColumn(name = "admin_id")
+    @JsonIgnore
+    private Admin admin;
 }

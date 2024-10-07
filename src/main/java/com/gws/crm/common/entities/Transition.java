@@ -9,6 +9,7 @@ public class Transition {
 
     private final long id;
     private final Long userId;
+    private final String role;
     private final Language language;
     private final int os;
     private final String version;
@@ -19,9 +20,11 @@ public class Transition {
         this.userId = null;
         this.os = 0; // OS identifier
         this.version = ""; // Application version or context-specific
+        this.role="";
     }
 
     public Transition(Language language, int os, String version) {
+        this.role = "";
         this.id = System.currentTimeMillis();
         this.language = language;
         this.userId = null;
@@ -29,7 +32,8 @@ public class Transition {
         this.version = version;
     }
 
-    public Transition(Language language, Long userId, int os, String version) {
+    public Transition(Language language, Long userId, String role, int os, String version) {
+        this.role = role;
         this.id = System.currentTimeMillis();
         this.language = language;
         this.userId = userId;

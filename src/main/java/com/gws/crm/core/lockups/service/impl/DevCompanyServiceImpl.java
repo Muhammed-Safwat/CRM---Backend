@@ -1,7 +1,9 @@
 package com.gws.crm.core.lockups.service.impl;
 
+import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.common.helper.ApiResponse;
+import com.gws.crm.core.admin.repository.AdminRepository;
 import com.gws.crm.core.lockups.dto.DevCompanyDTO;
 import com.gws.crm.core.lockups.entity.DevCompany;
 import com.gws.crm.core.lockups.repository.DevCompanyRepository;
@@ -23,30 +25,31 @@ import static com.gws.crm.common.handler.ApiResponseHandler.success;
 public class DevCompanyServiceImpl implements DevCompanyService {
 
     private final DevCompanyRepository devCompanyRepository;
-
+    private final AdminRepository adminRepository;
     @Override
-    public ResponseEntity<?> getDevCompanies(int page, int size) {
+    public ResponseEntity<?> getDevCompanies(int page, int size, Transition transition) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
-        Page<DevCompany> devCompanyPage = devCompanyRepository.findAll(pageable);
+        Page<DevCompany> devCompanyPage = devCompanyRepository.findAllByAdminId(pageable, transition.getUserId());
         return success(devCompanyPage);
     }
 
     @Override
-    public ResponseEntity<ApiResponse<List<DevCompany>>> getAllDevCompanies() {
+    public ResponseEntity<ApiResponse<List<DevCompany>>> getAllDevCompanies(Transition transition) {
         List<DevCompany> devCompanies = devCompanyRepository.findAll();
         return success(devCompanies);
     }
 
     @Override
-    public ResponseEntity<ApiResponse<DevCompany>> getDevCompanyById(long id) {
+    public ResponseEntity<ApiResponse<DevCompany>> getDevCompanyById(long id, Transition transition) {
         DevCompany devCompany = devCompanyRepository.findById(id)
                 .orElseThrow(NotFoundResourceException::new);
         return success(devCompany);
     }
 
     @Override
-    public ResponseEntity<ApiResponse<DevCompany>> createDevCompany(DevCompanyDTO devCompanyDTO) {
+    public ResponseEntity<ApiResponse<DevCompany>> createDevCompany(DevCompanyDTO devCompanyDTO, Transition transition) {
         DevCompany devCompany = DevCompany.builder()
+                .admin(adminRepository.getReferenceById(transition.getUserId()))
                 .name(devCompanyDTO.getName())
                 .build();
         DevCompany savedDevCompany = devCompanyRepository.save(devCompany);
@@ -54,7 +57,7 @@ public class DevCompanyServiceImpl implements DevCompanyService {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<DevCompany>> updateDevCompany(DevCompanyDTO devCompanyDTO) {
+    public ResponseEntity<ApiResponse<DevCompany>> updateDevCompany(DevCompanyDTO devCompanyDTO, Transition transition) {
         DevCompany devCompany = devCompanyRepository.findById(devCompanyDTO.getId())
                 .orElseThrow(NotFoundResourceException::new);
 
@@ -65,7 +68,7 @@ public class DevCompanyServiceImpl implements DevCompanyService {
     }
 
     @Override
-    public ResponseEntity<?> deleteDevCompany(long id) {
+    public ResponseEntity<?> deleteDevCompany(long id, Transition transition) {
         devCompanyRepository.deleteById(id);
         return success("Developer Company deleted successfully");
     }

@@ -26,13 +26,14 @@ public class EmployeeDto {
     @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
 
-    @NotBlank(message = "Job title is required")
-    @Size(min = 2, max = 100, message = "Job title must be between 2 and 100 characters")
-    private String jobTitle;
+    @NotNull
+    private long jobTitleId;
 
     @NotEmpty(message = "You must choose at least one privilege")
     private Set<Long> privileges;
-
+/*
     @NotNull(message = "Account Expiration Date Should not be null")
     private LocalDate accountExpirationDate;
+
+ */
 }

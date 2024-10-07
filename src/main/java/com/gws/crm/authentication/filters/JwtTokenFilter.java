@@ -19,6 +19,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import static com.gws.crm.common.handler.ApiResponseHandler.unauthorized;
+
 @Slf4j
 @RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
@@ -30,40 +32,48 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            log.info("done first ");
+            log.info("JWT filter started");
             String token = getTokenFromRequest(request);
 
-            if (token == null || (token != null && jwtTokenService.isTokenExpired(token))) {
-                filterChain.doFilter(request, response);
+            if (token == null || jwtTokenService.isTokenExpired(token)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write("Token expired or missing");
                 return;
             }
 
-            if (!jwtTokenService.isTokenExpired(token)) {
-                Long userId = jwtTokenService.extractUserId(token);
-                UserDetails userDetails = userRepository.findById(userId)
-                        .orElseThrow(NotFoundResourceException::new);
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails.getUsername(),
-                        null, userDetails.getAuthorities());
-                authenticationToken.setDetails(new WebAuthenticationDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            Long userId = jwtTokenService.extractUserId(token);
+            UserDetails userDetails = userRepository.findById(userId)
+                    .orElseThrow(NotFoundResourceException::new);
+
+            if(!userDetails.isEnabled() || !userDetails.isAccountNonLocked()){
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write("Account expired or missing");
+                return;
             }
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                    userDetails.getUsername(), null, userDetails.getAuthorities()
+            );
+            authenticationToken.setDetails(new WebAuthenticationDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
             filterChain.doFilter(request, response);
+
         } catch (NotFoundResourceException ex) {
-            // Handle NotFoundResourceException
             log.error("User not found: {}", ex.getMessage());
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            ApiResponseHandler.notFound("User not found").getBody();
+            response.setContentType("application/json");
+            response.getWriter().write( "User not found");
         } catch (JwtValidationException ex) {
-            // Handle JwtValidationException
             log.error("JWT validation error: {}", ex.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            ApiResponseHandler.unauthorized("Invalid or expired token").getBody();
+            response.setContentType("application/json");
+            response.getWriter().write("Invalid or expired token");
         } catch (Exception ex) {
-            // Handle general exceptions
             log.error("Internal server error: {}", ex.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            ApiResponseHandler.internalServerError().getBody();
+            response.setContentType("application/json");
         }
     }
 
@@ -78,8 +88,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-
         return path.contains("/auth");
     }
-
 }
+

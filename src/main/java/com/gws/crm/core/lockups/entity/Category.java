@@ -1,9 +1,8 @@
 package com.gws.crm.core.lockups.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.gws.crm.core.admin.entity.Admin;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
@@ -13,4 +12,14 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE,
+            CascadeType.DETACH,
+            CascadeType.REFRESH
+    })
+    @JoinColumn(name = "admin_id")
+    @JsonIgnore
+    private Admin admin;
 }

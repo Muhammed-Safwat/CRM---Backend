@@ -1,5 +1,6 @@
 package com.gws.crm.authentication.utils;
 
+import com.gws.crm.authentication.entity.Role;
 import com.gws.crm.authentication.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -46,7 +47,11 @@ public class JwtTokenService {
     }
 
     private Map<String, Object> generateExtraClaims(User user) {
-        return Map.of("authority", user.getAuthorities());
+        String roleName = user.getRoles().stream()
+                .findFirst()
+                .map(Role::getName)
+                .orElse("USER");
+        return Map.of("authority", user.getAuthorities(),"role",roleName);
     }
 
     public Claims extractAllClaims(String token) {
@@ -95,6 +100,15 @@ public class JwtTokenService {
             return extractClaim(token, Claims::getExpiration).before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
             return true;
+        }
+    }
+
+    public String extractUserRole(String token) {
+        try {
+            return extractClaim(token, claims -> (String) claims.get("role"));
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new JwtValidationException("Failed to extract role from token.",
+                    List.of(new OAuth2Error("invalid_token", "Token is invalid or malformed.", null)));
         }
     }
 }

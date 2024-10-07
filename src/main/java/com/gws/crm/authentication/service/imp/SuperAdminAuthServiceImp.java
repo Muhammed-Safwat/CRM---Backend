@@ -46,7 +46,7 @@ public class SuperAdminAuthServiceImp implements SuperAdminAuthService {
     }
 
     private Admin initAdmin(AdminRegistrationDto adminRegistrationDto) {
-        Role adminRole = roleRepository.findByName(RoleName.ADMIN_ROLE.toString());
+        Role adminRole = roleRepository.findByName(RoleName.ADMIN.toString());
         Set<Role> roles = new HashSet<>();
         roles.add(adminRole);
         return Admin.builder()

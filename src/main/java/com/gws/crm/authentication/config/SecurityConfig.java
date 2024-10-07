@@ -79,15 +79,14 @@ public class SecurityConfig {
                                         "/configuration/security",
                                         "/swagger-ui.html",
                                         "/webjars/**",
-                                        "/swagger-ui/**",
-                                        "/index.html")
+                                        "/swagger-ui/**")
                                 .permitAll()
-                                .requestMatchers("api/employees").hasAuthority("ROLE_ADMIN_ROLE")
-                                .requestMatchers("/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/user/**").hasRole("USER")
-                                .requestMatchers("/create/**").hasAuthority("CREATE_PRIVILEGE")
-                                .requestMatchers("/delete/**").hasAuthority("DELETE_PRIVILEGE")
-                                .anyRequest().permitAll())
+                                .requestMatchers("/api/super-admin/**").hasRole("SUPER_ADMIN")
+                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/api/employees/**").hasRole("ADMIN")
+                                .requestMatchers("/api/lockups/**").hasRole("ADMIN")
+                                .requestMatchers("/api/privileges/**").hasRole("ADMIN")
+                                .anyRequest().authenticated())
                 .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(transitionBuilderFilter(), UsernamePasswordAuthenticationFilter.class);
         http.httpBasic(Customizer.withDefaults());

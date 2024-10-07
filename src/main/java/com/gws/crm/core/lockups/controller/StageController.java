@@ -1,5 +1,6 @@
 package com.gws.crm.core.lockups.controller;
 
+import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.lockups.dto.StageDto;
 import com.gws.crm.core.lockups.service.StageService;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/stages")
+@RequestMapping("/api/lockups/stages")
 @RequiredArgsConstructor
 public class StageController {
 
@@ -15,28 +16,28 @@ public class StageController {
 
     @GetMapping
     public ResponseEntity<?> getStage(@RequestParam(defaultValue = "0") int page,
-                                      @RequestParam(defaultValue = "10") int size) {
-        return stageService.getStage(page, size);
+                                      @RequestParam(defaultValue = "10") int size, Transition transition) {
+        return stageService.getStage(page, size, transition);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getStageById(@PathVariable long id) {
-        return stageService.getStageById(id);
+    public ResponseEntity<?> getStageById(@PathVariable long id, Transition transition) {
+        return stageService.getStageById(id, transition);
     }
 
     @PostMapping
-    public ResponseEntity<?> createStage(@RequestBody StageDto stageDto) {
-        return stageService.createStage(stageDto);
+    public ResponseEntity<?> createStage(@RequestBody StageDto stageDto, Transition transition) {
+        return stageService.createStage(stageDto, transition);
     }
 
     @PutMapping()
-    public ResponseEntity<?> updateStage(@RequestBody StageDto stageDto) {
-        return stageService.updateStage(stageDto);
+    public ResponseEntity<?> updateStage(@RequestBody StageDto stageDto, Transition transition) {
+        return stageService.updateStage(stageDto, transition);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteStage(@PathVariable String id) {
-        return stageService.deleteStage(Long.parseLong(id));
+    public ResponseEntity<?> deleteStage(@PathVariable long id, Transition transition) {
+        return stageService.deleteStage(id, transition);
     }
 
 }

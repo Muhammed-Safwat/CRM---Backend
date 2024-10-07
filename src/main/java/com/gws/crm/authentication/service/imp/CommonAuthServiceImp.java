@@ -1,6 +1,7 @@
 package com.gws.crm.authentication.service.imp;
 
 import com.gws.crm.authentication.config.AuthenticationProviderService;
+import com.gws.crm.authentication.dto.RefreshTokenDto;
 import com.gws.crm.authentication.dto.ResetPasswordDto;
 import com.gws.crm.authentication.dto.SignInRequest;
 import com.gws.crm.authentication.dto.SignInResponse;
@@ -10,6 +11,7 @@ import com.gws.crm.authentication.repository.ForgetPasswordTokenRepository;
 import com.gws.crm.authentication.repository.UserRepository;
 import com.gws.crm.authentication.service.CommonAuthService;
 import com.gws.crm.authentication.utils.JwtTokenService;
+import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.common.service.EmailService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
@@ -143,6 +145,26 @@ public class CommonAuthServiceImp implements CommonAuthService {
         forgetPasswordTokenRepo.save(resetRequest);
 
         return success("Your password has been successfully reset.");
+    }
+
+    @Override
+    public ResponseEntity<?> refreshAccessToken(RefreshTokenDto refreshTokenDto) {
+        String refreshToken = refreshTokenDto.getRefreshToken().substring(7);
+
+        boolean isExpired = jwtTokenService.isTokenExpired(refreshToken);
+
+        if (isExpired) {
+           return error("Token Expired");
+        }
+         User  user = userRepository.findById(jwtTokenService.extractUserId(refreshToken))
+                .orElseThrow(NotFoundResourceException::new);
+
+        SignInResponse signInResponse = SignInResponse.builder()
+                .accessToken(jwtTokenService.generateAccessToken(user))
+                .refreshToken(jwtTokenService.generateRefreshToken(user))
+                .build();
+
+        return success(signInResponse);
     }
 
 

@@ -1,9 +1,8 @@
 package com.gws.crm.core.lockups.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.gws.crm.core.admin.entity.Admin;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,9 +25,14 @@ public class Region {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
-    /*
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "admin_id")
-        private Admin admin;
-     */
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE,
+            CascadeType.DETACH,
+            CascadeType.REFRESH
+    })
+    @JoinColumn(name = "admin_id")
+    @JsonIgnore
+    private Admin admin;
 }

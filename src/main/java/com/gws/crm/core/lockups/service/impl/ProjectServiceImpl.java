@@ -1,7 +1,9 @@
 package com.gws.crm.core.lockups.service.impl;
 
+import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.common.helper.ApiResponse;
+import com.gws.crm.core.admin.repository.AdminRepository;
 import com.gws.crm.core.lockups.dto.ProjectDTO;
 import com.gws.crm.core.lockups.entity.Project;
 import com.gws.crm.core.lockups.repository.CategoryRepository;
@@ -28,27 +30,26 @@ import static com.gws.crm.common.handler.ApiResponseHandler.success;
 @RequiredArgsConstructor
 public class ProjectServiceImpl implements ProjectService {
 
-
     private final RegionRepository regionRepository;
     private final DevCompanyRepository devCompanyRepository;
     private final ProjectRepository projectRepository;
     private final CategoryRepository categoryRepository;
-
+    private final AdminRepository adminRepository;
     @Override
-    public ResponseEntity<?> getProjects(int page, int size) {
+    public ResponseEntity<?> getProjects(int page, int size, Transition transition) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
-        Page<Project> projectPage = projectRepository.findAll(pageable);
+        Page<Project> projectPage = projectRepository.findAllByAdminId(pageable, transition.getUserId());
         return success(projectPage);
     }
 
     @Override
-    public ResponseEntity<ApiResponse<List<Project>>> getAllProjects() {
+    public ResponseEntity<ApiResponse<List<Project>>> getAllProjects(Transition transition) {
         List<Project> projects = projectRepository.findAll();
         return success(projects);
     }
 
     @Override
-    public ResponseEntity<ApiResponse<Project>> getProjectById(long id) {
+    public ResponseEntity<ApiResponse<Project>> getProjectById(long id, Transition transition) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(NotFoundResourceException::new);
         return success(project);
@@ -56,9 +57,10 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> createProject(ProjectDTO projectDTO) {
+    public ResponseEntity<?> createProject(ProjectDTO projectDTO, Transition transition) {
         Project project = Project.builder()
-                .projectName(projectDTO.getProjectName())
+                .admin(adminRepository.getReferenceById(transition.getUserId()))
+                .name(projectDTO.getName())
                 .region(regionRepository.findById(projectDTO.getRegion().getId()).get())
                 .category(categoryRepository.findById(projectDTO.getCategory().getId()).get())
                 .devCompany(devCompanyRepository.findById(projectDTO.getDevCompany().getId()).get())
@@ -70,11 +72,11 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<Project>> updateProject(ProjectDTO projectDTO) {
+    public ResponseEntity<ApiResponse<Project>> updateProject(ProjectDTO projectDTO, Transition transition) {
         Project project = projectRepository.findById(projectDTO.getId())
                 .orElseThrow(NotFoundResourceException::new);
 
-        project.setProjectName(projectDTO.getProjectName());
+        project.setName(projectDTO.getName());
         project.setRegion(regionRepository.findById(projectDTO.getRegion().getId()).get());
         project.setCategory(categoryRepository.findById(projectDTO.getCategory().getId()).get());
         project.setDevCompany(devCompanyRepository.findById(projectDTO.getDevCompany().getId()).get());
@@ -84,7 +86,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ResponseEntity<?> deleteProject(long id) {
+    public ResponseEntity<?> deleteProject(long id, Transition transition) {
         projectRepository.deleteById(id);
         return success("Project deleted successfully");
     }

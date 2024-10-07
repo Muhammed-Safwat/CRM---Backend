@@ -1,7 +1,9 @@
 package com.gws.crm.core.employee.entity;
 
+import com.gws.crm.authentication.entity.PrivilegeGroup;
 import com.gws.crm.authentication.entity.User;
-import jakarta.persistence.Entity;
+import com.gws.crm.core.admin.entity.Admin;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,6 +20,19 @@ import org.hibernate.annotations.DynamicUpdate;
 @SuperBuilder
 public class Employee extends User {
 
-    private String jobName;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {
+            CascadeType.PERSIST,
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.REFRESH
+    })
+    @JoinColumn(name = "job_name_id")
+    private PrivilegeGroup jobName;
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH,
+            CascadeType.MERGE, CascadeType.REFRESH},
+            fetch = FetchType.LAZY)
+    @JoinColumn(name = "admin_id")
+    private Admin admin;
 
 }

@@ -5,5 +5,7 @@ import org.springframework.http.ResponseEntity;
 
 public interface PrivilegeService {
 
-    ResponseEntity<?> getPrivileges();
+    ResponseEntity<?> getPrivileges(long privilegeId);
+
+    ResponseEntity<?> getPrivilegesGroups();
 }

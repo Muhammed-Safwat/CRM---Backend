@@ -1,6 +1,8 @@
 package com.gws.crm.core.lockups.service.impl;
 
+import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
+import com.gws.crm.core.admin.repository.AdminRepository;
 import com.gws.crm.core.lockups.dto.AreaDTO;
 import com.gws.crm.core.lockups.entity.Area;
 import com.gws.crm.core.lockups.entity.Region;
@@ -25,32 +27,38 @@ public class AreaServiceImpl implements AreaService {
 
     private final AreaRepository areaRepository;
     private final RegionRepository regionRepository;
+    private final AdminRepository adminRepository;
+
 
     @Override
-    public ResponseEntity<?> getAreas(int page, int size) {
+    public ResponseEntity<?> getAreas(int page, int size, Transition transition) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
-        Page<Area> areaPage = areaRepository.findAll(pageable);
+        Page<Area> areaPage = areaRepository.findAllByAdminId(pageable, transition.getUserId());
         return success(areaPage);
     }
 
     @Override
-    public ResponseEntity<?> getAreaById(long id) {
+    public ResponseEntity<?> getAreaById(long id, Transition transition) {
         Area area = areaRepository.findById(id)
                 .orElseThrow(NotFoundResourceException::new);
         return success(area);
     }
 
     @Override
-    public ResponseEntity<?> createArea(AreaDTO areaDTO) {
+    public ResponseEntity<?> createArea(AreaDTO areaDTO, Transition transition) {
         Region region = regionRepository.findById(areaDTO.getRegion().getId())
                 .orElseThrow(NotFoundResourceException::new);
-        Area area = Area.builder().name(areaDTO.getName()).region(region).build();
+        Area area = Area.builder()
+                .admin(adminRepository.getReferenceById(transition.getUserId()))
+                .name(areaDTO.getName())
+                .region(region)
+                .build();
         Area savedArea = areaRepository.save(area);
         return success(savedArea);
     }
 
     @Override
-    public ResponseEntity<?> updateArea(AreaDTO areaDTO) {
+    public ResponseEntity<?> updateArea(AreaDTO areaDTO, Transition transition) {
         Area area = areaRepository.findById(areaDTO.getId())
                 .orElseThrow(RuntimeException::new);
         Region region = regionRepository.findById(areaDTO.getRegion().getId())
@@ -62,13 +70,13 @@ public class AreaServiceImpl implements AreaService {
     }
 
     @Override
-    public ResponseEntity<?> deleteArea(long id) {
+    public ResponseEntity<?> deleteArea(long id, Transition transition) {
         areaRepository.deleteById(id);
         return success("Area deleted successfully");
     }
 
     @Override
-    public ResponseEntity<?> getAllAreas() {
+    public ResponseEntity<?> getAllAreas(Transition transition) {
         List<Area> areas = areaRepository.findAll();
         return success(areas);
     }

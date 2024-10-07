@@ -1,5 +1,6 @@
 package com.gws.crm.authentication.service;
 
+import com.gws.crm.authentication.dto.RefreshTokenDto;
 import com.gws.crm.authentication.dto.ResetPasswordDto;
 import com.gws.crm.authentication.dto.SignInRequest;
 import jakarta.mail.MessagingException;
@@ -16,4 +17,6 @@ public interface CommonAuthService {
     ResponseEntity<?> resetPassword(ResetPasswordDto resetPasswordDto);
 
     ResponseEntity<?> isResetPasswordTokenValid(String token);
+
+    ResponseEntity<?> refreshAccessToken(RefreshTokenDto refreshTokenDto);
 }

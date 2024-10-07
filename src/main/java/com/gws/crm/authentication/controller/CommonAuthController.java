@@ -1,5 +1,6 @@
 package com.gws.crm.authentication.controller;
 
+import com.gws.crm.authentication.dto.RefreshTokenDto;
 import com.gws.crm.authentication.dto.ResetPasswordDto;
 import com.gws.crm.authentication.dto.SignInRequest;
 import com.gws.crm.authentication.service.CommonAuthService;
@@ -40,6 +41,11 @@ public class CommonAuthController {
     @GetMapping("/reset/password/{token}")
     public ResponseEntity<?> isResetPasswordTokenValid(@PathVariable String token) {
         return commonAuthService.isResetPasswordTokenValid(token);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshAccessToken(@Valid @RequestBody RefreshTokenDto refreshTokenRequest) {
+        return commonAuthService.refreshAccessToken(refreshTokenRequest);
     }
 
 

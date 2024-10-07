@@ -1,6 +1,7 @@
 package com.gws.crm.core.lockups.service.impl;
 
 
+import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.lockups.dto.StatisticsDTO;
 import com.gws.crm.core.lockups.repository.*;
 import com.gws.crm.core.lockups.service.StatisticsService;
@@ -28,15 +29,20 @@ public class StatisticsServiceImp implements StatisticsService {
 
     private final DevCompanyRepository devCompanyRepository;
 
-    public ResponseEntity<?> getStatistics() {
-        StatisticsDTO statisticsDTO = StatisticsDTO.builder().totalChannels(channelRepository.count())
-                .totalStage(stageRepository.count())
-                .totalRegions(regionRepository.count())
-                .totalCommunicateWays(communicateWayRepository.count())
-                .totalAreas(areaRepository.count())
-                .totalProjects(projectRepository.count())
-                .totalDevCompanies(devCompanyRepository.count())
+    private final CancelReasonsRepository cancelReasonsRepository;
+
+    public ResponseEntity<?> getStatistics(Transition transition) {
+        StatisticsDTO statisticsDTO = StatisticsDTO.builder().totalChannels(channelRepository.countByAdminId(transition.getUserId()))
+                .totalStage(stageRepository.countByAdminId(transition.getUserId()))
+                .totalRegions(regionRepository.countByAdminId(transition.getUserId()))
+                .totalCommunicateWays(communicateWayRepository.countByAdminId(transition.getUserId()))
+                .totalAreas(areaRepository.countByAdminId(transition.getUserId()))
+                .totalProjects(projectRepository.countByAdminId(transition.getUserId()))
+                .totalDevCompanies(devCompanyRepository.countByAdminId(transition.getUserId()))
+                .totalCancelReasons(cancelReasonsRepository.countByAdminId(transition.getUserId()))
                 .build();
         return success(statisticsDTO);
     }
+
+
 }

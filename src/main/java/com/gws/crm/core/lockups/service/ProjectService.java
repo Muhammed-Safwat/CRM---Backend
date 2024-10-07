@@ -1,5 +1,6 @@
 package com.gws.crm.core.lockups.service;
 
+import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.helper.ApiResponse;
 import com.gws.crm.core.lockups.dto.ProjectDTO;
 import com.gws.crm.core.lockups.entity.Project;
@@ -9,15 +10,15 @@ import java.util.List;
 
 public interface ProjectService {
 
-    ResponseEntity<?> getProjects(int page, int size);
+    ResponseEntity<?> getProjects(int page, int size, Transition transition);
 
-    ResponseEntity<ApiResponse<List<Project>>> getAllProjects();
+    ResponseEntity<ApiResponse<List<Project>>> getAllProjects(Transition transition);
 
-    ResponseEntity<ApiResponse<Project>> getProjectById(long id);
+    ResponseEntity<ApiResponse<Project>> getProjectById(long id, Transition transition);
 
-    ResponseEntity<?> createProject(ProjectDTO projectDTO);
+    ResponseEntity<?> createProject(ProjectDTO projectDTO, Transition transition);
 
-    ResponseEntity<ApiResponse<Project>> updateProject(ProjectDTO projectDTO);
+    ResponseEntity<ApiResponse<Project>> updateProject(ProjectDTO projectDTO, Transition transition);
 
-    ResponseEntity<?> deleteProject(long id);
+    ResponseEntity<?> deleteProject(long id, Transition transition);
 }

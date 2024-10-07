@@ -13,4 +13,5 @@ public class StatisticsDTO {
     private long totalStage;
     private long totalDevCompanies;
     private long totalProjects;
+    private long totalCancelReasons;
 }

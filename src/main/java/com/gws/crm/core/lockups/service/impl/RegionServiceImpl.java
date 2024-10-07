@@ -1,6 +1,8 @@
 package com.gws.crm.core.lockups.service.impl;
 
+import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
+import com.gws.crm.core.admin.repository.AdminRepository;
 import com.gws.crm.core.lockups.dto.RegionDto;
 import com.gws.crm.core.lockups.entity.Region;
 import com.gws.crm.core.lockups.repository.RegionRepository;
@@ -20,30 +22,33 @@ import static com.gws.crm.common.handler.ApiResponseHandler.success;
 public class RegionServiceImpl implements RegionService {
 
     private final RegionRepository regionRepository;
-
+    private final AdminRepository adminRepository;
     @Override
-    public ResponseEntity<?> getRegions(int page, int size) {
+    public ResponseEntity<?> getRegions(int page, int size, Transition transition) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
-        Page<Region> regionPage = regionRepository.findAll(pageable);
+        Page<Region> regionPage = regionRepository.findAllByAdminId(pageable,transition.getUserId());
         return success(regionPage);
     }
 
     @Override
-    public ResponseEntity<?> getRegionById(long id) {
+    public ResponseEntity<?> getRegionById(long id, Transition transition) {
         Region region = regionRepository.findById(id)
                 .orElseThrow(NotFoundResourceException::new);
         return success(region);
     }
 
     @Override
-    public ResponseEntity<?> createRegion(RegionDto regionDto) {
-        Region region = Region.builder().name(regionDto.getName()).build();
+    public ResponseEntity<?> createRegion(RegionDto regionDto, Transition transition) {
+        Region region = Region.builder()
+                .admin(adminRepository.getReferenceById(transition.getUserId()))
+                .name(regionDto.getName())
+                .build();
         regionRepository.save(region);
         return success(region);
     }
 
     @Override
-    public ResponseEntity<?> updateRegion(RegionDto regionDto) {
+    public ResponseEntity<?> updateRegion(RegionDto regionDto, Transition transition) {
         Region region = regionRepository.findById(regionDto.getId())
                 .orElseThrow(NotFoundResourceException::new);
         region.setName(regionDto.getName());
@@ -52,13 +57,13 @@ public class RegionServiceImpl implements RegionService {
     }
 
     @Override
-    public ResponseEntity<?> deleteRegion(long id) {
+    public ResponseEntity<?> deleteRegion(long id, Transition transition) {
         regionRepository.deleteById(id);
         return success("Region deleted successfully");
     }
 
     @Override
-    public ResponseEntity<?> getAllRegions() {
+    public ResponseEntity<?> getAllRegions(Transition transition) {
         return success(regionRepository.findAll());
     }
 
