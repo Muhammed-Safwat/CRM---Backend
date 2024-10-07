@@ -13,7 +13,7 @@ public class AddLeadDTO {
 
     private String country;
 
-  //  private List<String> phoneNumbers;
+    private List<PhoneNumberDTO> phoneNumbers;
 
     private String contactTime;
 

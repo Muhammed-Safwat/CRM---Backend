@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,10 +23,9 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @GetMapping
-    public ResponseEntity<?> getAllEmployee(@RequestParam(value = "page", defaultValue = "0") int page,
-                                            @RequestParam(value = "size", defaultValue = "10") int size,
-                                            Transition transition) {
-        return employeeService.getAllEmployee(page, size, transition);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getAllEmployee(Transition transition) {
+        return employeeService.getAllEmployee(transition);
     }
 
     @PostMapping("all")

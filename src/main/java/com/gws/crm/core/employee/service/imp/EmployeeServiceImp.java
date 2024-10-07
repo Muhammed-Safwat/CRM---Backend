@@ -92,13 +92,11 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
     @Override
-    public ResponseEntity<?> getAllEmployee(int page, int size, Transition transition) {
-        Pageable pageable = PageRequest.of(page, size);
+    public ResponseEntity<?> getAllEmployee(Transition transition) {
         long adminId = transition.getUserId();
-        Page<Employee> employees = employeeRepository.findAllByAdminId(adminId, pageable);
-        List<EmployeeInfoResponse> employeeInfoResponseList = employeeMapper.toListDto(employees.getContent());
-        Page<EmployeeInfoResponse> employeeInfoResponsesPage = new PageImpl<>(employeeInfoResponseList, pageable, employees.getTotalElements());
-        return success(employeeInfoResponsesPage);
+        List<Employee> employees = employeeRepository.findAllByAdminId(adminId);
+        List<EmployeeSimpleDTO> employeeInfoResponseList = employeeMapper.toListSimpleDto(employees);
+        return success(employeeInfoResponseList);
     }
 
     @Override

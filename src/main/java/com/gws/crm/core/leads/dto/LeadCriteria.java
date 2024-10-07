@@ -6,15 +6,15 @@ import lombok.Getter;
 public class LeadCriteria {
     private String keyword;
     private long id;
-    private long statusId;
-    private long investmentGoalId;
-    private long communicateWayId;
-    private long cancelReasonsId;
-    private long salesRepId;
-    private long channelId;
-    private long projectId;
+    private long status;
+    private long investmentGoal;
+    private long communicateWay;
+    private long cancelReasons;
+    private long salesRep;
+    private long channel;
+    private long project;
     private boolean deleted;
-    private long creatorId;
+    private long creator;
     private int page;
     private int size;
 }

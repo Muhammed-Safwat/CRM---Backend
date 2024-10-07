@@ -11,6 +11,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 ;
 
@@ -36,7 +38,8 @@ public class Lead {
 
     private String country;
 
-    // private List<PhoneNumber> phoneNumbers;
+    @OneToMany(mappedBy = "lead", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PhoneNumber> phoneNumbers ;
 
     private String contactTime;
 

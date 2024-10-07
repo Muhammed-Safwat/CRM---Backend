@@ -48,7 +48,9 @@ public class LeadController {
     }
 
     @DeleteMapping("/{leadId}")
-    public ResponseEntity<?> deleteLead(@PathVariable String leadId, Transition transition) {
+    @PreAuthorize("hasAuthority('ADD_CLIENT') or hasRole('ADMIN')")
+    public ResponseEntity<?> deleteLead(@PathVariable Long leadId, Transition transition) {
         return leadService.deleteLead(leadId, transition);
     }
+
 }

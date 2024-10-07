@@ -14,7 +14,7 @@ public interface LeadService {
 
     ResponseEntity<?> updateLead(AddLeadDTO leadDTO, Transition transition);
 
-    ResponseEntity<?> deleteLead(String leadId, Transition transition);
+    ResponseEntity<?> deleteLead(long leadId, Transition transition);
 
     ResponseEntity<?> getAllLeads(LeadCriteria leadCriteria, Transition transition);
 }

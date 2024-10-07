@@ -21,7 +21,7 @@ public class LeadDTO {
 
     private String country;
 
-    private List<String> phoneNumbers;
+    private List<PhoneNumberDTO> phoneNumbers;
 
     private String contactTime;
 

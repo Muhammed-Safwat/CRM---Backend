@@ -10,7 +10,9 @@ import com.gws.crm.core.leads.dto.AddLeadDTO;
 import com.gws.crm.core.leads.dto.LeadCriteria;
 import com.gws.crm.core.leads.dto.LeadResponse;
 import com.gws.crm.core.leads.entity.Lead;
+import com.gws.crm.core.leads.entity.PhoneNumber;
 import com.gws.crm.core.leads.mapper.LeadMapper;
+import com.gws.crm.core.leads.mapper.PhoneNumberMapper;
 import com.gws.crm.core.leads.repository.LeadRepository;
 import com.gws.crm.core.leads.service.LeadService;
 import com.gws.crm.core.lockups.repository.*;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.created;
@@ -44,6 +47,7 @@ public class LeadServiceImp implements LeadService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final LeadMapper leadMapper;
+    private final PhoneNumberMapper phoneNumberMapper;
 
     @Override
     public ResponseEntity<?> getLeads(int page, int size, Transition transition) {
@@ -67,7 +71,6 @@ public class LeadServiceImp implements LeadService {
                 .name(leadDTO.getName())
                 .status(leadStatusRepository.getReferenceById(leadDTO.getStatus()))
                 .country(leadDTO.getCountry())
-               // .phoneNumbers(leadDTO.getPhoneNumbers())
                 .contactTime(leadDTO.getContactTime())
                 .whatsappNumber(leadDTO.getWhatsappNumber())
                 .email(leadDTO.getEmail())
@@ -79,38 +82,40 @@ public class LeadServiceImp implements LeadService {
                 .deleted(false)
                 .creator(creator);
 
-        if(!transition.getRole().equals("ADMIN")){
+        if (!transition.getRole().equals("ADMIN")) {
             admin = employeeRepository.getReferenceById(transition.getUserId()).getAdmin();
             leadBuilder.admin(admin);
-        }else {
+        } else {
             leadBuilder.admin((Admin) creator);
         }
-        Optional.of(leadDTO.getInvestmentGoal())
-                .ifPresent(investmentGoalId -> leadBuilder.investmentGoal(
-                        investmentGoalRepository.getReferenceById(investmentGoalId)));
 
-        Optional.of(leadDTO.getCommunicateWay())
-                .ifPresent(communicateWayId -> leadBuilder.communicateWay(
-                        communicateWayRepository.getReferenceById(communicateWayId)));
+        if (leadDTO.getInvestmentGoal() != null) {
+            leadBuilder.investmentGoal(investmentGoalRepository.getReferenceById(leadDTO.getInvestmentGoal()));
+        }
 
-        Optional.of(leadDTO.getCancelReasons())
-                .ifPresent(cancelReasonsId -> leadBuilder.cancelReasons(
-                        cancelReasonsRepository.getReferenceById(cancelReasonsId)));
+        if (leadDTO.getCommunicateWay() != null) {
+            leadBuilder.communicateWay(communicateWayRepository.getReferenceById(leadDTO.getCommunicateWay()));
+        }
 
-        Optional.of(leadDTO.getSalesRep())
-                .ifPresent(salesRepId -> leadBuilder.salesRep(
-                        employeeRepository.getReferenceById(salesRepId)));
+        if (leadDTO.getCancelReasons() != null) {
+            leadBuilder.cancelReasons(cancelReasonsRepository.getReferenceById(leadDTO.getCancelReasons()));
+        }
 
-        Optional.of(leadDTO.getChannel())
-                .ifPresent(channelId -> leadBuilder.channel(
-                        channelRepository.getReferenceById(channelId)));
+        if (leadDTO.getSalesRep() != null) {
+            leadBuilder.salesRep(employeeRepository.getReferenceById(leadDTO.getSalesRep()));
+        }
 
-        Optional.of(leadDTO.getProject())
-                .ifPresent(projectId -> leadBuilder.project(
-                        projectRepository.getReferenceById(projectId)));
+        if (leadDTO.getChannel() != null) {
+            leadBuilder.channel(channelRepository.getReferenceById(leadDTO.getChannel()));
+        }
+
+        if (leadDTO.getProject() != null) {
+            leadBuilder.project(projectRepository.getReferenceById(leadDTO.getProject()));
+        }
 
         Lead lead = leadBuilder.build();
-
+        List<PhoneNumber> phoneNumbers = phoneNumberMapper.toEntityList(leadDTO.getPhoneNumbers(), lead);
+        lead.setPhoneNumbers(phoneNumbers);
         Lead savedLead = leadRepository.save(lead);
         LeadResponse leadResponse = leadMapper.toDTO(savedLead);
         return created(leadResponse);
@@ -122,8 +127,9 @@ public class LeadServiceImp implements LeadService {
     }
 
     @Override
-    public ResponseEntity<?> deleteLead(String leadId, Transition transition) {
-        return null;
+    public ResponseEntity<?> deleteLead(long leadId, Transition transition) {
+        leadRepository.deleteLead(leadId);
+        return success("Lead Deleted Successfully");
     }
 
     @Override
@@ -134,4 +140,5 @@ public class LeadServiceImp implements LeadService {
         Page<LeadResponse> leadResponses = leadMapper.toDTOPage(leadPage);
         return success(leadResponses);
     }
+
 }

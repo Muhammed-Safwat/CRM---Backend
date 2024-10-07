@@ -12,7 +12,7 @@ public interface EmployeeService {
 
     ResponseEntity<?> saveEmployee(EmployeeDto employeeDto, Transition transition);
 
-    ResponseEntity<?> getAllEmployee(int page, int size, Transition transition);
+    ResponseEntity<?> getAllEmployee(Transition transition);
 
     ResponseEntity<?> changePasswordDTO(ChangePasswordDTO changePasswordDTO, Transition transition);
 

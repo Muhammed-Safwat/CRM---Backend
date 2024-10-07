@@ -1,5 +1,6 @@
 package com.gws.crm.core.employee.repository;
 
+import com.gws.crm.core.employee.dto.EmployeeSimpleDTO;
 import com.gws.crm.core.employee.entity.Employee;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

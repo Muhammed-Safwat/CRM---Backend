@@ -19,15 +19,15 @@ public class LeadSpecification {
         if (leadCriteria != null) {
             specs.add(fullTextSearch(leadCriteria.getKeyword()));
             specs.add(filterById(leadCriteria.getId()));
-            specs.add(filterByStatus(leadCriteria.getStatusId()));
-            specs.add(filterByInvestmentGoal(leadCriteria.getInvestmentGoalId()));
-            specs.add(filterByCommunicateWay(leadCriteria.getCommunicateWayId()));
-            specs.add(filterByCancelReasons(leadCriteria.getCancelReasonsId()));
-            specs.add(filterBySalesRep(leadCriteria.getSalesRepId()));
-            specs.add(filterByChannel(leadCriteria.getChannelId()));
-            specs.add(filterByProject(leadCriteria.getProjectId()));
+            specs.add(filterByStatus(leadCriteria.getStatus()));
+            specs.add(filterByInvestmentGoal(leadCriteria.getInvestmentGoal()));
+            specs.add(filterByCommunicateWay(leadCriteria.getCommunicateWay()));
+            specs.add(filterByCancelReasons(leadCriteria.getCancelReasons()));
+            specs.add(filterBySalesRep(leadCriteria.getSalesRep()));
+            specs.add(filterByChannel(leadCriteria.getChannel()));
+            specs.add(filterByProject(leadCriteria.getProject()));
             specs.add(filterByDeleted(leadCriteria.isDeleted()));
-            specs.add(filterByCreator(leadCriteria.getCreatorId()));
+            specs.add(filterByCreator(leadCriteria.getCreator()));
             specs.add(filterByAdminId(transition.getUserId()));
         }
 
