@@ -141,4 +141,16 @@ public class LeadServiceImp implements LeadService {
         return success(leadResponses);
     }
 
+    @Override
+    public ResponseEntity<?> restoreLead(Long leadId, Transition transition) {
+        leadRepository.restoreLead(leadId);
+        return success("Lead Deleted Successfully");
+    }
+
+    @Override
+    public ResponseEntity<?> generateExcel(Transition transition) {
+         
+        return null;
+    }
+
 }

@@ -17,5 +17,8 @@ public interface LeadRepository extends JpaRepository<Lead, Long>, JpaSpecificat
     @Transactional
     @Query("UPDATE Lead l SET l.deleted = true WHERE l.id = :leadId")
     void deleteLead(@Param("leadId") long leadId);
-
+    @Modifying
+    @Transactional
+    @Query("UPDATE Lead l SET l.deleted = false WHERE l.id = :leadId")
+    void restoreLead(Long leadId);
 }

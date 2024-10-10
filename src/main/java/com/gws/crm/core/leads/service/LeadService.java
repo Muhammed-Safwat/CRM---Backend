@@ -17,4 +17,8 @@ public interface LeadService {
     ResponseEntity<?> deleteLead(long leadId, Transition transition);
 
     ResponseEntity<?> getAllLeads(LeadCriteria leadCriteria, Transition transition);
+
+    ResponseEntity<?> restoreLead(Long leadId, Transition transition);
+
+    ResponseEntity<?> generateExcel(Transition transition);
 }

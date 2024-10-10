@@ -7,6 +7,7 @@ import com.gws.crm.core.leads.dto.LeadCriteria;
 import com.gws.crm.core.leads.service.LeadService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/leads")
 @RequiredArgsConstructor
+@Log
 public class LeadController {
 
     private final LeadService leadService;
@@ -28,6 +30,7 @@ public class LeadController {
     @PostMapping("all")
     public ResponseEntity<?> getAllLeads(@Valid @RequestBody LeadCriteria leadCriteria,
                                          Transition transition) {
+        log.info(leadCriteria.toString());
         return leadService.getAllLeads(leadCriteria, transition);
     }
 
@@ -51,6 +54,18 @@ public class LeadController {
     @PreAuthorize("hasAuthority('ADD_CLIENT') or hasRole('ADMIN')")
     public ResponseEntity<?> deleteLead(@PathVariable Long leadId, Transition transition) {
         return leadService.deleteLead(leadId, transition);
+    }
+
+    @DeleteMapping("restore/{leadId}")
+    @PreAuthorize("hasAuthority('ADD_CLIENT') or hasRole('ADMIN')")
+    public ResponseEntity<?> restoreLead(@PathVariable Long leadId, Transition transition) {
+        return leadService.restoreLead(leadId, transition);
+    }
+
+    @GetMapping("generate/excel")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> generateExcel(Transition transition){
+        return leadService.generateExcel(transition);
     }
 
 }
