@@ -11,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
@@ -37,14 +39,14 @@ public class LeadLockupsServiceImp implements LeadLockupsService {
         List<Project> projects = projectRepository.findAllByAdminId(transition.getUserId());
         List<CancelReasons> cancelReasons = cancelReasonsRepository.findAllByAdminId(transition.getUserId());
         List<EmployeeSimpleDTO> salesReps = employeeRepository.findAllByAdminId(transition.getUserId())
-                            .stream()
-                            .map(employee -> EmployeeSimpleDTO.builder()
-                                    .id(employee.getId())
-                                    .name(employee.getName())
-                                    .jobName(employee.getJobName().getJobName())
-                                    .build()
-                            )
-                            .collect(Collectors.toList());
+                .stream()
+                .map(employee -> EmployeeSimpleDTO.builder()
+                        .id(employee.getId())
+                        .name(employee.getName())
+                        .jobName(employee.getJobName().getJobName())
+                        .build()
+                )
+                .collect(Collectors.toList());
         List<Channel> channels = channelRepository.findAllByAdminId(transition.getUserId());
         List<CommunicateWay> communicateWays = communicateWayRepository.findAllByAdminId(transition.getUserId());
 
@@ -60,6 +62,31 @@ public class LeadLockupsServiceImp implements LeadLockupsService {
                 .build();
 
         return success(leadLockupsDTO);
+    }
+
+    @Override
+    public Map<String, List<String>> generateExcelSheetMap(Transition transition) {
+        List<String> brokers = brokerRepository.findAllNamesByAdminId(transition.getUserId());
+        List<String> leadStatuses = leadStatusRepository.findAllNames();
+        List<String> investmentGoals = investmentGoalRepository.findAllNamesByAdminId(transition.getUserId());
+        List<String> projects = projectRepository.findAllNamesByAdminId(transition.getUserId());
+        List<String> cancelReasons = cancelReasonsRepository.findAllNamesByAdminId(transition.getUserId());
+        List<String> channels = channelRepository.findAllNamesByAdminId(transition.getUserId());
+        List<String> communicateWays = communicateWayRepository.findAllNamesByAdminId(transition.getUserId());
+        List<String> salesReps = employeeRepository.findAllNamesByAdminId(transition.getUserId());
+
+        Map<String, List<String>> lockupsMap = new HashMap<>();
+
+        lockupsMap.put("broker", brokers);
+        lockupsMap.put("status", leadStatuses);
+        lockupsMap.put("investmentGoal", investmentGoals);
+        lockupsMap.put("project", projects);
+        lockupsMap.put("cancelReason", cancelReasons);
+        lockupsMap.put("channel", channels);
+        lockupsMap.put("communicateWay", communicateWays);
+        lockupsMap.put("salesRep", salesReps);
+
+        return lockupsMap;
     }
 }
 

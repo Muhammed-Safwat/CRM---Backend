@@ -2,6 +2,7 @@ package com.gws.crm.core.leads.service.imp;
 
 import com.gws.crm.authentication.entity.User;
 import com.gws.crm.authentication.repository.UserRepository;
+import com.gws.crm.common.entities.ExcelFile;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.core.admin.entity.Admin;
@@ -16,7 +17,9 @@ import com.gws.crm.core.leads.mapper.PhoneNumberMapper;
 import com.gws.crm.core.leads.repository.LeadRepository;
 import com.gws.crm.core.leads.service.LeadService;
 import com.gws.crm.core.lockups.repository.*;
+import com.gws.crm.core.lockups.service.LeadLockupsService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
@@ -26,14 +29,15 @@ import org.springframework.stereotype.Service;
 
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.created;
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
+import static com.gws.crm.common.utils.ExcelFileUtils.generateHeader;
 import static com.gws.crm.core.leads.spcification.LeadSpecification.filter;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class LeadServiceImp implements LeadService {
 
@@ -48,6 +52,7 @@ public class LeadServiceImp implements LeadService {
     private final UserRepository userRepository;
     private final LeadMapper leadMapper;
     private final PhoneNumberMapper phoneNumberMapper;
+    private final LeadLockupsService leadLockupsService;
 
     @Override
     public ResponseEntity<?> getLeads(int page, int size, Transition transition) {
@@ -97,8 +102,8 @@ public class LeadServiceImp implements LeadService {
             leadBuilder.communicateWay(communicateWayRepository.getReferenceById(leadDTO.getCommunicateWay()));
         }
 
-        if (leadDTO.getCancelReasons() != null) {
-            leadBuilder.cancelReasons(cancelReasonsRepository.getReferenceById(leadDTO.getCancelReasons()));
+        if (leadDTO.getCancelReason() != null) {
+            leadBuilder.cancelReasons(cancelReasonsRepository.getReferenceById(leadDTO.getCancelReason()));
         }
 
         if (leadDTO.getSalesRep() != null) {
@@ -134,6 +139,7 @@ public class LeadServiceImp implements LeadService {
 
     @Override
     public ResponseEntity<?> getAllLeads(LeadCriteria leadCriteria, Transition transition) {
+        log.info("Header Generated ====> {}", generateHeader(AddLeadDTO.class));
         Specification<Lead> leadSpecification = filter(leadCriteria, transition);
         Pageable pageable = PageRequest.of(leadCriteria.getPage(), leadCriteria.getSize());
         Page<Lead> leadPage = leadRepository.findAll(leadSpecification, pageable);
@@ -149,8 +155,11 @@ public class LeadServiceImp implements LeadService {
 
     @Override
     public ResponseEntity<?> generateExcel(Transition transition) {
-         
-        return null;
+        ExcelFile excelFile = ExcelFile.builder()
+                .header(generateHeader(AddLeadDTO.class))
+                .dropdowns(leadLockupsService.generateExcelSheetMap(transition))
+                .build();
+        return success(excelFile);
     }
 
 }

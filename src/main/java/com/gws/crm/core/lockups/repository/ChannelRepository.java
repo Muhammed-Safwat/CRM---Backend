@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -15,7 +17,8 @@ public interface ChannelRepository extends JpaRepository<Channel, Long> {
     Page<Channel> findAllByAdminId(Pageable pageable, Long userId);
 
     List<Channel> findAllByAdminId(Long userId);
-
+    @Query("SELECT c.name FROM Channel c WHERE c.admin.id = :userId")
+    List<String> findAllNamesByAdminId(@Param("userId") Long userId);
     Optional<Channel> findByIdAndAdminId(long id, Long userId);
 
     @Modifying

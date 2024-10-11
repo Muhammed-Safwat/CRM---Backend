@@ -63,7 +63,6 @@ public class LeadController {
     }
 
     @GetMapping("generate/excel")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> generateExcel(Transition transition){
         return leadService.generateExcel(transition);
     }

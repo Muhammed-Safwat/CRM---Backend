@@ -33,7 +33,7 @@ public class AddLeadDTO {
 
     private Long communicateWay;
 
-    private Long cancelReasons;
+    private Long cancelReason;
 
     private Long salesRep;
 
