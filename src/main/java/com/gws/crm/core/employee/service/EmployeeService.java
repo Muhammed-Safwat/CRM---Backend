@@ -3,9 +3,9 @@ package com.gws.crm.core.employee.service;
 
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.employee.dto.ChangePasswordDTO;
+import com.gws.crm.core.employee.dto.EmployeeCriteria;
 import com.gws.crm.core.employee.dto.EmployeeDto;
 import com.gws.crm.core.employee.dto.UpdateEmployeeDto;
-import com.gws.crm.core.employee.dto.EmployeeCriteria;
 import org.springframework.http.ResponseEntity;
 
 public interface EmployeeService {

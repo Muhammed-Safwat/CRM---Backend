@@ -4,7 +4,8 @@ import com.gws.crm.core.employee.dto.EmployeeSimpleDTO;
 import com.gws.crm.core.leads.dto.LeadResponse;
 import com.gws.crm.core.leads.dto.LeadStatusDto;
 import com.gws.crm.core.leads.entity.Lead;
-import com.gws.crm.core.lookups.dto.*;
+import com.gws.crm.core.lookups.dto.LookupDTO;
+import com.gws.crm.core.lookups.dto.ProjectDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
@@ -23,22 +24,22 @@ public class LeadMapper {
             return null;
         }
 
-        LockupDTO investmentGoalDTO = lead.getInvestmentGoal() != null ?
-                LockupDTO.builder()
+        LookupDTO investmentGoalDTO = lead.getInvestmentGoal() != null ?
+                LookupDTO.builder()
                         .id(lead.getInvestmentGoal().getId())
                         .name(lead.getInvestmentGoal().getName())
                         .build()
                 : null;
 
-        LockupDTO communicateWayDTO = lead.getCommunicateWay() != null ?
-                LockupDTO.builder()
+        LookupDTO communicateWayDTO = lead.getCommunicateWay() != null ?
+                LookupDTO.builder()
                         .id(lead.getCommunicateWay().getId())
                         .name(lead.getCommunicateWay().getName())
                         .build()
                 : null;
 
-        LockupDTO cancelReasonsDTO = lead.getCancelReasons() != null ?
-                LockupDTO.builder()
+        LookupDTO cancelReasonsDTO = lead.getCancelReasons() != null ?
+                LookupDTO.builder()
                         .id(lead.getCancelReasons().getId())
                         .name(lead.getCancelReasons().getName())
                         .build()
@@ -51,8 +52,8 @@ public class LeadMapper {
                         .build()
                 : null;
 
-        LockupDTO channelDTO = lead.getChannel() != null ?
-                LockupDTO.builder()
+        LookupDTO channelDTO = lead.getChannel() != null ?
+                LookupDTO.builder()
                         .id(lead.getChannel().getId())
                         .name(lead.getChannel().getName())
                         .build()

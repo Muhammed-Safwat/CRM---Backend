@@ -1,7 +1,7 @@
 package com.gws.crm.core.lookups.controller;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.lookups.service.LeadLockupsService;
+import com.gws.crm.core.lookups.service.LeadLookupsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,14 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/lead-lookups")
 @RequiredArgsConstructor
-public class LeadLockupsController {
+public class LeadLookupsController {
 
-    private final LeadLockupsService leadLockupsService;
+    private final LeadLookupsService leadLookupsService;
 
     @GetMapping
     @PreAuthorize("hasAuthority('ADD_CLIENT') or hasRole('ADMIN')")
-    public ResponseEntity<?> getLeadLockups(Transition transition){
-        return leadLockupsService.getLeadLockups(transition);
+    public ResponseEntity<?> getLeadLookups(Transition transition){
+        return leadLookupsService.getLeadLookups(transition);
     }
 
 }

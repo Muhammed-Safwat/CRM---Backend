@@ -3,9 +3,9 @@ package com.gws.crm.core.employee.controller;
 
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.employee.dto.ChangePasswordDTO;
+import com.gws.crm.core.employee.dto.EmployeeCriteria;
 import com.gws.crm.core.employee.dto.EmployeeDto;
 import com.gws.crm.core.employee.dto.UpdateEmployeeDto;
-import com.gws.crm.core.employee.dto.EmployeeCriteria;
 import com.gws.crm.core.employee.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

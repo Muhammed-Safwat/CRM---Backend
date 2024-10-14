@@ -2,7 +2,6 @@ package com.gws.crm.core.leads.mapper;
 
 import com.gws.crm.core.leads.dto.PhoneNumberDTO;
 import com.gws.crm.core.leads.entity.BaseLead;
-import com.gws.crm.core.leads.entity.BaseLead;
 import com.gws.crm.core.leads.entity.PhoneNumber;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;

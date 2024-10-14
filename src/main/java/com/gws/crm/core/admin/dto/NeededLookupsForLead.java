@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class NeededLockupsForLead {
+public class NeededLookupsForLead {
     private List<CommunicateWay> communicateWays;
     private List<Channel> channels;
 }

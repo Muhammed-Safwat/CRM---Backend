@@ -1,32 +1,22 @@
 package com.gws.crm.core.lookups.service.impl;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.core.admin.repository.AdminRepository;
 import com.gws.crm.core.lookups.dto.AreaDTO;
+import com.gws.crm.core.lookups.dto.LookupDTO;
 import com.gws.crm.core.lookups.entity.Area;
-import com.gws.crm.core.lookups.entity.Region;
 import com.gws.crm.core.lookups.repository.AreaRepository;
-import com.gws.crm.core.lookups.repository.BaseLookupRepository;
 import com.gws.crm.core.lookups.repository.RegionRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-
-import static com.gws.crm.common.handler.ApiResponseHandler.success;
 
 @Service
 public class AreaService extends BaseLookupServiceImpl<Area,AreaDTO> {
 
     @Autowired
     private RegionRepository regionRepository;
+    @Autowired
+    private AdminRepository adminRepository;
 
     public AreaService(AreaRepository repository) {
         super(repository);
@@ -37,6 +27,18 @@ public class AreaService extends BaseLookupServiceImpl<Area,AreaDTO> {
         return Area.builder()
                 .name(dto.getName())
                 .region(regionRepository.getReferenceById(dto.getRegion().getId()))
+                .build();
+    }
+
+    @Override
+    protected AreaDTO mapEntityToDto(Area entity) {
+        return AreaDTO.builder()
+                .name(entity.getName())
+                .id(entity.getId())
+                .region(LookupDTO.builder()
+                        .name(entity.getName())
+                        .id(entity.getId())
+                        .build())
                 .build();
     }
 

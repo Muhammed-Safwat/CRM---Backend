@@ -1,15 +1,10 @@
 package com.gws.crm.core.leads.dto;
 
-import com.gws.crm.authentication.entity.User;
-import com.gws.crm.core.employee.dto.EmployeeDto;
 import com.gws.crm.core.employee.dto.EmployeeSimpleDTO;
-import com.gws.crm.core.employee.entity.Employee;
-import com.gws.crm.core.lookups.dto.*;
-import com.gws.crm.core.lookups.entity.*;
-import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import com.gws.crm.core.lookups.dto.LookupDTO;
+import com.gws.crm.core.lookups.dto.ProjectDTO;
+import lombok.Builder;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,15 +31,15 @@ public class LeadResponse {
 
         private String jobTitle;
 
-        private LockupDTO investmentGoal;
+        private LookupDTO investmentGoal;
 
-        private LockupDTO communicateWay;
+        private LookupDTO communicateWay;
 
         private LocalDateTime updatedAt;
 
         private LocalDateTime createdAt;
 
-        private LockupDTO cancelReasons;
+        private LookupDTO cancelReasons;
 
         private EmployeeSimpleDTO salesRep;
 
@@ -52,7 +47,7 @@ public class LeadResponse {
 
         private String note;
 
-        private LockupDTO channel;
+        private LookupDTO channel;
 
         private ProjectDTO project;
 

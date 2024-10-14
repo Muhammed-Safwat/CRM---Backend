@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class LeadLockupsDTO {
+public class LeadLookupsDTO {
     private List<Broker> brokers;
     private List<LeadStatus> leadStatuses;
     private List<InvestmentGoal> investmentGoals;

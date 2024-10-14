@@ -3,16 +3,13 @@ package com.gws.crm;
 import com.gws.crm.authentication.entity.Privilege;
 import com.gws.crm.authentication.entity.PrivilegeGroup;
 import com.gws.crm.authentication.entity.Role;
-import com.gws.crm.authentication.repository.PrivilegeRepository;
 import com.gws.crm.authentication.repository.RoleRepository;
 import com.gws.crm.core.admin.entity.SuperAdmin;
 import com.gws.crm.core.admin.repository.SuperAdminRepository;
 import com.gws.crm.core.leads.repository.PrivilegeGroupRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

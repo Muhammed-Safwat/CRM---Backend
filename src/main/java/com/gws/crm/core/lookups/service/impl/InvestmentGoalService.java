@@ -1,34 +1,34 @@
 package com.gws.crm.core.lookups.service.impl;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.admin.repository.AdminRepository;
-import com.gws.crm.core.lookups.dto.LockupDTO;
-import com.gws.crm.core.lookups.entity.Channel;
+import com.gws.crm.core.lookups.dto.LookupDTO;
 import com.gws.crm.core.lookups.entity.InvestmentGoal;
-import com.gws.crm.core.lookups.repository.BaseLookupRepository;
 import com.gws.crm.core.lookups.repository.InvestmentGoalRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
-public class InvestmentGoalService extends BaseLookupServiceImpl<InvestmentGoal, LockupDTO> {
+public class InvestmentGoalService extends BaseLookupServiceImpl<InvestmentGoal, LookupDTO> {
 
     public InvestmentGoalService(InvestmentGoalRepository repository) {
         super(repository);
     }
 
     @Override
-    protected InvestmentGoal mapDtoToEntity(LockupDTO dto, Transition transition) {
+    protected InvestmentGoal mapDtoToEntity(LookupDTO dto, Transition transition) {
         return InvestmentGoal.builder()
-                .id(dto.getId())
                 .name(dto.getName())
                 .build();
     }
 
     @Override
-    protected void updateEntityFromDto(InvestmentGoal entity, LockupDTO dto) {
+    protected LookupDTO mapEntityToDto(InvestmentGoal entity) {
+        return LookupDTO.builder()
+                .name(entity.getName())
+                .build();
+    }
+
+    @Override
+    protected void updateEntityFromDto(InvestmentGoal entity, LookupDTO dto) {
         entity.setName(dto.getName());
     }
 }

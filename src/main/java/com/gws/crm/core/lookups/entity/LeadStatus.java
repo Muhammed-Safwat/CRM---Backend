@@ -1,22 +1,15 @@
 package com.gws.crm.core.lookups.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.gws.crm.core.admin.entity.Admin;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import jakarta.persistence.Entity;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
-@Data
+@Setter
+@SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
-public class LeadStatus {
+public class LeadStatus extends BaseLookup {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
-    private String name;
 
 }

@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.gws.crm.common.handler.ApiResponseHandler.success;
-
 @RestController
 @RequestMapping("api/leads")
 @RequiredArgsConstructor

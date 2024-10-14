@@ -1,21 +1,15 @@
 package com.gws.crm.core.lookups.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.gws.crm.core.admin.entity.Admin;
-import com.gws.crm.core.lookups.dto.LockupDTO;
-import com.gws.crm.core.lookups.service.impl.BaseLookupServiceImpl;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Setter
 @SuperBuilder
 @NoArgsConstructor
 public class Area extends BaseLookup {

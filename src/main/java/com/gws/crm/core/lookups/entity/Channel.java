@@ -1,6 +1,6 @@
 package com.gws.crm.core.lookups.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;

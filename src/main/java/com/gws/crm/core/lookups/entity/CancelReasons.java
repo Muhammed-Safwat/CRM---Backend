@@ -1,13 +1,9 @@
 package com.gws.crm.core.lookups.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.gws.crm.core.admin.entity.Admin;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter

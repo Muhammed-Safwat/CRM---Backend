@@ -4,7 +4,6 @@ import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.employee.dto.EmployeeCriteria;
 import com.gws.crm.core.employee.entity.Employee;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;

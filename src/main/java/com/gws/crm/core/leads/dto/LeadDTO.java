@@ -1,8 +1,8 @@
 package com.gws.crm.core.leads.dto;
 
+import com.gws.crm.core.lookups.dto.LookupDTO;
 import com.gws.crm.core.lookups.entity.Channel;
 import com.gws.crm.core.lookups.entity.Project;
-import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
 

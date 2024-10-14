@@ -3,10 +3,10 @@ package com.gws.crm.core.lookups.service.impl;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.employee.dto.EmployeeSimpleDTO;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
-import com.gws.crm.core.lookups.dto.LeadLockupsDTO;
+import com.gws.crm.core.lookups.dto.LeadLookupsDTO;
 import com.gws.crm.core.lookups.entity.*;
 import com.gws.crm.core.lookups.repository.*;
-import com.gws.crm.core.lookups.service.LeadLockupsService;
+import com.gws.crm.core.lookups.service.LeadLookupsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ import static com.gws.crm.common.handler.ApiResponseHandler.success;
 
 @Service
 @RequiredArgsConstructor
-public class LeadLockupsServiceImp implements LeadLockupsService {
+public class LeadLookupsServiceImp implements LeadLookupsService {
 
     private final BrokerRepository brokerRepository;
     private final LeadStatusRepository leadStatusRepository;
@@ -32,7 +32,7 @@ public class LeadLockupsServiceImp implements LeadLockupsService {
     private final CommunicateWayRepository communicateWayRepository;
 
     @Override
-    public ResponseEntity<?> getLeadLockups(Transition transition) {
+    public ResponseEntity<?> getLeadLookups(Transition transition) {
         List<Broker> brokers = brokerRepository.findAllByAdminId(transition.getUserId());
         List<LeadStatus> leadStatuses = leadStatusRepository.findAll();
         List<InvestmentGoal> investmentGoals = investmentGoalRepository.findAllByAdminId(transition.getUserId());
@@ -50,7 +50,7 @@ public class LeadLockupsServiceImp implements LeadLockupsService {
         List<Channel> channels = channelRepository.findAllByAdminId(transition.getUserId());
         List<CommunicateWay> communicateWays = communicateWayRepository.findAllByAdminId(transition.getUserId());
 
-        LeadLockupsDTO leadLockupsDTO = LeadLockupsDTO.builder()
+        LeadLookupsDTO leadLookupsDTO = LeadLookupsDTO.builder()
                 .brokers(brokers)
                 .leadStatuses(leadStatuses)
                 .investmentGoals(investmentGoals)
@@ -61,7 +61,7 @@ public class LeadLockupsServiceImp implements LeadLockupsService {
                 .communicateWays(communicateWays)
                 .build();
 
-        return success(leadLockupsDTO);
+        return success(leadLookupsDTO);
     }
 
     @Override

@@ -15,24 +15,24 @@ import static com.gws.crm.common.handler.ApiResponseHandler.success;
 @RequiredArgsConstructor
 public class StatisticsServiceImp implements StatisticsService {
 
+
     private final AreaRepository areaRepository;
-
     private final RegionRepository regionRepository;
-
     private final StageRepository stageRepository;
-
     private final CommunicateWayRepository communicateWayRepository;
-
     private final ChannelRepository channelRepository;
-
     private final ProjectRepository projectRepository;
-
     private final DevCompanyRepository devCompanyRepository;
-
     private final CancelReasonsRepository cancelReasonsRepository;
+    private final BrokerRepository brokerRepository;
+    private final CampaignRepository campaignRepository;
+    private final CategoryRepository categoryRepository;
+    private final InvestmentGoalRepository investmentGoalRepository;
+    private final LeadStatusRepository leadStatusRepository;
 
     public ResponseEntity<?> getStatistics(Transition transition) {
-        StatisticsDTO statisticsDTO = StatisticsDTO.builder().totalChannels(channelRepository.countByAdminId(transition.getUserId()))
+        StatisticsDTO statisticsDTO = StatisticsDTO.builder()
+                .totalChannels(channelRepository.countByAdminId(transition.getUserId()))
                 .totalStage(stageRepository.countByAdminId(transition.getUserId()))
                 .totalRegions(regionRepository.countByAdminId(transition.getUserId()))
                 .totalCommunicateWays(communicateWayRepository.countByAdminId(transition.getUserId()))
@@ -40,9 +40,14 @@ public class StatisticsServiceImp implements StatisticsService {
                 .totalProjects(projectRepository.countByAdminId(transition.getUserId()))
                 .totalDevCompanies(devCompanyRepository.countByAdminId(transition.getUserId()))
                 .totalCancelReasons(cancelReasonsRepository.countByAdminId(transition.getUserId()))
+                .totalBrokers(brokerRepository.countByAdminId(transition.getUserId()))
+                .totalCampaigns(campaignRepository.countByAdminId(transition.getUserId()))
+                .totalCategories(categoryRepository.countByAdminId(transition.getUserId()))
+                .totalInvestmentGoals(investmentGoalRepository.countByAdminId(transition.getUserId()))
+                .totalLeadStatuses(leadStatusRepository.countByAdminId(transition.getUserId()))
                 .build();
+
         return success(statisticsDTO);
     }
-
 
 }

@@ -18,19 +18,19 @@ import com.gws.crm.core.leads.mapper.PhoneNumberMapper;
 import com.gws.crm.core.leads.repository.LeadRepository;
 import com.gws.crm.core.leads.service.LeadService;
 import com.gws.crm.core.lookups.repository.*;
-import com.gws.crm.core.lookups.service.LeadLockupsService;
+import com.gws.crm.core.lookups.service.LeadLookupsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.created;
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
@@ -53,7 +53,7 @@ public class LeadServiceImp implements LeadService {
     private final UserRepository userRepository;
     private final LeadMapper leadMapper;
     private final PhoneNumberMapper phoneNumberMapper;
-    private final LeadLockupsService leadLockupsService;
+    private final LeadLookupsService leadLookupsService;
 
     @Override
     public ResponseEntity<?> getLeads(int page, int size, Transition transition) {
@@ -155,7 +155,7 @@ public class LeadServiceImp implements LeadService {
 
     @Override
     public ResponseEntity<?> generateExcel(Transition transition) {
-        ExcelFile excelFile = ExcelFile.builder().header(generateHeader(AddLeadDTO.class)).dropdowns(leadLockupsService.generateExcelSheetMap(transition)).build();
+        ExcelFile excelFile = ExcelFile.builder().header(generateHeader(AddLeadDTO.class)).dropdowns(leadLookupsService.generateExcelSheetMap(transition)).build();
         return success(excelFile);
     }
 

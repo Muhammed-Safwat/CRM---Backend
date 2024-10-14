@@ -1,40 +1,36 @@
 package com.gws.crm.core.lookups.service.impl;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.common.exception.NotFoundResourceException;
-import com.gws.crm.core.admin.repository.AdminRepository;
-import com.gws.crm.core.lookups.dto.LockupDTO;
+import com.gws.crm.core.lookups.dto.LookupDTO;
 import com.gws.crm.core.lookups.entity.Stage;
-import com.gws.crm.core.lookups.repository.ChannelRepository;
 import com.gws.crm.core.lookups.repository.StageRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import static com.gws.crm.common.handler.ApiResponseHandler.success;
-
 @Service
-public class StageService extends BaseLookupServiceImpl<Stage,LockupDTO>  {
+public class StageService extends BaseLookupServiceImpl<Stage,LookupDTO>  {
 
     public StageService(StageRepository repository) {
         super(repository);
     }
 
     @Override
-    protected Stage mapDtoToEntity(LockupDTO dto, Transition transition) {
-        return Stage.builder()
-                .id(dto.getId())
+    protected Stage mapDtoToEntity(LookupDTO dto, Transition transition) {
+        return Stage
+                .builder()
                 .name(dto.getName())
                 .build();
     }
 
     @Override
-    protected void updateEntityFromDto(Stage entity, LockupDTO dto) {
+    protected LookupDTO mapEntityToDto(Stage entity) {
+        return LookupDTO.builder()
+                .id(entity.getId())
+                .name(entity.getName())
+                .build();
+    }
+
+    @Override
+    protected void updateEntityFromDto(Stage entity, LookupDTO dto) {
         entity.setName(dto.getName());
     }
 }

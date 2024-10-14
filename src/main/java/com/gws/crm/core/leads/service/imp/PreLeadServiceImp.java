@@ -9,7 +9,6 @@ import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.leads.dto.AddPreLeadDTO;
 import com.gws.crm.core.leads.dto.PreLeadCriteria;
-import com.gws.crm.core.leads.entity.Lead;
 import com.gws.crm.core.leads.entity.PhoneNumber;
 import com.gws.crm.core.leads.entity.PreLead;
 import com.gws.crm.core.leads.mapper.PhoneNumberMapper;

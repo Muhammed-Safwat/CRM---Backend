@@ -3,7 +3,6 @@ package com.gws.crm.authentication.filters;
 import com.gws.crm.authentication.repository.UserRepository;
 import com.gws.crm.authentication.utils.JwtTokenService;
 import com.gws.crm.common.exception.NotFoundResourceException;
-import com.gws.crm.common.handler.ApiResponseHandler;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,8 +17,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-
-import static com.gws.crm.common.handler.ApiResponseHandler.unauthorized;
 
 @Slf4j
 @RequiredArgsConstructor

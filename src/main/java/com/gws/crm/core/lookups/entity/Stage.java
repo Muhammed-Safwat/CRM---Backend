@@ -1,7 +1,6 @@
 package com.gws.crm.core.lookups.entity;
 
-import com.gws.crm.core.lookups.dto.LockupDTO;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;

@@ -1,13 +1,17 @@
 package com.gws.crm.core.lookups.dto;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Getter
 @SuperBuilder
-public class AreaDTO extends LockupDTO{
+@AllArgsConstructor
+@NoArgsConstructor
+public class AreaDTO extends LookupDTO{
 
     @NotNull
-    private LockupDTO region;
+    private LookupDTO region;
 }

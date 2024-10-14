@@ -14,4 +14,10 @@ public class StatisticsDTO {
     private long totalDevCompanies;
     private long totalProjects;
     private long totalCancelReasons;
+    private long totalBrokers;
+    private long totalCampaigns;
+    private long totalCategories;
+    private long totalInvestmentGoals;
+    private long totalLeadStatuses;
+
 }

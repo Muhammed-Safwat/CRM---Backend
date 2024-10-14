@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 import java.util.Map;
 
-public interface LeadLockupsService {
-    ResponseEntity<?> getLeadLockups(Transition transition);
+public interface LeadLookupsService {
+    ResponseEntity<?> getLeadLookups(Transition transition);
 
     Map<String, List<String>> generateExcelSheetMap(Transition transition);
 }

@@ -1,20 +1,16 @@
 package com.gws.crm.core.lookups.controller;
 
-import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.lookups.dto.LockupDTO;
-import com.gws.crm.core.lookups.entity.Channel;
+import com.gws.crm.core.lookups.dto.LookupDTO;
 import com.gws.crm.core.lookups.entity.Stage;
-import com.gws.crm.core.lookups.service.BaseLookupService;
 import com.gws.crm.core.lookups.service.impl.StageService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/lookups/stages")
-public class StageController extends BaseLookupController<Stage, LockupDTO> {
+public class StageController extends BaseLookupController<Stage, LookupDTO> {
 
-    protected StageController(BaseLookupService<Stage, LockupDTO> service) {
+    protected StageController(StageService service) {
         super(service);
     }
 }
