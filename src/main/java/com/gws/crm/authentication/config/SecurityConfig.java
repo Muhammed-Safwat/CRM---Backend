@@ -84,7 +84,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/super-admin/admins/**").hasRole("SUPER_ADMIN")
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/api/employees/**").hasRole("ADMIN")
-                                .requestMatchers("/api/lockups/**").hasRole("ADMIN")
+                                .requestMatchers("/api/lookups/**").hasRole("ADMIN")
                                 .requestMatchers("/api/privileges/**").hasRole("ADMIN")
                                 .anyRequest().authenticated())
                 .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)

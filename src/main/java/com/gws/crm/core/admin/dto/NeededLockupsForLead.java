@@ -1,7 +1,7 @@
 package com.gws.crm.core.admin.dto;
 
-import com.gws.crm.core.lockups.entity.Channel;
-import com.gws.crm.core.lockups.entity.CommunicateWay;
+import com.gws.crm.core.lookups.entity.Channel;
+import com.gws.crm.core.lookups.entity.CommunicateWay;
 import lombok.Getter;
 import lombok.Setter;
 

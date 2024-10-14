@@ -4,7 +4,7 @@ import com.gws.crm.core.employee.dto.EmployeeSimpleDTO;
 import com.gws.crm.core.leads.dto.LeadResponse;
 import com.gws.crm.core.leads.dto.LeadStatusDto;
 import com.gws.crm.core.leads.entity.Lead;
-import com.gws.crm.core.lockups.dto.*;
+import com.gws.crm.core.lookups.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;

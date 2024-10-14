@@ -2,7 +2,7 @@ package com.gws.crm.core.leads.entity;
 
 import com.gws.crm.authentication.entity.User;
 import com.gws.crm.core.admin.entity.Admin;
-import com.gws.crm.core.lockups.entity.LeadStatus;
+import com.gws.crm.core.lookups.entity.LeadStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

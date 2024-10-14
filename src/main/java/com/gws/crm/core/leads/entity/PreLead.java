@@ -1,7 +1,7 @@
 package com.gws.crm.core.leads.entity;
 
 
-import com.gws.crm.core.lockups.entity.Campaign;
+import com.gws.crm.core.lookups.entity.Campaign;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

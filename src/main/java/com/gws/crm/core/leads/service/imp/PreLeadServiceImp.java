@@ -15,7 +15,7 @@ import com.gws.crm.core.leads.entity.PreLead;
 import com.gws.crm.core.leads.mapper.PhoneNumberMapper;
 import com.gws.crm.core.leads.repository.PreLeadRepository;
 import com.gws.crm.core.leads.service.PreLeadService;
-import com.gws.crm.core.lockups.repository.LeadStatusRepository;
+import com.gws.crm.core.lookups.repository.LeadStatusRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
