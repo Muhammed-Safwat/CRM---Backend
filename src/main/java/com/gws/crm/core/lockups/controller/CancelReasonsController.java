@@ -1,7 +1,7 @@
 package com.gws.crm.core.lockups.controller;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.lockups.dto.CancelReasonsDTO;
+import com.gws.crm.core.lockups.dto.LockupDTO;
 import com.gws.crm.core.lockups.service.CancelReasonsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,12 +28,12 @@ public class CancelReasonsController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createCancelReason(@Valid @RequestBody CancelReasonsDTO cancelReasonsDTO, Transition transition) {
+    public ResponseEntity<?> createCancelReason(@Valid @RequestBody LockupDTO cancelReasonsDTO, Transition transition) {
         return cancelReasonsService.createCancelReason(cancelReasonsDTO,transition);
     }
 
     @PutMapping
-    public ResponseEntity<?> updateCancelReason(@RequestBody CancelReasonsDTO cancelReasonsDTO, Transition transition) {
+    public ResponseEntity<?> updateCancelReason(@RequestBody LockupDTO cancelReasonsDTO, Transition transition) {
         return cancelReasonsService.updateCancelReason(cancelReasonsDTO,transition);
     }
 

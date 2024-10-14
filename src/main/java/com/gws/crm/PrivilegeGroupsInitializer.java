@@ -2,17 +2,25 @@ package com.gws.crm;
 
 import com.gws.crm.authentication.entity.Privilege;
 import com.gws.crm.authentication.entity.PrivilegeGroup;
+import com.gws.crm.authentication.entity.Role;
 import com.gws.crm.authentication.repository.PrivilegeRepository;
 import com.gws.crm.authentication.repository.RoleRepository;
+import com.gws.crm.core.admin.entity.SuperAdmin;
+import com.gws.crm.core.admin.repository.SuperAdminRepository;
 import com.gws.crm.core.leads.repository.PrivilegeGroupRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -21,27 +29,56 @@ public class PrivilegeGroupsInitializer {
 
     private final PrivilegeGroupRepository privilegeGroupRepository;
 
+    private final SuperAdminRepository superAdminRepository;
+
+    private final PasswordEncoder passwordEncoder;
+
+    private final RoleRepository roleRepository;
+
+    void createSuperAdmin() {
+        Set<Role> roles = new HashSet<>();
+        roles.add(roleRepository.findByName("SUPER_ADMIN"));
+        SuperAdmin superAdmin = SuperAdmin.builder()
+                .name("Muhammed Safwat")
+                .username("muhammedsafwat@gmail.com")
+                .password(passwordEncoder.encode("superadmin12345"))
+                .enabled(true)
+                .locked(false)
+                .createAt(LocalDateTime.now())
+                .updateAt(LocalDateTime.now())
+                .accountNonExpired(LocalDateTime.of(9999, 12, 31, 23, 59, 59))
+                .credentialsNonExpired(LocalDateTime.of(9999, 12, 31, 23, 59, 59))
+                .roles(roles)
+                .build();
+        superAdminRepository.save(superAdmin);
+    }
+
+    void createAdmin() {
+
+    }
+
     @PostConstruct
     public void initializeData() {
-        // addSalesDirectorRole();
-        // addTeamLeadRole();
-      /*
-        salesRep();
-        marketingRole();
-        dataEntry();
-        accountant();
-        callCenterAgent();
-        customerServiceManagement();
-        customerServiceAgent();
-        marketingManger();
-        salesManger();
-        qualityControl();
-        salesAdminRole();
-        teleSalesLeader();
-        teleSalesAgent();
-        customerServiceTeamLeader();
-        branchManger();*/
+        // createSuperAdmin();
+//        addSalesDirectorRole();
+//        addTeamLeadRole();
+//        salesRep();
+//        marketingRole();
+//        dataEntry();
+//        accountant();
+//        callCenterAgent();
+//        customerServiceManagement();
+//        customerServiceAgent();
+//        marketingManger();
+//        salesManger();
+//        qualityControl();
+//        salesAdminRole();
+//        teleSalesLeader();
+//        teleSalesAgent();
+//        customerServiceTeamLeader();
+//        branchManger();
     }
+
 
     void addSalesDirectorRole() {
         // Create a list to hold the Privileges for the Sales Director role
@@ -3285,7 +3322,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Add Client")
                     .defaultValue(true)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("SHOW_LEAD_CREATOR")
@@ -3293,7 +3330,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Show Lead Creator")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("DISABLE_EDIT_LEAD_PROFILE")
@@ -3301,7 +3338,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Disable Edit Lead Profile")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("EDIT_PHONE")
@@ -3309,7 +3346,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Edit Phone")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             // Units
             privileges.add(Privilege.builder()
@@ -3318,7 +3355,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Add Unit")
                     .defaultValue(true)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("UNIT_EXPORT")
@@ -3326,7 +3363,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Unit Export")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             // Reports
             privileges.add(Privilege.builder()
@@ -3335,7 +3372,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Sales Reports")
                     .defaultValue(true)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("CALLLOG_REPORT")
@@ -3343,7 +3380,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Call Log Report")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             // Owners
             privileges.add(Privilege.builder()
@@ -3352,7 +3389,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Owner")
                     .defaultValue(true)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("ALL_OWNERS")
@@ -3360,7 +3397,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("All Owners")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             // Others
             privileges.add(Privilege.builder()
@@ -3369,7 +3406,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("My Projects")
                     .defaultValue(true)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("ALLOW_TEXT_COPY")
@@ -3377,7 +3414,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Allow Text Copy")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("TOP_SELLER_CHART")
@@ -3385,7 +3422,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Top Seller Chart")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("TOP_ACTION_CHART")
@@ -3393,7 +3430,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Top Action Chart")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("DEVELOPER_COMPANY")
@@ -3401,7 +3438,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Developer Company")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("SALES_FEEDBACK")
@@ -3409,7 +3446,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Sales Feedback")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("SHOW_CUSTOMER_SERVICE_COMMENTS")
@@ -3417,7 +3454,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Show Customer Service Comments")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("RESHUFFLE_COLD_LEADS")
@@ -3425,7 +3462,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Reshuffle Cold Leads")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             // Controls
             privileges.add(Privilege.builder()
@@ -3434,7 +3471,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("SMS")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("EMAILS")
@@ -3442,7 +3479,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Emails")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("FILTER_BY_CHANNEL")
@@ -3450,7 +3487,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Filter By Channel")
                     .defaultValue(true)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("PREVIEW_CHANNEL")
@@ -3458,7 +3495,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Preview Channel")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("EDIT_CHANNEL")
@@ -3466,7 +3503,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Edit Channel")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
 
             privilegeGroupRepository.save(privilegeGroup);
@@ -3489,7 +3526,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Show Customer")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("DISABLE_EDIT_CUSTOMER_PROFILE")
@@ -3497,7 +3534,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Disable Edit Customer Profile")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("EDIT_PHONE")
@@ -3505,7 +3542,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Edit Phone")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("ASSIGN_CUSTOMERS")
@@ -3513,7 +3550,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Assign Customers")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             // Others
             privileges.add(Privilege.builder()
@@ -3522,7 +3559,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("All Customers")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("MY_CUSTOMERS")
@@ -3530,7 +3567,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("My Customers")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("ALLOW_TEXT_COPY")
@@ -3538,7 +3575,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Allow Text Copy")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("COLLECTIONS")
@@ -3546,7 +3583,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Collections")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("ACCOUNTANT_ACTIONS")
@@ -3554,7 +3591,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Accountant Actions")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("QUALITY_COMMENTS")
@@ -3562,7 +3599,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Quality Comments")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("SALES_FEEDBACK")
@@ -3570,7 +3607,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Sales Feedback")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             // Controls
             privileges.add(Privilege.builder()
@@ -3579,7 +3616,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Assign")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("EXPORT")
@@ -3587,7 +3624,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Export")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("SMS")
@@ -3595,7 +3632,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("SMS")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
             privileges.add(Privilege.builder()
                     .name("EMAILS")
@@ -3603,7 +3640,7 @@ public class PrivilegeGroupsInitializer {
                     .labelValue("Emails")
                     .defaultValue(false)
                     .privilegeGroup(privilegeGroup)
-                .build());
+                    .build());
 
 
             privilegeGroupRepository.save(privilegeGroup);

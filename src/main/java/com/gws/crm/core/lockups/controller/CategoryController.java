@@ -14,12 +14,12 @@ import static com.gws.crm.common.handler.ApiResponseHandler.success;
 @RequiredArgsConstructor
 @RequestMapping("api/lockups/categories")
 public class CategoryController {
+
     private final CategoryRepository categoryRepository;
 
     @GetMapping("all")
     public ResponseEntity<?> getAll(Transition transition) {
         return success(categoryRepository.findAllByAdminId(transition.getUserId()));
     }
-
 
 }

@@ -14,6 +14,8 @@ public interface StageRepository extends JpaRepository<Stage, Long> {
 
     Optional<Stage> findByIdAndAdminId(long id, Long userId);
 
+    Stage findByNameAndAdminId(String name, Long userId);
+
     @Modifying
     @Transactional
     void deleteByIdAndAdminId(long id, Long userId);

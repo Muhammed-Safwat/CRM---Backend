@@ -1,7 +1,6 @@
 package com.gws.crm.core.lockups.repository;
 
 import com.gws.crm.core.lockups.entity.Channel;
-import com.gws.crm.core.lockups.entity.Stage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,9 +16,13 @@ public interface ChannelRepository extends JpaRepository<Channel, Long> {
     Page<Channel> findAllByAdminId(Pageable pageable, Long userId);
 
     List<Channel> findAllByAdminId(Long userId);
+
     @Query("SELECT c.name FROM Channel c WHERE c.admin.id = :userId")
     List<String> findAllNamesByAdminId(@Param("userId") Long userId);
+
     Optional<Channel> findByIdAndAdminId(long id, Long userId);
+
+    Channel findByNameAndAdminId(String name, Long userId);
 
     @Modifying
     @Transactional

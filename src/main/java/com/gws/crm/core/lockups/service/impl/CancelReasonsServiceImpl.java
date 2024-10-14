@@ -3,7 +3,7 @@ package com.gws.crm.core.lockups.service.impl;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.core.admin.repository.AdminRepository;
-import com.gws.crm.core.lockups.dto.CancelReasonsDTO;
+import com.gws.crm.core.lockups.dto.LockupDTO;
 import com.gws.crm.core.lockups.entity.CancelReasons;
 import com.gws.crm.core.lockups.repository.CancelReasonsRepository;
 import com.gws.crm.core.lockups.service.CancelReasonsService;
@@ -38,7 +38,7 @@ public class CancelReasonsServiceImpl implements CancelReasonsService {
     }
 
     @Override
-    public ResponseEntity<?> createCancelReason(CancelReasonsDTO cancelReasonsDTO, Transition transition) {
+    public ResponseEntity<?> createCancelReason(LockupDTO cancelReasonsDTO, Transition transition) {
         CancelReasons cancelReason = CancelReasons.builder()
                 .admin(adminRepository.getReferenceById(transition.getUserId()))
                 .name(cancelReasonsDTO.getName())
@@ -48,7 +48,7 @@ public class CancelReasonsServiceImpl implements CancelReasonsService {
     }
 
     @Override
-    public ResponseEntity<?> updateCancelReason(CancelReasonsDTO cancelReasonsDTO, Transition transition) {
+    public ResponseEntity<?> updateCancelReason(LockupDTO cancelReasonsDTO, Transition transition) {
         CancelReasons cancelReason = cancelReasonsRepository.findById(cancelReasonsDTO.getId())
                 .orElseThrow(NotFoundResourceException::new);
         cancelReason.setName(cancelReasonsDTO.getName());

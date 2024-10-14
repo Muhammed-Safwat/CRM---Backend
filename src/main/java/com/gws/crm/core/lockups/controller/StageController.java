@@ -1,7 +1,7 @@
 package com.gws.crm.core.lockups.controller;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.lockups.dto.StageDto;
+import com.gws.crm.core.lockups.dto.LockupDTO;
 import com.gws.crm.core.lockups.service.StageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,12 +26,12 @@ public class StageController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createStage(@RequestBody StageDto stageDto, Transition transition) {
+    public ResponseEntity<?> createStage(@RequestBody LockupDTO stageDto, Transition transition) {
         return stageService.createStage(stageDto, transition);
     }
 
     @PutMapping()
-    public ResponseEntity<?> updateStage(@RequestBody StageDto stageDto, Transition transition) {
+    public ResponseEntity<?> updateStage(@RequestBody LockupDTO stageDto, Transition transition) {
         return stageService.updateStage(stageDto, transition);
     }
 

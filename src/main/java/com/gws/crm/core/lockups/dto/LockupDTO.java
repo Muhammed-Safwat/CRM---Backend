@@ -6,9 +6,9 @@ import lombok.Data;
 
 @Data
 @Builder
-public class CancelReasonsDTO {
+public class LockupDTO {
     private long id;
 
-    @NotNull(message = "Cancel reason is required")
+    @NotNull(message = "Name is required")
     private String name;
 }

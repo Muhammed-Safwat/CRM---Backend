@@ -1,7 +1,7 @@
 package com.gws.crm.core.lockups.controller;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.lockups.dto.ChannelDTO;
+import com.gws.crm.core.lockups.dto.LockupDTO;
 import com.gws.crm.core.lockups.service.ChannelService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +27,12 @@ public class ChannelController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createChannel(@Valid @RequestBody ChannelDTO channelDTO, Transition transition) {
+    public ResponseEntity<?> createChannel(@Valid @RequestBody LockupDTO channelDTO, Transition transition) {
         return channelService.createChannel(channelDTO,transition);
     }
 
     @PutMapping()
-    public ResponseEntity<?> updateChannel(@RequestBody ChannelDTO channelDTO, Transition transition) {
+    public ResponseEntity<?> updateChannel(@RequestBody LockupDTO channelDTO, Transition transition) {
         return channelService.updateChannel(channelDTO,transition);
     }
 

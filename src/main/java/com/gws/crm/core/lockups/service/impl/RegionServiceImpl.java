@@ -3,7 +3,7 @@ package com.gws.crm.core.lockups.service.impl;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.core.admin.repository.AdminRepository;
-import com.gws.crm.core.lockups.dto.RegionDto;
+import com.gws.crm.core.lockups.dto.LockupDTO;
 import com.gws.crm.core.lockups.entity.Region;
 import com.gws.crm.core.lockups.repository.RegionRepository;
 import com.gws.crm.core.lockups.service.RegionService;
@@ -38,7 +38,7 @@ public class RegionServiceImpl implements RegionService {
     }
 
     @Override
-    public ResponseEntity<?> createRegion(RegionDto regionDto, Transition transition) {
+    public ResponseEntity<?> createRegion(LockupDTO regionDto, Transition transition) {
         Region region = Region.builder()
                 .admin(adminRepository.getReferenceById(transition.getUserId()))
                 .name(regionDto.getName())
@@ -48,7 +48,7 @@ public class RegionServiceImpl implements RegionService {
     }
 
     @Override
-    public ResponseEntity<?> updateRegion(RegionDto regionDto, Transition transition) {
+    public ResponseEntity<?> updateRegion(LockupDTO regionDto, Transition transition) {
         Region region = regionRepository.findById(regionDto.getId())
                 .orElseThrow(NotFoundResourceException::new);
         region.setName(regionDto.getName());

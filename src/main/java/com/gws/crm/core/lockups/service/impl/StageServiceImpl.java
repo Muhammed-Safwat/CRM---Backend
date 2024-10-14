@@ -3,7 +3,7 @@ package com.gws.crm.core.lockups.service.impl;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.core.admin.repository.AdminRepository;
-import com.gws.crm.core.lockups.dto.StageDto;
+import com.gws.crm.core.lockups.dto.LockupDTO;
 import com.gws.crm.core.lockups.entity.Stage;
 import com.gws.crm.core.lockups.repository.StageRepository;
 import com.gws.crm.core.lockups.service.StageService;
@@ -40,7 +40,7 @@ public class StageServiceImpl implements StageService {
     }
 
     @Override
-    public ResponseEntity<?> createStage(StageDto stageDto, Transition transition) {
+    public ResponseEntity<?> createStage(LockupDTO stageDto, Transition transition) {
         Stage stage = Stage.builder()
                 .admin(adminRepository.getReferenceById(transition.getUserId()))
                 .name(stageDto.getName())
@@ -52,7 +52,7 @@ public class StageServiceImpl implements StageService {
     }
 
     @Override
-    public ResponseEntity<?> updateStage(StageDto stageDto, Transition transition) {
+    public ResponseEntity<?> updateStage(LockupDTO stageDto, Transition transition) {
         Stage stage = stageRepository.findByIdAndAdminId(stageDto.getId(),transition.getUserId()).orElseThrow(NotFoundResourceException::new);
         stage.setName(stageDto.getName());
         stageRepository.save(stage);

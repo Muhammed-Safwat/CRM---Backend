@@ -23,22 +23,22 @@ public class LeadMapper {
             return null;
         }
 
-        InvestmentGoalDTO investmentGoalDTO = lead.getInvestmentGoal() != null ?
-                InvestmentGoalDTO.builder()
+        LockupDTO investmentGoalDTO = lead.getInvestmentGoal() != null ?
+                LockupDTO.builder()
                         .id(lead.getInvestmentGoal().getId())
                         .name(lead.getInvestmentGoal().getName())
                         .build()
                 : null;
 
-        CommunicateWayDTO communicateWayDTO = lead.getCommunicateWay() != null ?
-                CommunicateWayDTO.builder()
+        LockupDTO communicateWayDTO = lead.getCommunicateWay() != null ?
+                LockupDTO.builder()
                         .id(lead.getCommunicateWay().getId())
                         .name(lead.getCommunicateWay().getName())
                         .build()
                 : null;
 
-        CancelReasonsDTO cancelReasonsDTO = lead.getCancelReasons() != null ?
-                CancelReasonsDTO.builder()
+        LockupDTO cancelReasonsDTO = lead.getCancelReasons() != null ?
+                LockupDTO.builder()
                         .id(lead.getCancelReasons().getId())
                         .name(lead.getCancelReasons().getName())
                         .build()
@@ -51,8 +51,8 @@ public class LeadMapper {
                         .build()
                 : null;
 
-        ChannelDTO channelDTO = lead.getChannel() != null ?
-                ChannelDTO.builder()
+        LockupDTO channelDTO = lead.getChannel() != null ?
+                LockupDTO.builder()
                         .id(lead.getChannel().getId())
                         .name(lead.getChannel().getName())
                         .build()

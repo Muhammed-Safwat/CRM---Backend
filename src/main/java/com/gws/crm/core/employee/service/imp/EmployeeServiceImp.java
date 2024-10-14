@@ -74,7 +74,8 @@ public class EmployeeServiceImp implements EmployeeService {
         roles.add(role);
         Set<Privilege> privileges = new HashSet<>(privilegeRepository.findAllById(employeeDto.getPrivileges()));
         Employee employee = Employee.builder().name(employeeDto.getName())
-                //.admin(admin).username(employeeDto.getEmail())
+                .admin(admin)
+                .username(employeeDto.getEmail())
                 .phone(employeeDto.getPhone())
                 .password(passwordEncoder.encode(employeeDto.getPassword()))
                 .jobName(privilegeGroupRepository.getReferenceById(employeeDto.getJobTitleId()))

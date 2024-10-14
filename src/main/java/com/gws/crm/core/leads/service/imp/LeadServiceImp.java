@@ -8,6 +8,7 @@ import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.leads.dto.AddLeadDTO;
+import com.gws.crm.core.leads.dto.ImportLeadDTO;
 import com.gws.crm.core.leads.dto.LeadCriteria;
 import com.gws.crm.core.leads.dto.LeadResponse;
 import com.gws.crm.core.leads.entity.Lead;
@@ -68,8 +69,7 @@ public class LeadServiceImp implements LeadService {
 
     @Override
     public ResponseEntity<?> addLead(AddLeadDTO leadDTO, Transition transition) {
-        User creator = userRepository.findById(transition.getUserId())
-                .orElseThrow(NotFoundResourceException::new);
+        User creator = userRepository.findById(transition.getUserId()).orElseThrow(NotFoundResourceException::new);
         Admin admin = null;
 
         Lead.LeadBuilder leadBuilder = Lead.builder()
@@ -155,11 +155,82 @@ public class LeadServiceImp implements LeadService {
 
     @Override
     public ResponseEntity<?> generateExcel(Transition transition) {
-        ExcelFile excelFile = ExcelFile.builder()
-                .header(generateHeader(AddLeadDTO.class))
-                .dropdowns(leadLockupsService.generateExcelSheetMap(transition))
-                .build();
+        ExcelFile excelFile = ExcelFile.builder().header(generateHeader(AddLeadDTO.class)).dropdowns(leadLockupsService.generateExcelSheetMap(transition)).build();
         return success(excelFile);
+    }
+
+    @Override
+    public ResponseEntity<?> importLead(List<ImportLeadDTO> leads, Transition transition) {
+        List<Lead> leadList = createLeadsList(leads, transition);
+        leadRepository.saveAll(leadList);
+        return success("Lead Imported Successfully");
+    }
+
+    private List<Lead> createLeadsList(List<ImportLeadDTO> importLeadDTOS, Transition transition) {
+        List<Lead> leads = new ArrayList<>();
+        User creator = userRepository.findById(transition.getUserId()).orElseThrow(NotFoundResourceException::new);
+        Admin admin;
+
+        if (!transition.getRole().equals("ADMIN")) {
+            admin = employeeRepository.getReferenceById(transition.getUserId()).getAdmin();
+        } else {
+            admin = (Admin) creator;
+        }
+
+        Admin finalAdmin = admin;
+
+        importLeadDTOS.forEach(leadDTO -> {
+            Lead.LeadBuilder leadBuilder = Lead.builder()
+                    .name(leadDTO.getName())
+                    .creator(creator)
+                    .admin(finalAdmin)
+                    .budget(leadDTO.getBudget())
+                    .note(leadDTO.getNote())
+                    .country(leadDTO.getCountry())
+                    .deleted(false)
+                    .email(leadDTO.getEmail())
+                    .whatsappNumber(leadDTO.getWhatsappNumber())
+                    .createdAt(LocalDateTime.now())
+                    .updatedAt(LocalDateTime.now())
+                    .status(leadStatusRepository.findByName(leadDTO.getStatus()));
+
+            if (leadDTO.getInvestmentGoal() != null) {
+                leadBuilder.investmentGoal(investmentGoalRepository.findByNameAndAdminId(leadDTO.getInvestmentGoal(), finalAdmin.getId()));
+            }
+
+            if (leadDTO.getCommunicateWay() != null) {
+                leadBuilder.communicateWay(communicateWayRepository.findByNameAndAdminId(leadDTO.getCommunicateWay(), finalAdmin.getId()));
+            }
+
+            if (leadDTO.getCancelReason() != null) {
+                leadBuilder.cancelReasons(cancelReasonsRepository.findByNameAndAdminId(leadDTO.getCancelReason(), finalAdmin.getId()));
+            }
+
+            if (leadDTO.getSalesRep() != null) {
+                leadBuilder.salesRep(employeeRepository.findByNameAndAdminId(leadDTO.getSalesRep(), finalAdmin.getId()));
+            }
+
+            if (leadDTO.getChannel() != null) {
+                leadBuilder.channel(channelRepository.findByNameAndAdminId(leadDTO.getChannel(), finalAdmin.getId()));
+            }
+
+            if (leadDTO.getProject() != null) {
+                leadBuilder.project(projectRepository.findByNameAndAdminId(leadDTO.getProject(), finalAdmin.getId()));
+            }
+
+            Lead lead = leadBuilder.build();
+
+            PhoneNumber phoneNumber = PhoneNumber.builder()
+                    .lead(lead)
+                    .phone(leadDTO.getPhoneNumbers())
+                    .build();
+
+            lead.setPhoneNumbers(List.of(phoneNumber));
+
+            leads.add(lead);
+        });
+
+        return leads;
     }
 
 }

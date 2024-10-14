@@ -18,16 +18,17 @@ public class ExcelFileUtils {
 
     private static ExcelFileColumn createColumn(Field field) {
         return ExcelFileColumn.builder()
-                .header(capitalize(field.getName()))
+                .header(field.getName())
                 .key(field.getName())
                 .width(45)
                 .build();
     }
-
+/*
     private static String capitalize(String name) {
         if (name == null || name.isEmpty()) {
             return name;
         }
         return name.substring(0, 1).toUpperCase() + name.substring(1);
     }
+ */
 }

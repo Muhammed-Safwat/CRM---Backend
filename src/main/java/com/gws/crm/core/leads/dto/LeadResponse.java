@@ -36,15 +36,15 @@ public class LeadResponse {
 
         private String jobTitle;
 
-        private InvestmentGoalDTO investmentGoal;
+        private LockupDTO investmentGoal;
 
-        private CommunicateWayDTO communicateWay;
+        private LockupDTO communicateWay;
 
         private LocalDateTime updatedAt;
 
         private LocalDateTime createdAt;
 
-        private CancelReasonsDTO cancelReasons;
+        private LockupDTO cancelReasons;
 
         private EmployeeSimpleDTO salesRep;
 
@@ -52,7 +52,7 @@ public class LeadResponse {
 
         private String note;
 
-        private ChannelDTO channel;
+        private LockupDTO channel;
 
         private ProjectDTO project;
 

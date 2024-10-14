@@ -81,7 +81,7 @@ public class SecurityConfig {
                                         "/webjars/**",
                                         "/swagger-ui/**")
                                 .permitAll()
-                                .requestMatchers("/api/super-admin/**").hasRole("SUPER_ADMIN")
+                                .requestMatchers("/api/super-admin/admins/**").hasRole("SUPER_ADMIN")
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/api/employees/**").hasRole("ADMIN")
                                 .requestMatchers("/api/lockups/**").hasRole("ADMIN")

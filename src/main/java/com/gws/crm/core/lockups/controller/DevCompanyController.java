@@ -1,7 +1,7 @@
 package com.gws.crm.core.lockups.controller;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.lockups.dto.DevCompanyDTO;
+import com.gws.crm.core.lockups.dto.LockupDTO;
 import com.gws.crm.core.lockups.service.DevCompanyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,12 +32,12 @@ public class DevCompanyController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createDevCompany(@Valid @RequestBody DevCompanyDTO devCompany, Transition transition) {
+    public ResponseEntity<?> createDevCompany(@Valid @RequestBody LockupDTO devCompany, Transition transition) {
         return devCompanyService.createDevCompany(devCompany, transition);
     }
 
     @PutMapping
-    public ResponseEntity<?> updateDevCompany(@Valid @RequestBody DevCompanyDTO devCompany, Transition transition) {
+    public ResponseEntity<?> updateDevCompany(@Valid @RequestBody LockupDTO devCompany, Transition transition) {
         return devCompanyService.updateDevCompany(devCompany, transition);
     }
 

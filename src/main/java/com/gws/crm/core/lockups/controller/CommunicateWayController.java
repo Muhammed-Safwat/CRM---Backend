@@ -1,7 +1,7 @@
 package com.gws.crm.core.lockups.controller;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.lockups.dto.CommunicateWayDTO;
+import com.gws.crm.core.lockups.dto.LockupDTO;
 import com.gws.crm.core.lockups.service.CommunicateWayService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +27,12 @@ public class CommunicateWayController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createCommunicateWay(@Valid @RequestBody CommunicateWayDTO communicateWayDTO, Transition transition) {
+    public ResponseEntity<?> createCommunicateWay(@Valid @RequestBody LockupDTO communicateWayDTO, Transition transition) {
         return communicateWayService.createCommunicateWay(communicateWayDTO, transition);
     }
 
     @PutMapping()
-    public ResponseEntity<?> updateCommunicateWay(@Valid @RequestBody CommunicateWayDTO communicateWayDTO, Transition transition) {
+    public ResponseEntity<?> updateCommunicateWay(@Valid @RequestBody LockupDTO communicateWayDTO, Transition transition) {
         return communicateWayService.updateCommunicateWay(communicateWayDTO, transition);
     }
 

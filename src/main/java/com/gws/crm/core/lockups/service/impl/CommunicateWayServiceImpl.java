@@ -3,7 +3,7 @@ package com.gws.crm.core.lockups.service.impl;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.core.admin.repository.AdminRepository;
-import com.gws.crm.core.lockups.dto.CommunicateWayDTO;
+import com.gws.crm.core.lockups.dto.LockupDTO;
 import com.gws.crm.core.lockups.entity.CommunicateWay;
 import com.gws.crm.core.lockups.repository.CommunicateWayRepository;
 import com.gws.crm.core.lockups.service.CommunicateWayService;
@@ -37,7 +37,7 @@ public class CommunicateWayServiceImpl implements CommunicateWayService {
     }
 
     @Override
-    public ResponseEntity<?> createCommunicateWay(CommunicateWayDTO communicateWayDTO, Transition transition) {
+    public ResponseEntity<?> createCommunicateWay(LockupDTO communicateWayDTO, Transition transition) {
         CommunicateWay communicateWay = CommunicateWay.builder()
                 .admin(adminRepository.getReferenceById(transition.getUserId()))
                 .name(communicateWayDTO.getName())
@@ -47,7 +47,7 @@ public class CommunicateWayServiceImpl implements CommunicateWayService {
     }
 
     @Override
-    public ResponseEntity<?> updateCommunicateWay(CommunicateWayDTO communicateWayDTO, Transition transition) {
+    public ResponseEntity<?> updateCommunicateWay(LockupDTO communicateWayDTO, Transition transition) {
         CommunicateWay communicateWay = communicateWayRepository.findById(communicateWayDTO.getId()).orElseThrow(NotFoundResourceException::new);
         communicateWay.setName(communicateWay.getName());
         return success(communicateWay);

@@ -1,7 +1,7 @@
 package com.gws.crm.core.lockups.controller;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.lockups.dto.RegionDto;
+import com.gws.crm.core.lockups.dto.LockupDTO;
 import com.gws.crm.core.lockups.service.RegionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,12 +32,12 @@ public class RegionController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createRegion(@Valid @RequestBody RegionDto region, Transition transition) {
+    public ResponseEntity<?> createRegion(@Valid @RequestBody LockupDTO region, Transition transition) {
         return regionService.createRegion(region, transition);
     }
 
     @PutMapping
-    public ResponseEntity<?> updateRegion(@RequestBody RegionDto region, Transition transition) {
+    public ResponseEntity<?> updateRegion(@RequestBody LockupDTO region, Transition transition) {
         return regionService.updateRegion(region, transition);
     }
 

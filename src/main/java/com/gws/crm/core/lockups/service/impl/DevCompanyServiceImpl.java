@@ -4,7 +4,7 @@ import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.common.helper.ApiResponse;
 import com.gws.crm.core.admin.repository.AdminRepository;
-import com.gws.crm.core.lockups.dto.DevCompanyDTO;
+import com.gws.crm.core.lockups.dto.LockupDTO;
 import com.gws.crm.core.lockups.entity.DevCompany;
 import com.gws.crm.core.lockups.repository.DevCompanyRepository;
 import com.gws.crm.core.lockups.service.DevCompanyService;
@@ -47,7 +47,7 @@ public class DevCompanyServiceImpl implements DevCompanyService {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<DevCompany>> createDevCompany(DevCompanyDTO devCompanyDTO, Transition transition) {
+    public ResponseEntity<ApiResponse<DevCompany>> createDevCompany(LockupDTO devCompanyDTO, Transition transition) {
         DevCompany devCompany = DevCompany.builder()
                 .admin(adminRepository.getReferenceById(transition.getUserId()))
                 .name(devCompanyDTO.getName())
@@ -57,7 +57,7 @@ public class DevCompanyServiceImpl implements DevCompanyService {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<DevCompany>> updateDevCompany(DevCompanyDTO devCompanyDTO, Transition transition) {
+    public ResponseEntity<ApiResponse<DevCompany>> updateDevCompany(LockupDTO devCompanyDTO, Transition transition) {
         DevCompany devCompany = devCompanyRepository.findById(devCompanyDTO.getId())
                 .orElseThrow(NotFoundResourceException::new);
 

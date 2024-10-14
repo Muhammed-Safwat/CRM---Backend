@@ -1,7 +1,7 @@
 package com.gws.crm.core.lockups.service;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.lockups.dto.CommunicateWayDTO;
+import com.gws.crm.core.lockups.dto.LockupDTO;
 import org.springframework.http.ResponseEntity;
 
 public interface CommunicateWayService {
@@ -9,9 +9,9 @@ public interface CommunicateWayService {
 
     ResponseEntity<?> getCommunicateWayById(long id, Transition transition);
 
-    ResponseEntity<?> createCommunicateWay(CommunicateWayDTO communicateWayDTO, Transition transition);
+    ResponseEntity<?> createCommunicateWay(LockupDTO communicateWayDTO, Transition transition);
 
-    ResponseEntity<?> updateCommunicateWay(CommunicateWayDTO communicateWayDTO, Transition transition);
+    ResponseEntity<?> updateCommunicateWay(LockupDTO communicateWayDTO, Transition transition);
 
     ResponseEntity<?> deleteCommunicateWay(long id, Transition transition);
 }

@@ -18,12 +18,17 @@ import java.util.Optional;
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSpecificationExecutor<Employee> {
     Page<Employee> findAllByAdminId(long adminId, Pageable pageable);
+
     List<Employee> findAllByAdminId(long adminId);
+
     @Query("SELECT e.name FROM Employee e WHERE e.admin.id = :userId")
     List<String> findAllNamesByAdminId(@Param("userId") Long userId);
+
     Optional<Employee> getByIdAndAdminId(long id, long adminId);
 
     @Transactional
     @Modifying
     void deleteByIdAndAdminId(long id, long adminId);
+
+    Employee findByNameAndAdminId(String salesRep, long id);
 }

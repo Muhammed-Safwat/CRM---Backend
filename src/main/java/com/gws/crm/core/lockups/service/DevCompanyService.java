@@ -2,7 +2,7 @@ package com.gws.crm.core.lockups.service;
 
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.helper.ApiResponse;
-import com.gws.crm.core.lockups.dto.DevCompanyDTO;
+import com.gws.crm.core.lockups.dto.LockupDTO;
 import com.gws.crm.core.lockups.entity.DevCompany;
 import org.springframework.http.ResponseEntity;
 
@@ -16,9 +16,9 @@ public interface DevCompanyService {
 
     ResponseEntity<ApiResponse<DevCompany>> getDevCompanyById(long id, Transition transition);
 
-    ResponseEntity<ApiResponse<DevCompany>> createDevCompany(DevCompanyDTO devCompanyDTO, Transition transition);
+    ResponseEntity<ApiResponse<DevCompany>> createDevCompany(LockupDTO devCompanyDTO, Transition transition);
 
-    ResponseEntity<ApiResponse<DevCompany>> updateDevCompany(DevCompanyDTO devCompanyDTO, Transition transition);
+    ResponseEntity<ApiResponse<DevCompany>> updateDevCompany(LockupDTO devCompanyDTO, Transition transition);
 
     ResponseEntity<?> deleteDevCompany(long id, Transition transition);
 }

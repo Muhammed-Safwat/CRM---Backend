@@ -13,17 +13,21 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-public interface BrokerRepository extends JpaRepository<Broker,Long> {
+public interface BrokerRepository extends JpaRepository<Broker, Long> {
     Page<Broker> findAllByAdminId(Pageable pageable, Long userId);
 
     @Query("SELECT b.name FROM Broker b WHERE b.admin.id = :userId")
     List<String> findAllNamesByAdminId(@Param("userId") Long userId);
 
     List<Broker> findAllByAdminId(Long userId);
+
     Optional<Broker> findByIdAndAdminId(long id, Long userId);
+
+    Broker findByNameAndAdminId(String name, Long userId);
 
     @Modifying
     @Transactional
     void deleteByIdAndAdminId(long id, Long userId);
+
     long countByAdminId(long id);
 }

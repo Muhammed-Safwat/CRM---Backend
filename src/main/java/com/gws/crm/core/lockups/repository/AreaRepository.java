@@ -1,7 +1,6 @@
 package com.gws.crm.core.lockups.repository;
 
 import com.gws.crm.core.lockups.entity.Area;
-import com.gws.crm.core.lockups.entity.Stage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,6 +17,8 @@ public interface AreaRepository extends JpaRepository<Area, Long> {
     @Modifying
     @Transactional
     void deleteByIdAndAdminId(long id, Long userId);
+
+    Area findByNameAndAdminId(String name, Long userId);
 
     long countByAdminId(long id);
 }

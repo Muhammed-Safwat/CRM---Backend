@@ -13,7 +13,7 @@ public class PhoneNumber {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id ;
+    private long id;
 
     private String code;
 
@@ -21,5 +21,5 @@ public class PhoneNumber {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     @JoinColumn(nullable = false)
-    private Lead lead;
+    private BaseLead lead;
 }

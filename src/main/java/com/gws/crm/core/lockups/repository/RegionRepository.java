@@ -1,7 +1,6 @@
 package com.gws.crm.core.lockups.repository;
 
 import com.gws.crm.core.lockups.entity.Region;
-import com.gws.crm.core.lockups.entity.Stage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,7 +14,7 @@ public interface RegionRepository extends JpaRepository<Region, Long> {
     Page<Region> findAllByAdminId(Pageable pageable, Long userId);
 
     Optional<Region> findByIdAndAdminId(long id, Long userId);
-
+    Region findByNameAndAdminId(String name, Long userId);
     @Modifying
     @Transactional
     void deleteByIdAndAdminId(long id, Long userId);

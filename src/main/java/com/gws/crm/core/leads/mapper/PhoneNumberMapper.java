@@ -1,7 +1,8 @@
 package com.gws.crm.core.leads.mapper;
 
 import com.gws.crm.core.leads.dto.PhoneNumberDTO;
-import com.gws.crm.core.leads.entity.Lead;
+import com.gws.crm.core.leads.entity.BaseLead;
+import com.gws.crm.core.leads.entity.BaseLead;
 import com.gws.crm.core.leads.entity.PhoneNumber;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class PhoneNumberMapper {
 
-    public PhoneNumber toEntity(PhoneNumberDTO phoneNumberDTO, Lead lead){
+    public PhoneNumber toEntity(PhoneNumberDTO phoneNumberDTO, BaseLead lead){
         if (phoneNumberDTO == null || lead == null) {
             return null;
         }
@@ -24,7 +25,7 @@ public class PhoneNumberMapper {
                 .build();
     }
 
-    public List<PhoneNumber> toEntityList(List<PhoneNumberDTO> phoneNumbersDTOs, Lead lead){
+    public List<PhoneNumber> toEntityList(List<PhoneNumberDTO> phoneNumbersDTOs, BaseLead lead){
         if (phoneNumbersDTOs == null || lead == null) {
             return null;
         }
