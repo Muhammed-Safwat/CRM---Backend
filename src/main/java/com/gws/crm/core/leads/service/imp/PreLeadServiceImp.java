@@ -7,34 +7,59 @@ import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.common.handler.ApiResponseHandler;
 import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
-import com.gws.crm.core.leads.dto.AddPreLeadDTO;
-import com.gws.crm.core.leads.dto.PreLeadCriteria;
+import com.gws.crm.core.leads.dto.*;
+import com.gws.crm.core.leads.entity.Lead;
 import com.gws.crm.core.leads.entity.PhoneNumber;
 import com.gws.crm.core.leads.entity.PreLead;
 import com.gws.crm.core.leads.mapper.PhoneNumberMapper;
+import com.gws.crm.core.leads.mapper.PreLeadMapper;
+import com.gws.crm.core.leads.repository.BaseLeadRepository;
+import com.gws.crm.core.leads.repository.LeadRepository;
 import com.gws.crm.core.leads.repository.PreLeadRepository;
 import com.gws.crm.core.leads.service.PreLeadService;
-import com.gws.crm.core.lookups.repository.LeadStatusRepository;
+import com.gws.crm.core.lookups.entity.Project;
+import com.gws.crm.core.lookups.repository.CampaignRepository;
+import com.gws.crm.core.lookups.repository.ChannelRepository;
+import com.gws.crm.core.lookups.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.gws.crm.common.handler.ApiResponseHandler.success;
+import static com.gws.crm.common.utils.ExcelFileUtils.generateHeader;
+import static com.gws.crm.core.leads.spcification.PreLeadSpecification.filter;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PreLeadServiceImp implements PreLeadService {
 
     private final PreLeadRepository preLeadRepository;
-    private final LeadStatusRepository leadStatusRepository;
     private final UserRepository userRepository;
     private final EmployeeRepository employeeRepository;
     private final PhoneNumberMapper phoneNumberMapper;
+    private final PreLeadMapper preLeadMapper;
+    private final ProjectRepository projectRepository;
+    private final ChannelRepository channelRepository;
+    private final BaseLeadRepository baseLeadRepository;
 
     @Override
     public ResponseEntity<?> getAllPreLead(PreLeadCriteria preLeadCriteria, Transition transition) {
-        return null;
+        Specification<PreLead> leadSpecification = filter(preLeadCriteria, transition);
+        log.info("Page size ====> {}", preLeadCriteria);
+        Pageable pageable = PageRequest.of(preLeadCriteria.getPage(), preLeadCriteria.getSize());
+        log.info("Page size ====> {}", pageable);
+        Page<PreLead> leadPage = preLeadRepository.findAll(leadSpecification, pageable);
+        Page<PreLeadResponse> leadResponses = preLeadMapper.toDTOPage(leadPage);
+        return success(leadResponses);
     }
 
     @Override
@@ -49,25 +74,37 @@ public class PreLeadServiceImp implements PreLeadService {
             admin = (Admin) creator;
         }
 
-
         PreLead preLead = PreLead.builder()
                 .name(preLeadDTO.getName())
-                .email(preLeadDTO.getEmail())
                 .country(preLeadDTO.getCountry())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .deleted(false)
                 .note(preLeadDTO.getNote())
-                .jobTitle(preLeadDTO.getJobTitle())
-                .status(leadStatusRepository.findByName(preLeadDTO.getName()))
                 .creator(creator)
                 .admin(admin)
+                .imported(false)
+                .link(preLeadDTO.getLink())
+                .project(projectRepository.getReferenceById(preLeadDTO.getProject()))
+                .channel(channelRepository.getReferenceById(preLeadDTO.getChannel()))
                 .build();
 
         List<PhoneNumber> phoneNumbers = phoneNumberMapper.toEntityList(preLeadDTO.getPhoneNumbers(), preLead);
 
         preLead.setPhoneNumbers(phoneNumbers);
         preLeadRepository.save(preLead);
-        return ApiResponseHandler.success("Pre Lead added ");
+        return ApiResponseHandler.success("Pre Lead added successfully");
+    }
+
+    @Override
+    public ResponseEntity<?> deletePreLead(Long leadId, Transition transition) {
+        baseLeadRepository.deleteLead(leadId);
+        return success("Lead Deleted Successfully");
+    }
+
+    @Override
+    public ResponseEntity<?> restorePreLead(Long leadId, Transition transition) {
+        baseLeadRepository.restoreLead(leadId);
+        return success("Lead Deleted Successfully");
     }
 }

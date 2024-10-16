@@ -7,18 +7,22 @@ import com.gws.crm.core.lookups.dto.LookupDTO;
 import com.gws.crm.core.lookups.entity.BaseLookup;
 import com.gws.crm.core.lookups.repository.BaseLookupRepository;
 import com.gws.crm.core.lookups.service.BaseLookupService;
+import com.gws.crm.core.lookups.spcification.LookupSpecification;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
 
+@Slf4j
 @RequiredArgsConstructor
 public abstract class BaseLookupServiceImpl<T extends BaseLookup, D extends LookupDTO> implements BaseLookupService<T, D> {
 
@@ -28,9 +32,15 @@ public abstract class BaseLookupServiceImpl<T extends BaseLookup, D extends Look
     private AdminRepository adminRepository;
 
     @Override
-    public ResponseEntity<?> getAll(int page, int size, Transition transition) {
+    public ResponseEntity<?> getAll(int page, int size, String keyword, Transition transition) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
-        Page<T> lookupPage = repository.findAllByAdminId(pageable, transition.getUserId());
+
+        Specification<T> specification = LookupSpecification.filter(keyword, transition);
+
+        Page<T> lookupPage = repository.findAll(specification, pageable);
+
+        log.info("keyword ====== {}", keyword);
+
         return success(lookupPage);
     }
 

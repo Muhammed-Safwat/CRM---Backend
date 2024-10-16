@@ -15,6 +15,7 @@ import com.gws.crm.core.leads.entity.Lead;
 import com.gws.crm.core.leads.entity.PhoneNumber;
 import com.gws.crm.core.leads.mapper.LeadMapper;
 import com.gws.crm.core.leads.mapper.PhoneNumberMapper;
+import com.gws.crm.core.leads.repository.BaseLeadRepository;
 import com.gws.crm.core.leads.repository.LeadRepository;
 import com.gws.crm.core.leads.service.LeadService;
 import com.gws.crm.core.lookups.repository.*;
@@ -43,6 +44,7 @@ import static com.gws.crm.core.leads.spcification.LeadSpecification.filter;
 public class LeadServiceImp implements LeadService {
 
     private final LeadRepository leadRepository;
+    private final BaseLeadRepository  baseLeadRepository;
     private final LeadStatusRepository leadStatusRepository;
     private final InvestmentGoalRepository investmentGoalRepository;
     private final CommunicateWayRepository communicateWayRepository;
@@ -133,7 +135,7 @@ public class LeadServiceImp implements LeadService {
 
     @Override
     public ResponseEntity<?> deleteLead(long leadId, Transition transition) {
-        leadRepository.deleteLead(leadId);
+        baseLeadRepository.deleteLead(leadId);
         return success("Lead Deleted Successfully");
     }
 
@@ -149,7 +151,7 @@ public class LeadServiceImp implements LeadService {
 
     @Override
     public ResponseEntity<?> restoreLead(Long leadId, Transition transition) {
-        leadRepository.restoreLead(leadId);
+        baseLeadRepository.restoreLead(leadId);
         return success("Lead Deleted Successfully");
     }
 

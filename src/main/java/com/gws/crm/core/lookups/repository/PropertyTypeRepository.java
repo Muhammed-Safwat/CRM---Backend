@@ -1,6 +1,7 @@
 package com.gws.crm.core.lookups.repository;
 
-import com.gws.crm.core.lookups.entity.Category;
+
+import com.gws.crm.core.lookups.entity.PropertyType;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -8,8 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface CategoryRepository extends BaseLookupRepository<Category> {
+public interface PropertyTypeRepository extends BaseLookupRepository<PropertyType> {
 
-    @Query("SELECT c.name FROM Category c WHERE c.admin.id = :adminId")
+    @Query("SELECT pt.name FROM PropertyType pt  WHERE pt.admin.id = :adminId")
     List<String> findAllNamesByAdminId(@Param("adminId") Long adminId);
+
 }

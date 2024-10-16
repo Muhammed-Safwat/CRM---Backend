@@ -21,8 +21,9 @@ public abstract class BaseLookupController<T extends BaseLookup, D extends Looku
     @GetMapping
     public ResponseEntity<?> getAll(@RequestParam(defaultValue = "0") int page,
                                     @RequestParam(defaultValue = "10") int size,
+                                    @RequestParam(required = false) String keyword,
                                     Transition transition) {
-        return service.getAll(page, size, transition);
+        return service.getAll(page, size, keyword, transition);
     }
 
     @GetMapping("all")

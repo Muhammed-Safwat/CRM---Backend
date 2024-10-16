@@ -22,9 +22,7 @@ public class PreLead extends BaseLead {
 
     private boolean imported;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.DETACH})
-    @JoinColumn(name = "campaign_id")
-    private Campaign campaign;
+    private String link;
 
 
 }

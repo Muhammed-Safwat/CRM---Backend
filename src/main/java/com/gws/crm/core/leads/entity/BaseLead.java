@@ -2,7 +2,9 @@ package com.gws.crm.core.leads.entity;
 
 import com.gws.crm.authentication.entity.User;
 import com.gws.crm.core.admin.entity.Admin;
+import com.gws.crm.core.lookups.entity.Channel;
 import com.gws.crm.core.lookups.entity.LeadStatus;
+import com.gws.crm.core.lookups.entity.Project;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,16 +37,10 @@ public class BaseLead {
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
-    @JoinColumn(nullable = false)
-    private LeadStatus status;
-
     @OneToMany(mappedBy = "lead", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PhoneNumber> phoneNumbers ;
 
     private String email;
-
-    private String jobTitle;
 
     @CreationTimestamp
     private LocalDateTime updatedAt;
@@ -63,6 +59,15 @@ public class BaseLead {
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(name = "admin_id")
     private Admin admin;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.DETACH})
+    @JoinColumn(nullable = true)
+    private Channel channel;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.DETACH})
+    @JoinColumn(nullable = false)
+    private Project project;
+
 
     private boolean deleted;
 }

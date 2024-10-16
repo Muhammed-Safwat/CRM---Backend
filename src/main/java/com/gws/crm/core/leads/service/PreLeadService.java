@@ -11,4 +11,8 @@ public interface PreLeadService {
     ResponseEntity<?> getAllPreLead(PreLeadCriteria preLeadCriteria, Transition transition);
 
     ResponseEntity<?> addPreLead(@Valid AddPreLeadDTO preLeadDTO, Transition transition);
+
+    ResponseEntity<?> deletePreLead(Long leadId, Transition transition);
+
+    ResponseEntity<?> restorePreLead(Long leadId, Transition transition);
 }

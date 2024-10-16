@@ -46,14 +46,11 @@ public class Lead extends BaseLead{
 
     private String budget;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.DETACH})
-    @JoinColumn(nullable = true)
-    private Channel channel;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.DETACH})
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     @JoinColumn(nullable = false)
-    private Project project;
+    private LeadStatus status;
 
-
+    private String jobTitle;
 
 }

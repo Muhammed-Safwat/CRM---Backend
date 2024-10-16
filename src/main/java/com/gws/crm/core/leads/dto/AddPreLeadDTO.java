@@ -1,5 +1,6 @@
 package com.gws.crm.core.leads.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,18 +13,20 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class AddPreLeadDTO {
+
+    @NotNull
     private String name;
 
     private String country;
 
+    @NotNull
     private List<PhoneNumberDTO> phoneNumbers;
-
-    private String email;
-
-    private String jobTitle;
 
     private String note;
 
-    private Long status;
+    private Long channel;
 
+    private Long project;
+
+    private String link;
 }
