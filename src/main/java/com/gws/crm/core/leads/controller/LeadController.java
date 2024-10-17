@@ -23,18 +23,10 @@ public class LeadController {
 
     private final LeadService leadService;
 
-    @GetMapping
-    public ResponseEntity<?> getLeads(@RequestParam(value = "page", defaultValue = "0") int page,
-                                      @RequestParam(value = "size", defaultValue = "10") int size,
-                                      Transition transition) {
-        return leadService.getLeads(page, size, transition);
-    }
-
     @PostMapping("all")
     public ResponseEntity<?> getAllLeads(@Valid @RequestBody LeadCriteria leadCriteria,
                                          Transition transition) {
-        log.info(leadCriteria.toString());
-        return leadService.getAllLeads(leadCriteria, transition);
+        return leadService.getLeads(leadCriteria, transition);
     }
 
     @GetMapping("/{leadId}")

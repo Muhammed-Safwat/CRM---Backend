@@ -1,5 +1,7 @@
 package com.gws.crm.core.resale.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Setter
@@ -8,14 +10,34 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddResaleDTO {
+
+    @NotNull
+    @NotBlank
     private String name;
+
+    @NotNull
+    @NotBlank
     private String phone;
+
+    @NotNull
+    private Long status;
+
+    @NotNull
+    private Long type;
+
     private String email;
-    private long project;
+
+    private Long project;
+
     private String BUA;
-    private String Phase;
-    private String Code;
-    private long category;
-    private long property;
+
+    private String phase;
+
+    private String code;
+
+    private Long category;
+
+    private Long property;
+
     private String note;
 }

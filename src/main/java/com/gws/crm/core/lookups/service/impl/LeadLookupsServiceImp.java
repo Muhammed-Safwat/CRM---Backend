@@ -11,9 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
@@ -65,42 +63,5 @@ public class LeadLookupsServiceImp implements LeadLookupsService {
     }
 
 
-    @Override
-    public Map<String, List<String>> generateLeadExcelSheetMap(Transition transition) {
-        List<String> brokers = brokerRepository.findAllNamesByAdminId(transition.getUserId());
-        List<String> leadStatuses = leadStatusRepository.findAllNames();
-        List<String> investmentGoals = investmentGoalRepository.findAllNamesByAdminId(transition.getUserId());
-        List<String> projects = projectRepository.findAllNamesByAdminId(transition.getUserId());
-        List<String> cancelReasons = cancelReasonsRepository.findAllNamesByAdminId(transition.getUserId());
-        List<String> channels = channelRepository.findAllNamesByAdminId(transition.getUserId());
-        List<String> communicateWays = communicateWayRepository.findAllNamesByAdminId(transition.getUserId());
-        List<String> salesReps = employeeRepository.findAllNamesByAdminId(transition.getUserId());
-
-        Map<String, List<String>> lookupsMap = new HashMap<>();
-
-        lookupsMap.put("broker", brokers);
-        lookupsMap.put("status", leadStatuses);
-        lookupsMap.put("investmentGoal", investmentGoals);
-        lookupsMap.put("project", projects);
-        lookupsMap.put("cancelReason", cancelReasons);
-        lookupsMap.put("channel", channels);
-        lookupsMap.put("communicateWay", communicateWays);
-        lookupsMap.put("salesRep", salesReps);
-
-        return lookupsMap;
-    }
-
-    @Override
-    public Map<String, List<String>> generatePreLeadExcelSheetMap(Transition transition) {
-        List<String> projects = projectRepository.findAllNamesByAdminId(transition.getUserId());
-        List<String> channels = channelRepository.findAllNamesByAdminId(transition.getUserId());
-
-        Map<String, List<String>> lookupsMap = new HashMap<>();
-
-        lookupsMap.put("project", projects);
-        lookupsMap.put("channel", channels);
-
-        return lookupsMap;
-    }
 }
 

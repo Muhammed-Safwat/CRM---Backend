@@ -20,21 +20,14 @@ public class ResaleController {
 
     private final ResaleService resaleService;
 
-    @GetMapping
-    public ResponseEntity<?> getResales(@RequestParam(value = "page", defaultValue = "0") int page,
-                                        @RequestParam(value = "size", defaultValue = "10") int size,
-                                        Transition transition) {
-        return resaleService.getResales(page, size, transition);
-    }
-
     @PostMapping("all")
-    public ResponseEntity<?> getAllResales(@Valid @RequestBody ResaleCriteria resaleCriteria,
-                                           Transition transition) {
-        return resaleService.getAllResales(resaleCriteria, transition);
+    public ResponseEntity<?> getResales(@Valid @RequestBody ResaleCriteria resaleCriteria,
+                                        Transition transition) {
+        return resaleService.getResales(resaleCriteria, transition);
     }
 
     @GetMapping("/{resaleId}")
-    public ResponseEntity<?> getResaleDetails(@PathVariable("resaleId") long resaleId,
+    public ResponseEntity<?> getResaleDetails(@Valid @PathVariable("resaleId") long resaleId,
                                               Transition transition) {
         return resaleService.getResaleDetails(resaleId, transition);
     }

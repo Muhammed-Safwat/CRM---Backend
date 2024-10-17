@@ -3,11 +3,10 @@ package com.gws.crm.core.resale.entities;
 
 import com.gws.crm.authentication.entity.User;
 import com.gws.crm.core.admin.entity.Admin;
-import com.gws.crm.core.lookups.entity.Category;
-import com.gws.crm.core.lookups.entity.Project;
-import com.gws.crm.core.lookups.entity.PropertyType;
+import com.gws.crm.core.lookups.entity.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -17,6 +16,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Resale {
@@ -35,6 +35,18 @@ public class Resale {
             cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
                     CascadeType.PERSIST, CascadeType.DETACH})
     private Project project;
+
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
+                    CascadeType.PERSIST, CascadeType.DETACH})
+    @JoinColumn(nullable = false)
+    private ResaleType type ;
+
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
+                    CascadeType.PERSIST, CascadeType.DETACH})
+    @JoinColumn(nullable = false)
+    private ResaleStatus status;
 
     private String BUA;
 
@@ -67,12 +79,12 @@ public class Resale {
     private Admin admin;
 
     @CreationTimestamp
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
 
-    private LocalDateTime deleteAt;
+    private LocalDateTime deletedAt;
 
     private boolean deleted;
 

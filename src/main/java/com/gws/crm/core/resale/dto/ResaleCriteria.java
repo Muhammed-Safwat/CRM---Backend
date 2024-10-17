@@ -1,8 +1,10 @@
 package com.gws.crm.core.resale.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Setter
 @Getter
@@ -11,18 +13,26 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class ResaleCriteria {
     private int id;
+    private String keyword;
     private String name;
     private String phone;
     private String email;
-    private long project;
+    private List<Long> project;
     private String BUA;
-    private String Phase;
-    private String Code;
-    private long category;
-    private long property;
+    private String phase;
+    private String code;
+    private List<Long> status;
+    private List<Long> type;
+    private List<Long> category;
+    private List<Long> property;
     private String note;
-    private long creator;
+    private List<Long> creator;
     private LocalDate createdAt;
-    private int page;
-    private int size;
+    private boolean deleted;
+    private boolean myLead;
+
+    @NotNull
+    private Integer page;
+    @NotNull
+    private Integer size;
 }

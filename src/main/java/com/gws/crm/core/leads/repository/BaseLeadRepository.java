@@ -16,10 +16,10 @@ public interface BaseLeadRepository extends JpaRepository<BaseLead, Long>, JpaSp
     @Modifying
     @Transactional
     @Query("UPDATE BaseLead l SET l.deleted = true WHERE l.id = :leadId")
-    int deleteLead(@Param("leadId") long leadId);
+    void deleteLead(@Param("leadId") long leadId);
 
     @Modifying
     @Transactional
     @Query("UPDATE BaseLead l SET l.deleted = false WHERE l.id = :leadId")
-    int restoreLead(Long leadId);
+    void restoreLead(Long leadId);
 }

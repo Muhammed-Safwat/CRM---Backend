@@ -9,8 +9,6 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface LeadService {
-    ResponseEntity<?> getLeads(int page, int size, Transition transition);
-
     ResponseEntity<?> getLeadDetails(long leadId, Transition transition);
 
     ResponseEntity<?> addLead(AddLeadDTO leadDTO, Transition transition);
@@ -19,7 +17,7 @@ public interface LeadService {
 
     ResponseEntity<?> deleteLead(long leadId, Transition transition);
 
-    ResponseEntity<?> getAllLeads(LeadCriteria leadCriteria, Transition transition);
+    ResponseEntity<?> getLeads(LeadCriteria leadCriteria, Transition transition);
 
     ResponseEntity<?> restoreLead(Long leadId, Transition transition);
 

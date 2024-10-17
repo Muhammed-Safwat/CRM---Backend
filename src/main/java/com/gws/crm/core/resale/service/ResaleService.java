@@ -12,9 +12,8 @@ import java.util.List;
 
 @Service
 public interface ResaleService {
-    ResponseEntity<?> getResales(int page, int size, Transition transition);
 
-    ResponseEntity<?> getAllResales(@Valid ResaleCriteria resaleCriteria, Transition transition);
+    ResponseEntity<?> getResales(@Valid ResaleCriteria resaleCriteria, Transition transition);
 
     ResponseEntity<?> getResaleDetails(long resaleId, Transition transition);
 

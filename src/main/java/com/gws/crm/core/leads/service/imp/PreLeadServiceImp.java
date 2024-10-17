@@ -6,6 +6,7 @@ import com.gws.crm.common.entities.ExcelFile;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.common.handler.ApiResponseHandler;
+import com.gws.crm.common.service.ExcelSheetService;
 import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.leads.dto.AddPreLeadDTO;
@@ -37,7 +38,7 @@ import java.util.List;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
 import static com.gws.crm.common.utils.ExcelFileUtils.generateHeader;
-import static com.gws.crm.core.leads.spcification.PreLeadSpecification.filter;
+import static com.gws.crm.core.leads.specification.PreLeadSpecification.filter;
 
 @Slf4j
 @Service
@@ -53,6 +54,7 @@ public class PreLeadServiceImp implements PreLeadService {
     private final ChannelRepository channelRepository;
     private final BaseLeadRepository baseLeadRepository;
     private final LeadLookupsService leadLookupsService;
+    private final ExcelSheetService excelSheetService;
 
     @Override
     public ResponseEntity<?> getAllPreLead(PreLeadCriteria preLeadCriteria, Transition transition) {
@@ -172,7 +174,7 @@ public class PreLeadServiceImp implements PreLeadService {
     public ResponseEntity<?> generateExcel(Transition transition) {
         ExcelFile excelFile = ExcelFile.builder()
                 .header(generateHeader(AddPreLeadDTO.class))
-                .dropdowns(leadLookupsService.generatePreLeadExcelSheetMap(transition))
+                .dropdowns(excelSheetService.generatePreLeadExcelSheetMap(transition))
                 .build();
         return success(excelFile);
     }

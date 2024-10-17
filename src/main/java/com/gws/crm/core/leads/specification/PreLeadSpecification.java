@@ -1,4 +1,4 @@
-package com.gws.crm.core.leads.spcification;
+package com.gws.crm.core.leads.specification;
 
 
 import com.gws.crm.common.entities.Transition;

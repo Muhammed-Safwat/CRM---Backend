@@ -5,6 +5,7 @@ import com.gws.crm.authentication.repository.UserRepository;
 import com.gws.crm.common.entities.ExcelFile;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
+import com.gws.crm.common.service.ExcelSheetService;
 import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.leads.dto.AddLeadDTO;
@@ -36,7 +37,7 @@ import java.util.List;
 import static com.gws.crm.common.handler.ApiResponseHandler.created;
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
 import static com.gws.crm.common.utils.ExcelFileUtils.generateHeader;
-import static com.gws.crm.core.leads.spcification.LeadSpecification.filter;
+import static com.gws.crm.core.leads.specification.LeadSpecification.filter;
 
 @Service
 @Slf4j
@@ -56,12 +57,7 @@ public class LeadServiceImp implements LeadService {
     private final LeadMapper leadMapper;
     private final PhoneNumberMapper phoneNumberMapper;
     private final LeadLookupsService leadLookupsService;
-
-    @Override
-    public ResponseEntity<?> getLeads(int page, int size, Transition transition) {
-        return null;
-    }
-
+    private final ExcelSheetService excelSheetService;
 
     @Override
     public ResponseEntity<?> getLeadDetails(long leadId, Transition transition) {
@@ -140,8 +136,7 @@ public class LeadServiceImp implements LeadService {
     }
 
     @Override
-    public ResponseEntity<?> getAllLeads(LeadCriteria leadCriteria, Transition transition) {
-        log.info("Header Generated ====> {}", generateHeader(AddLeadDTO.class));
+    public ResponseEntity<?> getLeads(LeadCriteria leadCriteria, Transition transition) {
         Specification<Lead> leadSpecification = filter(leadCriteria, transition);
         Pageable pageable = PageRequest.of(leadCriteria.getPage(), leadCriteria.getSize());
         Page<Lead> leadPage = leadRepository.findAll(leadSpecification, pageable);
@@ -152,12 +147,14 @@ public class LeadServiceImp implements LeadService {
     @Override
     public ResponseEntity<?> restoreLead(Long leadId, Transition transition) {
         baseLeadRepository.restoreLead(leadId);
-        return success("Lead Deleted Successfully");
+        return success("Lead restored Successfully");
     }
 
     @Override
     public ResponseEntity<?> generateExcel(Transition transition) {
-        ExcelFile excelFile = ExcelFile.builder().header(generateHeader(AddLeadDTO.class)).dropdowns(leadLookupsService.generateLeadExcelSheetMap(transition)).build();
+        ExcelFile excelFile = ExcelFile.builder()
+                .header(generateHeader(AddLeadDTO.class))
+                .dropdowns(excelSheetService.generateLeadExcelSheetMap(transition)).build();
         return success(excelFile);
     }
 
