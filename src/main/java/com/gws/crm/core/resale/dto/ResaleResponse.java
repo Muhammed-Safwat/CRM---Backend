@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class ResaleResponse {
     private long id;
     private String name;
-    private LookupDTO status ;
+    private LookupDTO status;
     private LookupDTO type;
     private String phone;
     private String email;

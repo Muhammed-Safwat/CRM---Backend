@@ -3,7 +3,9 @@ package com.gws.crm.core.resale.entities;
 
 import com.gws.crm.authentication.entity.User;
 import com.gws.crm.core.admin.entity.Admin;
-import com.gws.crm.core.lookups.entity.*;
+import com.gws.crm.core.lookups.entity.Category;
+import com.gws.crm.core.lookups.entity.Project;
+import com.gws.crm.core.lookups.entity.PropertyType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,7 +42,7 @@ public class Resale {
             cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
                     CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(nullable = false)
-    private ResaleType type ;
+    private ResaleType type;
 
     @ManyToOne(fetch = FetchType.LAZY,
             cascade = {CascadeType.REFRESH, CascadeType.REMOVE,

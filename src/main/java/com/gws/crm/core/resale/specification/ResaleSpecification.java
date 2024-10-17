@@ -69,6 +69,7 @@ public class ResaleSpecification {
             return root.join("creator", JoinType.INNER).get("id").in(creatorId);
         };
     }
+
     private static Specification<Resale> filterByStatus(List<Long> statusesIds) {
         return (root, query, criteriaBuilder) -> {
             if (statusesIds == null || statusesIds.isEmpty()) {
@@ -77,6 +78,7 @@ public class ResaleSpecification {
             return root.join("status", JoinType.INNER).get("id").in(statusesIds);
         };
     }
+
     private static Specification<Resale> filterByType(List<Long> typesIds) {
         return (root, query, criteriaBuilder) -> {
             if (typesIds == null || typesIds.isEmpty()) {
@@ -85,6 +87,7 @@ public class ResaleSpecification {
             return root.join("type", JoinType.INNER).get("id").in(typesIds);
         };
     }
+
     private static Specification<Resale> filterByCategory(List<Long> creatorId) {
         return (root, query, criteriaBuilder) -> {
             if (creatorId == null || creatorId.isEmpty()) {
