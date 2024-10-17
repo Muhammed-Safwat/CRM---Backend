@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@MappedSuperclass
 @Builder
 public class ResaleType {
     @Id
