@@ -2,7 +2,6 @@ package com.gws.crm.core.lookups.spcification;
 
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.lookups.entity.BaseLookup;
-import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 

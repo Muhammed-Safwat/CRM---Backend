@@ -23,7 +23,7 @@ public class ProjectController {
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllProjects(Transition transition) {
-        return projectService.getAllProjects( transition);
+        return projectService.getAllProjects(transition);
     }
 
     @GetMapping("/{id}")

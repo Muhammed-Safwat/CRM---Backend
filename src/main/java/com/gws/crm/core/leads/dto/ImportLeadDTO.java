@@ -1,13 +1,9 @@
 package com.gws.crm.core.leads.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class ImportLeadDTO {
     private String name;

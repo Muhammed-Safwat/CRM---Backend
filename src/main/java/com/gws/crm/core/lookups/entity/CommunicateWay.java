@@ -9,5 +9,5 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @SuperBuilder
 @NoArgsConstructor
-public class CommunicateWay  extends BaseLookup {
+public class CommunicateWay extends BaseLookup {
 }

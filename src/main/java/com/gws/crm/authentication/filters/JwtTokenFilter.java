@@ -43,7 +43,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             UserDetails userDetails = userRepository.findById(userId)
                     .orElseThrow(NotFoundResourceException::new);
 
-            if(!userDetails.isEnabled() || !userDetails.isAccountNonLocked()){
+            if (!userDetails.isEnabled() || !userDetails.isAccountNonLocked()) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType("application/json");
                 response.getWriter().write("Account expired or missing");
@@ -61,7 +61,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             log.error("User not found: {}", ex.getMessage());
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             response.setContentType("application/json");
-            response.getWriter().write( "User not found");
+            response.getWriter().write("User not found");
         } catch (JwtValidationException ex) {
             log.error("JWT validation error: {}", ex.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/lookups/campaigns")
-public class CampaignController  extends  BaseLookupController<Campaign, LookupDTO> {
+public class CampaignController extends BaseLookupController<Campaign, LookupDTO> {
     protected CampaignController(CampaignService service) {
         super(service);
     }

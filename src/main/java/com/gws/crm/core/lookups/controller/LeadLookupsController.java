@@ -18,7 +18,7 @@ public class LeadLookupsController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('ADD_CLIENT') or hasRole('ADMIN')")
-    public ResponseEntity<?> getLeadLookups(Transition transition){
+    public ResponseEntity<?> getLeadLookups(Transition transition) {
         return leadLookupsService.getLeadLookups(transition);
     }
 

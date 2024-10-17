@@ -51,7 +51,7 @@ public class JwtTokenService {
                 .findFirst()
                 .map(Role::getName)
                 .orElse("USER");
-        return Map.of("authority", user.getAuthorities(),"role",roleName);
+        return Map.of("authority", user.getAuthorities(), "role", roleName);
     }
 
     public Claims extractAllClaims(String token) {

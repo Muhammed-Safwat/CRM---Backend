@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/lookups/regions")
-public class RegionController extends BaseLookupController<Region,LookupDTO> {
+public class RegionController extends BaseLookupController<Region, LookupDTO> {
 
     protected RegionController(RegionService service) {
         super(service);

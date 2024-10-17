@@ -11,5 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ImportPreLeadDTO {
-
+    private String name;
+    private String country;
+    private String phoneNumbers;
+    private String channel;
+    private String link;
+    private String note;
+    private String project;
 }

@@ -2,7 +2,10 @@ package com.gws.crm.core.leads.entity;
 
 
 import com.gws.crm.core.employee.entity.Employee;
-import com.gws.crm.core.lookups.entity.*;
+import com.gws.crm.core.lookups.entity.CancelReasons;
+import com.gws.crm.core.lookups.entity.CommunicateWay;
+import com.gws.crm.core.lookups.entity.InvestmentGoal;
+import com.gws.crm.core.lookups.entity.LeadStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,8 +14,6 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-
-;
 
 @Entity
 @Table(name = "leads")
@@ -23,7 +24,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicInsert
 @AllArgsConstructor
 @NoArgsConstructor
-public class Lead extends BaseLead{
+public class Lead extends BaseLead {
 
     private String contactTime;
 
@@ -45,7 +46,6 @@ public class Lead extends BaseLead{
     private Employee salesRep;
 
     private String budget;
-
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     @JoinColumn(nullable = false)

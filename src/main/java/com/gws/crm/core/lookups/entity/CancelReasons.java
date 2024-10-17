@@ -9,6 +9,6 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @SuperBuilder
 @NoArgsConstructor
-public class CancelReasons extends BaseLookup{
+public class CancelReasons extends BaseLookup {
 
 }

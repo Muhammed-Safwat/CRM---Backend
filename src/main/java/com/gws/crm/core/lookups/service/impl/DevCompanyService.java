@@ -7,7 +7,7 @@ import com.gws.crm.core.lookups.repository.BaseLookupRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DevCompanyService extends BaseLookupServiceImpl<DevCompany , LookupDTO> {
+public class DevCompanyService extends BaseLookupServiceImpl<DevCompany, LookupDTO> {
 
     public DevCompanyService(BaseLookupRepository<DevCompany> repository) {
         super(repository);

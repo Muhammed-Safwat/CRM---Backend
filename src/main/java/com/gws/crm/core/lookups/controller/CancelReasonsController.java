@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("api/lookups/cancel-reasons")
-public class CancelReasonsController extends BaseLookupController<CancelReasons,LookupDTO> {
+public class CancelReasonsController extends BaseLookupController<CancelReasons, LookupDTO> {
 
     protected CancelReasonsController(CancelReasonsService service) {
         super(service);

@@ -9,6 +9,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Data
 @NoArgsConstructor
-public class DevCompany extends BaseLookup{
+public class DevCompany extends BaseLookup {
 
 }

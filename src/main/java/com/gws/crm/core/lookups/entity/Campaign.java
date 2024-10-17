@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @SuperBuilder
 @NoArgsConstructor
-public class Campaign  extends BaseLookup{
+public class Campaign extends BaseLookup {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     @UpdateTimestamp

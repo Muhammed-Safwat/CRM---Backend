@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("api/lookups/categories")
-public class CategoryController  extends BaseLookupController<Category, LookupDTO>{
+public class CategoryController extends BaseLookupController<Category, LookupDTO> {
 
     protected CategoryController(CategoryService service) {
         super(service);

@@ -1,6 +1,5 @@
 package com.gws.crm.core.leads.dto;
 
-import com.gws.crm.core.lookups.dto.LookupDTO;
 import com.gws.crm.core.lookups.entity.Channel;
 import com.gws.crm.core.lookups.entity.Project;
 import lombok.Builder;
@@ -13,7 +12,7 @@ import java.util.List;
 @Builder
 public class LeadDTO {
 
-    private long id ;
+    private long id;
 
     private String name;
 

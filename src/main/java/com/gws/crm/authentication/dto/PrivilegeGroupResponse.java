@@ -7,6 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PrivilegeGroupResponse {
-    private long id ;
+    private long id;
     private String jobName;
 }

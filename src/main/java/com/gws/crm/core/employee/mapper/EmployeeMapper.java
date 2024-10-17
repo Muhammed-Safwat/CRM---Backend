@@ -16,17 +16,17 @@ public interface EmployeeMapper {
 
     List<EmployeeSimpleDTO> toListSimpleDto(List<Employee> employee);
 
-    default  EmployeeSimpleDTO toSimpleDto(Employee employee) {
+    default EmployeeSimpleDTO toSimpleDto(Employee employee) {
 
-        if ( employee == null ) {
+        if (employee == null) {
             return null;
         }
 
         EmployeeSimpleDTO.EmployeeSimpleDTOBuilder employeeSimpleDTO = EmployeeSimpleDTO.builder();
 
-        employeeSimpleDTO.id( employee.getId() );
-        employeeSimpleDTO.name( employee.getName() );
-        employeeSimpleDTO.jobName( employee.getJobName().getJobName() );
+        employeeSimpleDTO.id(employee.getId());
+        employeeSimpleDTO.name(employee.getName());
+        employeeSimpleDTO.jobName(employee.getJobName().getJobName());
 
         return employeeSimpleDTO.build();
     }

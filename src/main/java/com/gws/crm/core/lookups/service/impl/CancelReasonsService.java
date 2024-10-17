@@ -7,7 +7,7 @@ import com.gws.crm.core.lookups.repository.CancelReasonsRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CancelReasonsService  extends BaseLookupServiceImpl<CancelReasons, LookupDTO> {
+public class CancelReasonsService extends BaseLookupServiceImpl<CancelReasons, LookupDTO> {
 
     public CancelReasonsService(CancelReasonsRepository repository) {
         super(repository);

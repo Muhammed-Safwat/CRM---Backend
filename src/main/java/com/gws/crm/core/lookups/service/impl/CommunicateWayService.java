@@ -7,7 +7,7 @@ import com.gws.crm.core.lookups.repository.BaseLookupRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CommunicateWayService  extends BaseLookupServiceImpl<CommunicateWay,LookupDTO> {
+public class CommunicateWayService extends BaseLookupServiceImpl<CommunicateWay, LookupDTO> {
 
     public CommunicateWayService(BaseLookupRepository<CommunicateWay> repository) {
         super(repository);

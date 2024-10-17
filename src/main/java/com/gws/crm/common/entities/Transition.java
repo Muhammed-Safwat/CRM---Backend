@@ -20,7 +20,7 @@ public class Transition {
         this.userId = null;
         this.os = 0; // OS identifier
         this.version = ""; // Application version or context-specific
-        this.role="";
+        this.role = "";
     }
 
     public Transition(Language language, int os, String version) {

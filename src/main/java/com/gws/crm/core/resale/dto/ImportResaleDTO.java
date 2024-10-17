@@ -1,18 +1,21 @@
-package com.gws.crm.core.owners.dto;
+package com.gws.crm.core.resale.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
 @Setter
-public class AddOwnerDto {
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ImportResaleDTO {
     private String name;
     private String phone;
     private String email;
-    private long projects;
+    private String project;
     private String BUA;
     private String Phase;
     private String Code;
     private String category;
+    private String property;
     private String note;
 }

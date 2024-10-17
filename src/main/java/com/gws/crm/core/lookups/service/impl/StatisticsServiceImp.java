@@ -6,8 +6,6 @@ import com.gws.crm.core.lookups.dto.StatisticsDTO;
 import com.gws.crm.core.lookups.repository.*;
 import com.gws.crm.core.lookups.service.StatisticsService;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -34,6 +32,7 @@ public class StatisticsServiceImp implements StatisticsService {
     private final InvestmentGoalRepository investmentGoalRepository;
     private final LeadStatusRepository leadStatusRepository;
     private final PropertyTypeRepository propertyTypeRepository;
+
     public ResponseEntity<?> getStatistics(Transition transition) {
         StatisticsDTO statisticsDTO = StatisticsDTO.builder()
                 .totalChannels(channelRepository.countByAdminId(transition.getUserId()))

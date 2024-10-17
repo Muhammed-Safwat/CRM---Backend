@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Data
 @NoArgsConstructor
-public class InvestmentGoal extends BaseLookup{
+public class InvestmentGoal extends BaseLookup {
 
 
 }

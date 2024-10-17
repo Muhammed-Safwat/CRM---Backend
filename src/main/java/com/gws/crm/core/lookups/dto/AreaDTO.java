@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AreaDTO extends LookupDTO{
+public class AreaDTO extends LookupDTO {
 
     @NotNull
     private LookupDTO region;

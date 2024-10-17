@@ -21,7 +21,7 @@ public class PrivilegeController {
     }
 
     @GetMapping("/groups")
-    public ResponseEntity<?> getPrivilegesGroups(){
+    public ResponseEntity<?> getPrivilegesGroups() {
         return privilegeService.getPrivilegesGroups();
     }
 

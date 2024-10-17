@@ -2,25 +2,26 @@ package com.gws.crm.core.leads.service.imp;
 
 import com.gws.crm.authentication.entity.User;
 import com.gws.crm.authentication.repository.UserRepository;
+import com.gws.crm.common.entities.ExcelFile;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.common.handler.ApiResponseHandler;
 import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
-import com.gws.crm.core.leads.dto.*;
-import com.gws.crm.core.leads.entity.Lead;
+import com.gws.crm.core.leads.dto.AddPreLeadDTO;
+import com.gws.crm.core.leads.dto.ImportPreLeadDTO;
+import com.gws.crm.core.leads.dto.PreLeadCriteria;
+import com.gws.crm.core.leads.dto.PreLeadResponse;
 import com.gws.crm.core.leads.entity.PhoneNumber;
 import com.gws.crm.core.leads.entity.PreLead;
 import com.gws.crm.core.leads.mapper.PhoneNumberMapper;
 import com.gws.crm.core.leads.mapper.PreLeadMapper;
 import com.gws.crm.core.leads.repository.BaseLeadRepository;
-import com.gws.crm.core.leads.repository.LeadRepository;
 import com.gws.crm.core.leads.repository.PreLeadRepository;
 import com.gws.crm.core.leads.service.PreLeadService;
-import com.gws.crm.core.lookups.entity.Project;
-import com.gws.crm.core.lookups.repository.CampaignRepository;
 import com.gws.crm.core.lookups.repository.ChannelRepository;
 import com.gws.crm.core.lookups.repository.ProjectRepository;
+import com.gws.crm.core.lookups.service.LeadLookupsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -31,6 +32,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
@@ -50,6 +52,7 @@ public class PreLeadServiceImp implements PreLeadService {
     private final ProjectRepository projectRepository;
     private final ChannelRepository channelRepository;
     private final BaseLeadRepository baseLeadRepository;
+    private final LeadLookupsService leadLookupsService;
 
     @Override
     public ResponseEntity<?> getAllPreLead(PreLeadCriteria preLeadCriteria, Transition transition) {
@@ -106,5 +109,71 @@ public class PreLeadServiceImp implements PreLeadService {
     public ResponseEntity<?> restorePreLead(Long leadId, Transition transition) {
         baseLeadRepository.restoreLead(leadId);
         return success("Lead Deleted Successfully");
+    }
+
+    @Override
+    public ResponseEntity<?> importLead(List<ImportPreLeadDTO> leads, Transition transition) {
+        List<PreLead> leadList = createLeadsList(leads, transition);
+        preLeadRepository.saveAll(leadList);
+        return success("Pre Lead Imported Successfully");
+    }
+
+    private List<PreLead> createLeadsList(List<ImportPreLeadDTO> importLeadDTOS, Transition transition) {
+        List<PreLead> leads = new ArrayList<>();
+        User creator = userRepository.findById(transition.getUserId())
+                .orElseThrow(NotFoundResourceException::new);
+        Admin admin;
+
+        if (!transition.getRole().equals("ADMIN")) {
+            admin = employeeRepository.getReferenceById(transition.getUserId()).getAdmin();
+        } else {
+            admin = (Admin) creator;
+        }
+
+        Admin finalAdmin = admin;
+
+        importLeadDTOS.forEach(leadDTO -> {
+            PreLead.PreLeadBuilder leadBuilder = PreLead.builder()
+                    .name(leadDTO.getName())
+                    .creator(creator)
+                    .admin(finalAdmin)
+                    .note(leadDTO.getNote())
+                    .country(leadDTO.getCountry())
+                    .deleted(false)
+                    .imported(false)
+                    .createdAt(LocalDateTime.now())
+                    .updatedAt(LocalDateTime.now());
+
+            if (leadDTO.getChannel() != null) {
+                leadBuilder.channel(channelRepository.findByNameAndAdminId(leadDTO.getChannel(), finalAdmin.getId()));
+            }
+
+            if (leadDTO.getProject() != null) {
+                leadBuilder.project(projectRepository.findByNameAndAdminId(leadDTO.getProject(), finalAdmin.getId()));
+            }
+
+
+            PreLead lead = leadBuilder.build();
+
+            PhoneNumber phoneNumber = PhoneNumber.builder()
+                    .lead(lead)
+                    .phone(leadDTO.getPhoneNumbers())
+                    .build();
+
+            lead.setPhoneNumbers(List.of(phoneNumber));
+
+            leads.add(lead);
+        });
+
+        return leads;
+    }
+
+    @Override
+    public ResponseEntity<?> generateExcel(Transition transition) {
+        ExcelFile excelFile = ExcelFile.builder()
+                .header(generateHeader(AddPreLeadDTO.class))
+                .dropdowns(leadLookupsService.generatePreLeadExcelSheetMap(transition))
+                .build();
+        return success(excelFile);
     }
 }

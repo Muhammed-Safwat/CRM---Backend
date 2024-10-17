@@ -13,46 +13,46 @@ import java.util.List;
 @Builder
 public class LeadResponse {
 
-        private long id;
+    private long id;
 
-        private String name;
+    private String name;
 
-        private LeadStatusDto status;
+    private LeadStatusDto status;
 
-        private List<PhoneNumberDTO> phoneNumbers;
+    private List<PhoneNumberDTO> phoneNumbers;
 
-        private String country;
+    private String country;
 
-        private String contactTime;
+    private String contactTime;
 
-        private String whatsappNumber;
+    private String whatsappNumber;
 
-        private String email;
+    private String email;
 
-        private String jobTitle;
+    private String jobTitle;
 
-        private LookupDTO investmentGoal;
+    private LookupDTO investmentGoal;
 
-        private LookupDTO communicateWay;
+    private LookupDTO communicateWay;
 
-        private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
-        private LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
-        private LookupDTO cancelReasons;
+    private LookupDTO cancelReasons;
 
-        private EmployeeSimpleDTO salesRep;
+    private EmployeeSimpleDTO salesRep;
 
-        private String budget;
+    private String budget;
 
-        private String note;
+    private String note;
 
-        private LookupDTO channel;
+    private LookupDTO channel;
 
-        private ProjectDTO project;
+    private ProjectDTO project;
 
-        private boolean deleted;
+    private boolean deleted;
 
-        private EmployeeSimpleDTO creator;
+    private EmployeeSimpleDTO creator;
 
 }

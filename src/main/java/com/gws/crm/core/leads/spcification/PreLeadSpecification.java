@@ -3,7 +3,6 @@ package com.gws.crm.core.leads.spcification;
 
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.leads.dto.PreLeadCriteria;
-import com.gws.crm.core.leads.entity.Lead;
 import com.gws.crm.core.leads.entity.PreLead;
 import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
@@ -23,7 +22,7 @@ public class PreLeadSpecification {
             specs.add(filterByDeleted(leadCriteria.isDeleted()));
             specs.add(filterByCampaignId(leadCriteria.getCampaignId()));
             specs.add(filterByCreatedAt(leadCriteria.getCreatedAt()));
-            specs.add(filterByUser(leadCriteria,transition));
+            specs.add(filterByUser(leadCriteria, transition));
             specs.add(filterByCreator(leadCriteria.getCreator()));
             specs.add(filterByCountry(leadCriteria.getCountry()));
         }
@@ -32,7 +31,7 @@ public class PreLeadSpecification {
     }
 
     private static Specification<PreLead> filterByUser(PreLeadCriteria leadCriteria, Transition transition) {
-        if(leadCriteria.isMyLead()){
+        if (leadCriteria.isMyLead()) {
             return filterByCreator(List.of(transition.getUserId()));
         } else if (transition.getRole().equals("ADMIN")) {
             return filterByAdminId(transition.getUserId());
@@ -60,18 +59,19 @@ public class PreLeadSpecification {
 
     private static Specification<PreLead> filterByCountry(String country) {
         return ((root, query, criteriaBuilder) -> {
-            if(!StringUtils.hasText(country)){
+            if (!StringUtils.hasText(country)) {
                 return criteriaBuilder.conjunction();
             }
             return criteriaBuilder.equal(root.get("country"), country);
         });
     }
+
     private static Specification<PreLead> filterByCreator(List<Long> creatorId) {
         return (root, query, criteriaBuilder) -> {
             if (creatorId == null || creatorId.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-            return root.join("creator",JoinType.INNER).get("id").in(creatorId);
+            return root.join("creator", JoinType.INNER).get("id").in(creatorId);
         };
     }
 
@@ -84,10 +84,9 @@ public class PreLeadSpecification {
             if (campaignId == null || campaignId.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-            return root.join("campaign",JoinType.INNER).get("id").in(campaignId);
+            return root.join("campaign", JoinType.INNER).get("id").in(campaignId);
         };
     }
-
 
 
     private static Specification<PreLead> filterByCreatedAt(LocalDate createdAt) {

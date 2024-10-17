@@ -44,7 +44,7 @@ import static com.gws.crm.core.leads.spcification.LeadSpecification.filter;
 public class LeadServiceImp implements LeadService {
 
     private final LeadRepository leadRepository;
-    private final BaseLeadRepository  baseLeadRepository;
+    private final BaseLeadRepository baseLeadRepository;
     private final LeadStatusRepository leadStatusRepository;
     private final InvestmentGoalRepository investmentGoalRepository;
     private final CommunicateWayRepository communicateWayRepository;
@@ -157,7 +157,7 @@ public class LeadServiceImp implements LeadService {
 
     @Override
     public ResponseEntity<?> generateExcel(Transition transition) {
-        ExcelFile excelFile = ExcelFile.builder().header(generateHeader(AddLeadDTO.class)).dropdowns(leadLookupsService.generateExcelSheetMap(transition)).build();
+        ExcelFile excelFile = ExcelFile.builder().header(generateHeader(AddLeadDTO.class)).dropdowns(leadLookupsService.generateLeadExcelSheetMap(transition)).build();
         return success(excelFile);
     }
 
@@ -219,6 +219,8 @@ public class LeadServiceImp implements LeadService {
             if (leadDTO.getProject() != null) {
                 leadBuilder.project(projectRepository.findByNameAndAdminId(leadDTO.getProject(), finalAdmin.getId()));
             }
+
+            log.info("Project {} ", leadDTO.getProject());
 
             Lead lead = leadBuilder.build();
 

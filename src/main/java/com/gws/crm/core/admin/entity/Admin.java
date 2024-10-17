@@ -31,10 +31,10 @@ public class Admin extends User {
     // Maximum number of users (employees) the admin can create
     private int maxNumberOfUsers;
 
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "admin")
-    private List<Employee> employees ;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "admin")
+    private List<Employee> employees;
 
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private List<Lead> leads ;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Lead> leads;
 
 }

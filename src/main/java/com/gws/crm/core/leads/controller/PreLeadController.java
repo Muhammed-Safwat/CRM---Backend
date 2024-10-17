@@ -2,7 +2,7 @@ package com.gws.crm.core.leads.controller;
 
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.leads.dto.AddPreLeadDTO;
-import com.gws.crm.core.leads.dto.ImportLeadDTO;
+import com.gws.crm.core.leads.dto.ImportPreLeadDTO;
 import com.gws.crm.core.leads.dto.PreLeadCriteria;
 import com.gws.crm.core.leads.service.PreLeadService;
 import jakarta.validation.Valid;
@@ -53,7 +53,7 @@ public class PreLeadController {
     }
 
     @PostMapping("import")
-    public ResponseEntity<?> importLead(@Valid @RequestBody List<ImportLeadDTO> leads,
+    public ResponseEntity<?> importLead(@Valid @RequestBody List<ImportPreLeadDTO> leads,
                                         Transition transition) {
         return preLeadService.importLead(leads, transition);
     }

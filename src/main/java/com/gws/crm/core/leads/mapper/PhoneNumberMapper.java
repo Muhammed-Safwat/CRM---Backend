@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class PhoneNumberMapper {
 
-    public PhoneNumber toEntity(PhoneNumberDTO phoneNumberDTO, BaseLead lead){
+    public PhoneNumber toEntity(PhoneNumberDTO phoneNumberDTO, BaseLead lead) {
         if (phoneNumberDTO == null || lead == null) {
             return null;
         }
@@ -24,7 +24,7 @@ public class PhoneNumberMapper {
                 .build();
     }
 
-    public List<PhoneNumber> toEntityList(List<PhoneNumberDTO> phoneNumbersDTOs, BaseLead lead){
+    public List<PhoneNumber> toEntityList(List<PhoneNumberDTO> phoneNumbersDTOs, BaseLead lead) {
         if (phoneNumbersDTOs == null || lead == null) {
             return null;
         }
@@ -33,7 +33,7 @@ public class PhoneNumberMapper {
                 .collect(Collectors.toList());
     }
 
-    public PhoneNumberDTO toDto(PhoneNumber phoneNumber){
+    public PhoneNumberDTO toDto(PhoneNumber phoneNumber) {
         if (phoneNumber == null) {
             return null;
         }
@@ -43,7 +43,7 @@ public class PhoneNumberMapper {
                 .build();
     }
 
-    public List<PhoneNumberDTO> toDtoList(List<PhoneNumber> phoneNumbers){
+    public List<PhoneNumberDTO> toDtoList(List<PhoneNumber> phoneNumbers) {
         if (phoneNumbers == null || phoneNumbers.isEmpty()) {
             return null;
         }

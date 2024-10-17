@@ -25,5 +25,5 @@ public interface LeadService {
 
     ResponseEntity<?> generateExcel(Transition transition);
 
-    ResponseEntity<?> importLead(List<ImportLeadDTO> leads,Transition transition);
+    ResponseEntity<?> importLead(List<ImportLeadDTO> leads, Transition transition);
 }

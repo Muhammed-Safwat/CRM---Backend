@@ -37,7 +37,7 @@ public class LeadSpecification {
             // specs.add(filterByHasPayment(leadCriteria.getHasPayment()));
             // specs.add(filterByNoAnswers(leadCriteria.getNoAnswers()));
             specs.add(filterByCreatedAt(leadCriteria.getCreatedAt()));
-            specs.add(filterByUser(leadCriteria,transition));
+            specs.add(filterByUser(leadCriteria, transition));
             specs.add(filterByCreator(leadCriteria.getCreator()));
         }
 
@@ -45,10 +45,10 @@ public class LeadSpecification {
     }
 
     private static Specification<Lead> filterByUser(LeadCriteria leadCriteria, Transition transition) {
-        if(leadCriteria.isMyLead()){
-           return filterByCreator(transition.getUserId());
+        if (leadCriteria.isMyLead()) {
+            return filterByCreator(transition.getUserId());
         } else if (transition.getRole().equals("ADMIN")) {
-           return filterByAdminId(transition.getUserId());
+            return filterByAdminId(transition.getUserId());
         }
         return null;
     }
@@ -71,7 +71,6 @@ public class LeadSpecification {
             );
         };
     }
-
 
 
     private static Specification<Lead> filterByStatus(Long statusId) {
@@ -152,6 +151,7 @@ public class LeadSpecification {
             return root.join("project", JoinType.INNER).get("id").in(projects);
         };
     }
+
     private static Specification<Lead> filterByCountry(String country) {
         return (root, query, criteriaBuilder) -> {
             if (!StringUtils.hasText(country)) {
@@ -163,7 +163,7 @@ public class LeadSpecification {
 
     private static Specification<Lead> filterByCreator(Long creatorId) {
         return (root, query, criteriaBuilder) -> {
-            if (creatorId == null ) {
+            if (creatorId == null) {
                 return null;
             }
             return criteriaBuilder.equal(root.get("creator").get("id"), creatorId);

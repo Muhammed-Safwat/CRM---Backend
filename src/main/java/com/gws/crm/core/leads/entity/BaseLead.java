@@ -3,7 +3,6 @@ package com.gws.crm.core.leads.entity;
 import com.gws.crm.authentication.entity.User;
 import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.lookups.entity.Channel;
-import com.gws.crm.core.lookups.entity.LeadStatus;
 import com.gws.crm.core.lookups.entity.Project;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -38,7 +37,7 @@ public class BaseLead {
     private String name;
 
     @OneToMany(mappedBy = "lead", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PhoneNumber> phoneNumbers ;
+    private List<PhoneNumber> phoneNumbers;
 
     private String email;
 

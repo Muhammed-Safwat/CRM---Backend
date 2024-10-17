@@ -10,5 +10,7 @@ import java.util.Map;
 public interface LeadLookupsService {
     ResponseEntity<?> getLeadLookups(Transition transition);
 
-    Map<String, List<String>> generateExcelSheetMap(Transition transition);
+    Map<String, List<String>> generateLeadExcelSheetMap(Transition transition);
+
+    Map<String, List<String>> generatePreLeadExcelSheetMap(Transition transition);
 }

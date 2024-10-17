@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface DevCompanyRepository extends BaseLookupRepository<DevCompany> {
 
-        @Query("SELECT dc.name FROM DevCompany dc WHERE dc.admin.id = :adminId")
-        List<String> findAllNamesByAdminId(@Param("adminId") Long adminId);
-    }
+    @Query("SELECT dc.name FROM DevCompany dc WHERE dc.admin.id = :adminId")
+    List<String> findAllNamesByAdminId(@Param("adminId") Long adminId);
+}

@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PropertyTypeDTO extends LookupDTO{
+public class PropertyTypeDTO extends LookupDTO {
 
     private LookupDTO category;
 }

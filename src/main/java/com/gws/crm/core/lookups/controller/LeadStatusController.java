@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/lookup/statuses")
-public class LeadStatusController extends BaseLookupController<LeadStatus , LookupDTO>{
+public class LeadStatusController extends BaseLookupController<LeadStatus, LookupDTO> {
 
     protected LeadStatusController(LeadStatusService service) {
         super(service);

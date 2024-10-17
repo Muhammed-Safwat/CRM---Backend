@@ -1,8 +1,7 @@
 package com.gws.crm.core.leads.entity;
 
 
-import com.gws.crm.core.lookups.entity.Campaign;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

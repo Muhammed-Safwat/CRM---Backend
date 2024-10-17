@@ -64,8 +64,9 @@ public class LeadLookupsServiceImp implements LeadLookupsService {
         return success(leadLookupsDTO);
     }
 
+
     @Override
-    public Map<String, List<String>> generateExcelSheetMap(Transition transition) {
+    public Map<String, List<String>> generateLeadExcelSheetMap(Transition transition) {
         List<String> brokers = brokerRepository.findAllNamesByAdminId(transition.getUserId());
         List<String> leadStatuses = leadStatusRepository.findAllNames();
         List<String> investmentGoals = investmentGoalRepository.findAllNamesByAdminId(transition.getUserId());
@@ -85,6 +86,19 @@ public class LeadLookupsServiceImp implements LeadLookupsService {
         lookupsMap.put("channel", channels);
         lookupsMap.put("communicateWay", communicateWays);
         lookupsMap.put("salesRep", salesReps);
+
+        return lookupsMap;
+    }
+
+    @Override
+    public Map<String, List<String>> generatePreLeadExcelSheetMap(Transition transition) {
+        List<String> projects = projectRepository.findAllNamesByAdminId(transition.getUserId());
+        List<String> channels = channelRepository.findAllNamesByAdminId(transition.getUserId());
+
+        Map<String, List<String>> lookupsMap = new HashMap<>();
+
+        lookupsMap.put("project", projects);
+        lookupsMap.put("channel", channels);
 
         return lookupsMap;
     }

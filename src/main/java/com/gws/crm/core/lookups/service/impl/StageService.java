@@ -7,7 +7,7 @@ import com.gws.crm.core.lookups.repository.StageRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class StageService extends BaseLookupServiceImpl<Stage,LookupDTO>  {
+public class StageService extends BaseLookupServiceImpl<Stage, LookupDTO> {
 
     public StageService(StageRepository repository) {
         super(repository);

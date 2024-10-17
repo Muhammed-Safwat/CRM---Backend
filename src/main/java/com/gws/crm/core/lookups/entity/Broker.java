@@ -10,6 +10,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Getter
 @NoArgsConstructor
-public class Broker  extends BaseLookup{
+public class Broker extends BaseLookup {
 
 }
