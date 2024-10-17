@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 
 public interface BaseLookupService<T extends BaseLookup, D extends LookupDTO> {
 
-    ResponseEntity<?> getAll(int page, int size,String keyword, Transition transition);
+    ResponseEntity<?> getAll(int page, int size, String keyword, Transition transition);
 
     ResponseEntity<?> getAll(Transition transition);
 

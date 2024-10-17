@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("api/lookups/dev-companies")
-public class DevCompanyController  extends  BaseLookupController<DevCompany,LookupDTO> {
+public class DevCompanyController extends BaseLookupController<DevCompany, LookupDTO> {
     protected DevCompanyController(DevCompanyService service) {
         super(service);
     }

@@ -8,6 +8,6 @@ import lombok.Setter;
 @Getter
 @Builder
 public class LeadStatusDto {
-    private long id ;
+    private long id;
     private String name;
 }

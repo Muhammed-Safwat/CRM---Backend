@@ -10,5 +10,5 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Getter
 @NoArgsConstructor
-public class Region  extends BaseLookup {
+public class Region extends BaseLookup {
 }

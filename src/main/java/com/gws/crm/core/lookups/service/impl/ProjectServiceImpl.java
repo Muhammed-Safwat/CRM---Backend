@@ -35,6 +35,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectRepository projectRepository;
     private final CategoryRepository categoryRepository;
     private final AdminRepository adminRepository;
+
     @Override
     public ResponseEntity<?> getProjects(int page, int size, Transition transition) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());

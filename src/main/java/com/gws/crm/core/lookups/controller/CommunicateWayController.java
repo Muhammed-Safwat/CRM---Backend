@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("api/lookups/communicate-ways")
-public class CommunicateWayController extends BaseLookupController<CommunicateWay,LookupDTO>{
+public class CommunicateWayController extends BaseLookupController<CommunicateWay, LookupDTO> {
 
     protected CommunicateWayController(CommunicateWayService service) {
         super(service);
