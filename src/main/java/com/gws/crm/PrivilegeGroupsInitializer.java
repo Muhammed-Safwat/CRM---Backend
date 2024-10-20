@@ -7,6 +7,10 @@ import com.gws.crm.authentication.repository.RoleRepository;
 import com.gws.crm.core.admin.entity.SuperAdmin;
 import com.gws.crm.core.admin.repository.SuperAdminRepository;
 import com.gws.crm.core.leads.repository.PrivilegeGroupRepository;
+import com.gws.crm.core.resale.entities.ResaleStatus;
+import com.gws.crm.core.resale.entities.ResaleType;
+import com.gws.crm.core.resale.repository.ResaleStatusRepository;
+import com.gws.crm.core.resale.repository.ResaleTypeRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +36,10 @@ public class PrivilegeGroupsInitializer {
 
     private final RoleRepository roleRepository;
 
+    private final ResaleStatusRepository resaleStatusRepository;
+
+    private final ResaleTypeRepository resaleTypeRepository;
+
     void createSuperAdmin() {
         Set<Role> roles = new HashSet<>();
         roles.add(roleRepository.findByName("SUPER_ADMIN"));
@@ -56,6 +64,8 @@ public class PrivilegeGroupsInitializer {
 
     @PostConstruct
     public void initializeData() {
+        //addResaleStatuses();
+        //addResaleTypes();
         // createSuperAdmin();
 //        addSalesDirectorRole();
 //        addTeamLeadRole();
@@ -76,6 +86,41 @@ public class PrivilegeGroupsInitializer {
 //        branchManger();
     }
 
+    private void addResaleStatuses() {
+        List<String> statuses = List.of(
+                "For Sale",
+                "Not For Sale",
+                "In Deal",
+                "Sold",
+                "For Rent",
+                "Rented",
+                "Showing",
+                "Follow Up",
+                "Rejected",
+                "Expired",
+                "Recycled"
+        );
+
+        for (String statusName : statuses) {
+            ResaleStatus resaleStatus = ResaleStatus.builder()
+                    .name(statusName)
+                    .build();
+            resaleStatusRepository.save(resaleStatus);
+
+        }
+    }
+
+    // Add all predefined ResaleType values to the database
+    private void addResaleTypes() {
+        List<String> types = List.of("Sale", "Rent");
+
+        for (String typeName : types) {
+            ResaleType resaleType = ResaleType.builder()
+                    .name(typeName)
+                    .build();
+            resaleTypeRepository.save(resaleType);
+        }
+    }
 
     void addSalesDirectorRole() {
         // Create a list to hold the Privileges for the Sales Director role

@@ -86,7 +86,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/employees/**").hasRole("ADMIN")
                                 .requestMatchers("/api/lookups/**").hasRole("ADMIN")
                                 .requestMatchers("/api/privileges/**").hasRole("ADMIN")
-                                .anyRequest().authenticated())
+                                .anyRequest().permitAll())
                 .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(transitionBuilderFilter(), UsernamePasswordAuthenticationFilter.class);
         http.httpBasic(Customizer.withDefaults());

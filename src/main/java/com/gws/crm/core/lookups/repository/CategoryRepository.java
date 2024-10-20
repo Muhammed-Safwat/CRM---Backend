@@ -12,4 +12,6 @@ public interface CategoryRepository extends BaseLookupRepository<Category> {
 
     @Query("SELECT c.name FROM Category c WHERE c.admin.id = :adminId")
     List<String> findAllNamesByAdminId(@Param("adminId") Long adminId);
+
+
 }

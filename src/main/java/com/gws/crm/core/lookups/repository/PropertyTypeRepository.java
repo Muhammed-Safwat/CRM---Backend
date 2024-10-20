@@ -14,4 +14,5 @@ public interface PropertyTypeRepository extends BaseLookupRepository<PropertyTyp
     @Query("SELECT pt.name FROM PropertyType pt  WHERE pt.admin.id = :adminId")
     List<String> findAllNamesByAdminId(@Param("adminId") Long adminId);
 
+    List<PropertyType> getByCategoryId(Long categoryId);
 }

@@ -58,6 +58,12 @@ public class ResaleMapper {
                         .name(resale.getCreator().getName())
                         .build()
                 : null;
+        EmployeeSimpleDTO sealRep = resale.getSalesRep() != null ?
+                EmployeeSimpleDTO.builder()
+                        .id(resale.getSalesRep().getId())
+                        .name(resale.getSalesRep().getName())
+                        .build()
+                : null;
 
 
         return ResaleResponse.builder()
@@ -73,6 +79,7 @@ public class ResaleMapper {
                 .property(propertyDTO)
                 .status(statusDTO)
                 .type(typeDTO)
+                .salesRep(sealRep)
                 .deleted(resale.isDeleted())
                 .creator(creatorDTO)
                 .build();

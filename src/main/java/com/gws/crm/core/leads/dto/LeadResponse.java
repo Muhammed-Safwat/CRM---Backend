@@ -54,5 +54,4 @@ public class LeadResponse {
     private boolean deleted;
 
     private EmployeeSimpleDTO creator;
-
 }

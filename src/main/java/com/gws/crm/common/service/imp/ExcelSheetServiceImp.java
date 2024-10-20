@@ -4,6 +4,8 @@ import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.service.ExcelSheetService;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.lookups.repository.*;
+import com.gws.crm.core.resale.repository.ResaleStatusRepository;
+import com.gws.crm.core.resale.repository.ResaleTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,8 @@ public class ExcelSheetServiceImp implements ExcelSheetService {
     private final ChannelRepository channelRepository;
     private final CommunicateWayRepository communicateWayRepository;
     private final CategoryRepository categoryRepository;
+    private final ResaleTypeRepository resaleTypeRepository;
+    private final ResaleStatusRepository resaleStatusRepository;
 
 
     @Override
@@ -54,24 +58,31 @@ public class ExcelSheetServiceImp implements ExcelSheetService {
     @Override
     public Map<String, List<String>> generatePreLeadExcelSheetMap(Transition transition) {
         List<String> projects = projectRepository.findAllNamesByAdminId(transition.getUserId());
-        List<String> channels = channelRepository.findAllNamesByAdminId(transition.getUserId());
-
-        Map<String, List<String>> lookupsMap = new HashMap<>();
-
-        lookupsMap.put("project", projects);
-        lookupsMap.put("channel", channels);
-
-        return lookupsMap;
-    }
-
-    @Override
-    public Map<String, List<String>> generateResaleSheetMap(Transition transition) {
-        List<String> projects = projectRepository.findAllNamesByAdminId(transition.getUserId());
         List<String> categories = categoryRepository.findAllNamesByAdminId(transition.getUserId());
         Map<String, List<String>> lookupsMap = new HashMap<>();
 
         lookupsMap.put("project", projects);
         lookupsMap.put("category", categories);
+        return lookupsMap;
+    }
+
+    @Override
+    public Map<String, List<String>> generateResaleSheetMap(Transition transition) {
+
+        List<String> projects = projectRepository.findAllNamesByAdminId(transition.getUserId());
+        List<String> categories = categoryRepository.findAllNamesByAdminId(transition.getUserId());
+        List<String> types = resaleTypeRepository.findAllNames();
+        List<String> statuses = resaleStatusRepository.findAllNames();
+        List<String> salesReps = employeeRepository.findAllNamesByAdminId(transition.getUserId());
+
+        Map<String, List<String>> lookupsMap = new HashMap<>();
+
+        lookupsMap.put("type", types);
+        lookupsMap.put("status", statuses);
+        lookupsMap.put("salesRep", salesReps);
+        lookupsMap.put("project", projects);
+        lookupsMap.put("category", categories);
+
         return lookupsMap;
     }
 }

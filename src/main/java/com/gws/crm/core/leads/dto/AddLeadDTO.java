@@ -41,4 +41,6 @@ public class AddLeadDTO {
 
     private Long project;
 
+    private Long type ;
+
 }

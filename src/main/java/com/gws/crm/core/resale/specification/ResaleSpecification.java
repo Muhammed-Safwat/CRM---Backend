@@ -79,12 +79,12 @@ public class ResaleSpecification {
         };
     }
 
-    private static Specification<Resale> filterByType(List<Long> typesIds) {
+    private static Specification<Resale> filterByType(Long typeId) {
         return (root, query, criteriaBuilder) -> {
-            if (typesIds == null || typesIds.isEmpty()) {
-                return criteriaBuilder.conjunction();
+            if (typeId == null || typeId == 0) {
+                return null;
             }
-            return root.join("type", JoinType.INNER).get("id").in(typesIds);
+            return criteriaBuilder.equal(root.get("type").get("id"), typeId);
         };
     }
 

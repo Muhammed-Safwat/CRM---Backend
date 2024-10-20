@@ -16,12 +16,14 @@ import com.gws.crm.core.resale.dto.ImportResaleDTO;
 import com.gws.crm.core.resale.dto.ResaleCriteria;
 import com.gws.crm.core.resale.dto.ResaleResponse;
 import com.gws.crm.core.resale.entities.Resale;
+import com.gws.crm.core.resale.entities.ResaleStatus;
 import com.gws.crm.core.resale.mapper.ResaleMapper;
 import com.gws.crm.core.resale.repository.ResaleRepository;
 import com.gws.crm.core.resale.repository.ResaleStatusRepository;
 import com.gws.crm.core.resale.repository.ResaleTypeRepository;
 import com.gws.crm.core.resale.service.ResaleService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +39,7 @@ import static com.gws.crm.common.handler.ApiResponseHandler.success;
 import static com.gws.crm.common.utils.ExcelFileUtils.generateHeader;
 import static com.gws.crm.core.resale.specification.ResaleSpecification.filter;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ResaleServiceImp implements ResaleService {
@@ -76,11 +79,14 @@ public class ResaleServiceImp implements ResaleService {
                 .name(resaleDTO.getName())
                 .status(resaleStatusRepository.getReferenceById(resaleDTO.getStatus()))
                 .type(resaleTypeRepository.getReferenceById(resaleDTO.getType()))
+                .salesRep(employeeRepository.getReferenceById(resaleDTO.getSalesRep()))
                 .note(resaleDTO.getNote())
                 .email(resaleDTO.getEmail())
                 .phone(resaleDTO.getPhone())
                 .phase(resaleDTO.getPhase())
                 .code(resaleDTO.getCode())
+                .creator(creator)
+                .budget(resaleDTO.getBudget())
                 .BUA(resaleDTO.getBUA());
 
         if (!transition.getRole().equals("ADMIN")) {
@@ -135,6 +141,8 @@ public class ResaleServiceImp implements ResaleService {
 
     @Override
     public ResponseEntity<?> importResale(List<ImportResaleDTO> resales, Transition transition) {
+        log.info("Resale List {}",resales);
+
         List<Resale> resaleList = createResaleList(resales, transition);
         resaleRepository.saveAll(resaleList);
         return success("Resale Imported Successfully");
@@ -155,9 +163,11 @@ public class ResaleServiceImp implements ResaleService {
         Admin finalAdmin = admin;
 
         importResaleDTOS.forEach(resaleDTO -> {
+            ResaleStatus resaleStatus = resaleStatusRepository.findByName(resaleDTO.getStatus());
+            log.info("status {}",resaleStatus);
             Resale.ResaleBuilder resaleBuilder = Resale.builder()
                     .name(resaleDTO.getName())
-                    .status(resaleStatusRepository.findByName(resaleDTO.getStatus()))
+                    .status(resaleStatus)
                     .type(resaleTypeRepository.findByName(resaleDTO.getType()))
                     .note(resaleDTO.getNote())
                     .email(resaleDTO.getEmail())

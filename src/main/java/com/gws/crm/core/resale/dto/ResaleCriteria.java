@@ -22,7 +22,7 @@ public class ResaleCriteria {
     private String phase;
     private String code;
     private List<Long> status;
-    private List<Long> type;
+    private Long type;
     private List<Long> category;
     private List<Long> property;
     private String note;

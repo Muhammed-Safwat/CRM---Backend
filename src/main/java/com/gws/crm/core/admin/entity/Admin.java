@@ -4,6 +4,8 @@ package com.gws.crm.core.admin.entity;
 import com.gws.crm.authentication.entity.User;
 import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.leads.entity.Lead;
+import com.gws.crm.core.notification.entities.Subscriber;
+import com.gws.crm.core.notification.services.NotificationService;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -17,6 +19,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -37,4 +40,9 @@ public class Admin extends User {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Lead> leads;
 
+
+    @Override
+    public void notify(EventType eventType, String message, NotificationService notificationService) {
+
+    }
 }

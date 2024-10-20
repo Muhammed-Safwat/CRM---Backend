@@ -4,6 +4,7 @@ import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.resale.dto.AddResaleDTO;
 import com.gws.crm.core.resale.dto.ImportResaleDTO;
 import com.gws.crm.core.resale.dto.ResaleCriteria;
+import com.gws.crm.core.resale.service.ResaleLookupsService;
 import com.gws.crm.core.resale.service.ResaleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +15,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/resale")
+@RequestMapping("/api/resales")
 @RequiredArgsConstructor
 public class ResaleController {
 
     private final ResaleService resaleService;
+    private final ResaleLookupsService resaleLookupsService;
 
     @PostMapping("all")
     public ResponseEntity<?> getResales(@Valid @RequestBody ResaleCriteria resaleCriteria,
@@ -70,5 +72,9 @@ public class ResaleController {
         return resaleService.importResale(resales, transition);
     }
 
+    @GetMapping("lookups")
+    public ResponseEntity<?> getLookups(Transition transition) {
+        return resaleLookupsService.getLookups(transition);
+    }
 
 }

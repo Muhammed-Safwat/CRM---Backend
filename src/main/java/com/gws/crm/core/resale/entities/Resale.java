@@ -3,6 +3,7 @@ package com.gws.crm.core.resale.entities;
 
 import com.gws.crm.authentication.entity.User;
 import com.gws.crm.core.admin.entity.Admin;
+import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.lookups.entity.Category;
 import com.gws.crm.core.lookups.entity.Project;
 import com.gws.crm.core.lookups.entity.PropertyType;
@@ -12,6 +13,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -19,6 +22,8 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @Builder
+@DynamicUpdate
+@DynamicInsert
 @NoArgsConstructor
 @AllArgsConstructor
 public class Resale {
@@ -68,6 +73,8 @@ public class Resale {
 
     private String note;
 
+    private String budget;
+
     @ManyToOne(fetch = FetchType.LAZY,
             cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
                     CascadeType.PERSIST, CascadeType.DETACH})
@@ -79,6 +86,11 @@ public class Resale {
                     CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(name = "admin_id")
     private Admin admin;
+
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
+                    CascadeType.PERSIST, CascadeType.DETACH})
+    private Employee salesRep;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

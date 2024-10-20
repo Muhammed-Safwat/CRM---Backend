@@ -32,6 +32,7 @@ public class LeadCriteria {
     private String hasPayment;
     private String noAnswers;
     private LocalDate createdAt;
+    private Long type ;
     private int page;
     private int size;
 }

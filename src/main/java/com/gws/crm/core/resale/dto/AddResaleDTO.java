@@ -25,6 +25,9 @@ public class AddResaleDTO {
     @NotNull
     private Long type;
 
+    @NotNull
+    private long salesRep;
+
     private String email;
 
     private Long project;
@@ -40,4 +43,6 @@ public class AddResaleDTO {
     private Long property;
 
     private String note;
+
+    private String budget;
 }

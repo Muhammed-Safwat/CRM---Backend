@@ -1,5 +1,6 @@
 package com.gws.crm.authentication.entity;
 
+import com.gws.crm.core.notification.entities.Subscriber;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class User implements UserDetails {
+public abstract class User implements UserDetails , Subscriber {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -115,4 +116,6 @@ public abstract class User implements UserDetails {
     public boolean isEnabled() {
         return enabled;
     }
+
+
 }

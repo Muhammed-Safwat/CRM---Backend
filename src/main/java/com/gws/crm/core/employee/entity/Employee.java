@@ -3,6 +3,8 @@ package com.gws.crm.core.employee.entity;
 import com.gws.crm.authentication.entity.PrivilegeGroup;
 import com.gws.crm.authentication.entity.User;
 import com.gws.crm.core.admin.entity.Admin;
+import com.gws.crm.core.admin.entity.EventType;
+import com.gws.crm.core.notification.services.NotificationService;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,4 +37,8 @@ public class Employee extends User {
     @JoinColumn(name = "admin_id")
     private Admin admin;
 
+    @Override
+    public void notify(EventType eventType, String message, NotificationService notificationService) {
+        notificationService.notifyUser(eventType,message,getName(),getId());
+    }
 }

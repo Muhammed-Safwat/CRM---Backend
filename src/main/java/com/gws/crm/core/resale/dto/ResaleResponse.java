@@ -26,8 +26,9 @@ public class ResaleResponse {
     private LookupDTO category;
     private LookupDTO property;
     private String note;
-    private EmployeeSimpleDTO creator;
     private LocalDateTime createdAt;
+    private EmployeeSimpleDTO creator;
+    private EmployeeSimpleDTO salesRep;
     private LocalDateTime updatedAt;
     private boolean deleted;
 }

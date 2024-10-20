@@ -2,9 +2,13 @@ package com.gws.crm.core.leads.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Builder
+@DynamicUpdate
+@DynamicInsert
 @Setter
 @Getter
 @NoArgsConstructor
