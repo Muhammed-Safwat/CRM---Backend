@@ -61,7 +61,10 @@ public class LeadServiceImp implements LeadService {
 
     @Override
     public ResponseEntity<?> getLeadDetails(long leadId, Transition transition) {
-        return null;
+        Lead lead = leadRepository.findById(leadId)
+                .orElseThrow(NotFoundResourceException::new);
+        LeadResponse leadResponse  = leadMapper.toDTO(lead);
+        return success(leadResponse);
     }
 
 
