@@ -58,6 +58,7 @@ public class LeadServiceImp implements LeadService {
     private final PhoneNumberMapper phoneNumberMapper;
     private final LeadLookupsService leadLookupsService;
     private final ExcelSheetService excelSheetService;
+    private final BrokerRepository brokerRepository;
 
     @Override
     public ResponseEntity<?> getLeadDetails(long leadId, Transition transition) {
@@ -117,6 +118,10 @@ public class LeadServiceImp implements LeadService {
 
         if (leadDTO.getProject() != null) {
             leadBuilder.project(projectRepository.getReferenceById(leadDTO.getProject()));
+        }
+
+        if(leadDTO.getBroker() != null){
+            leadBuilder.broker(brokerRepository.getReferenceById(leadDTO.getBroker()));
         }
 
         Lead lead = leadBuilder.build();

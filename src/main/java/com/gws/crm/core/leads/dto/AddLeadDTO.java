@@ -43,4 +43,5 @@ public class AddLeadDTO {
 
     private Long type ;
 
+    private Long broker ;
 }

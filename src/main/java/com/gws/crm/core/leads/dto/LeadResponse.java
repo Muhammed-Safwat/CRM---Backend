@@ -33,6 +33,8 @@ public class LeadResponse {
 
     private LookupDTO investmentGoal;
 
+    private LookupDTO broker;
+
     private LookupDTO communicateWay;
 
     private LocalDateTime updatedAt;
@@ -42,6 +44,8 @@ public class LeadResponse {
     private LookupDTO cancelReasons;
 
     private EmployeeSimpleDTO salesRep;
+
+    private EmployeeSimpleDTO admin;
 
     private String budget;
 

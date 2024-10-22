@@ -2,10 +2,7 @@ package com.gws.crm.core.leads.entity;
 
 
 import com.gws.crm.core.employee.entity.Employee;
-import com.gws.crm.core.lookups.entity.CancelReasons;
-import com.gws.crm.core.lookups.entity.CommunicateWay;
-import com.gws.crm.core.lookups.entity.InvestmentGoal;
-import com.gws.crm.core.lookups.entity.LeadStatus;
+import com.gws.crm.core.lookups.entity.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,6 +38,10 @@ public class Lead extends BaseLead {
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(nullable = true)
     private CancelReasons cancelReasons;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.DETACH})
+    @JoinColumn(nullable = true)
+    private Broker broker;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.DETACH})
     private Employee salesRep;

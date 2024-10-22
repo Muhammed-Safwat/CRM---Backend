@@ -52,6 +52,13 @@ public class LeadMapper {
                         .build()
                 : null;
 
+        EmployeeSimpleDTO admin = lead.getAdmin() != null ?
+                EmployeeSimpleDTO.builder()
+                        .id(lead.getAdmin().getId())
+                        .name(lead.getAdmin().getName())
+                        .build()
+                : null;
+
         LookupDTO channelDTO = lead.getChannel() != null ?
                 LookupDTO.builder()
                         .id(lead.getChannel().getId())
@@ -78,6 +85,13 @@ public class LeadMapper {
                         .id(lead.getStatus().getId())
                         .build()
                 : null;
+
+        LookupDTO brokerDTO = lead.getBroker() != null ?
+                LookupDTO.builder()
+                        .name(lead.getBroker().getName())
+                        .id(lead.getBroker().getId())
+                        .build()
+                : null;
         return LeadResponse.builder()
                 .id(lead.getId())
                 .phoneNumbers(phoneNumberMapper.toDtoList(lead.getPhoneNumbers()))
@@ -100,6 +114,8 @@ public class LeadMapper {
                 .project(projectDTO)
                 .deleted(lead.isDeleted())
                 .creator(creatorDTO)
+                .admin(admin)
+                .broker(brokerDTO)
                 .build();
     }
 
