@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSpecificationExecutor<Employee> {
+
     Page<Employee> findAllByAdminId(long adminId, Pageable pageable);
 
     List<Employee> findAllByAdminId(long adminId);

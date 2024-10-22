@@ -3,6 +3,7 @@ package com.gws.crm.core.lookups.service.impl;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.employee.dto.EmployeeSimpleDTO;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
+import com.gws.crm.core.lookups.dto.ActionLookupDTO;
 import com.gws.crm.core.lookups.dto.LeadLookupsDTO;
 import com.gws.crm.core.lookups.entity.*;
 import com.gws.crm.core.lookups.repository.*;
@@ -28,6 +29,8 @@ public class LeadLookupsServiceImp implements LeadLookupsService {
     private final EmployeeRepository employeeRepository;
     private final ChannelRepository channelRepository;
     private final CommunicateWayRepository communicateWayRepository;
+    private final CallOutcomeRepository callOutcomeRepository;
+    private final StageRepository stageRepository;
 
     @Override
     public ResponseEntity<?> getLeadLookups(Transition transition) {
@@ -60,6 +63,21 @@ public class LeadLookupsServiceImp implements LeadLookupsService {
                 .build();
 
         return success(leadLookupsDTO);
+    }
+
+    @Override
+    public ResponseEntity<?> getActionLookups(Transition transition) {
+        List<CancelReasons> cancelReasons = cancelReasonsRepository.findAllByAdminId(transition.getUserId());
+        List<CallOutcome> callOutcomes = callOutcomeRepository.findAllByAdminId(transition.getUserId());
+        List<Stage> stages = stageRepository.findAllByAdminId(transition.getUserId());
+
+        ActionLookupDTO actionLookupDTO = ActionLookupDTO.builder()
+                .cancelReasons(cancelReasons)
+                .callOutcome(callOutcomes)
+                .stages(stages)
+                .build();
+
+        return success(actionLookupDTO);
     }
 
 

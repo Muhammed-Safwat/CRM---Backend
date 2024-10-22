@@ -23,5 +23,4 @@ public class PreLead extends BaseLead {
 
     private String link;
 
-
 }

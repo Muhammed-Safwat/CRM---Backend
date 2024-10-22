@@ -6,9 +6,14 @@ import lombok.Getter;
 public enum ActionType {
     LOGIN("Login"),
     LOGOUT("Logout"),
+
     CREATE("Create"),
-    UPDATE("Update"),
+    EDIT("Edit"),
     DELETE("Delete"),
+    ASSIGN("Assign"),
+    ANSWERED("Add Answer"),
+    NO_ANSWER("No Answer"),
+
     VIEW("View"),
     ASSIGN_TASK("Assign Task"),
     EXPORT_DATA("Export Data"),

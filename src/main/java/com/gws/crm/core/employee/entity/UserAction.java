@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserAction {
+public abstract class UserAction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,10 +34,7 @@ public class UserAction {
     private ActionType type;
 
     @Column(columnDefinition = "TEXT")
-    private String details;
-
-    @Enumerated(EnumType.STRING)
-    private ActionStatus status;
+    private String comment;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

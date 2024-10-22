@@ -22,4 +22,9 @@ public class LeadLookupsController {
         return leadLookupsService.getLeadLookups(transition);
     }
 
+    @GetMapping("action")
+    public ResponseEntity<?> getLeadLookupsAction(Transition transition) {
+        return leadLookupsService.getActionLookups(transition);
+    }
+
 }

@@ -8,4 +8,5 @@ import org.springframework.http.ResponseEntity;
 public interface LeadLookupsService {
     ResponseEntity<?> getLeadLookups(Transition transition);
 
+    ResponseEntity<?> getActionLookups(Transition transition);
 }

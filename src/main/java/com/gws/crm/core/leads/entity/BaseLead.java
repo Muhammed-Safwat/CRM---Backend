@@ -67,6 +67,5 @@ public class BaseLead {
     @JoinColumn(nullable = false)
     private Project project;
 
-
     private boolean deleted;
 }
