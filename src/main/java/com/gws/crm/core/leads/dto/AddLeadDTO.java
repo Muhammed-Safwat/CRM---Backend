@@ -8,6 +8,7 @@ import java.util.List;
 @Setter
 @Getter
 public class AddLeadDTO {
+    private Long id;
 
     private String name;
 
@@ -44,4 +45,8 @@ public class AddLeadDTO {
     private Long type ;
 
     private Long broker ;
+
+    private String campaignId;
+
+    private String lastStage;
 }

@@ -116,6 +116,8 @@ public class LeadMapper {
                 .creator(creatorDTO)
                 .admin(admin)
                 .broker(brokerDTO)
+                .campaignId(lead.getCampaignId())
+                .lastStage(lead.getLastStage())
                 .build();
     }
 

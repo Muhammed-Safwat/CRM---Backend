@@ -54,4 +54,7 @@ public class Lead extends BaseLead {
 
     private String jobTitle;
 
+    private String campaignId;
+
+    private String lastStage;
 }

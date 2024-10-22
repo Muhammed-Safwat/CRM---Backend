@@ -25,6 +25,10 @@ public class LeadResponse {
 
     private String contactTime;
 
+    private String campaignId;
+
+    private String lastStage;
+
     private String whatsappNumber;
 
     private String email;

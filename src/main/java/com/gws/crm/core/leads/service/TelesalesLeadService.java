@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-public interface TeleSalesLeadService {
+public interface TelesalesLeadService {
     ResponseEntity<?> getLeadDetails(long leadId, Transition transition);
 
     ResponseEntity<?> addLead(AddLeadDTO leadDTO, Transition transition);

@@ -36,7 +36,7 @@ public class BaseLead {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "lead", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "lead", cascade = CascadeType.ALL)
     private List<PhoneNumber> phoneNumbers;
 
     private String email;

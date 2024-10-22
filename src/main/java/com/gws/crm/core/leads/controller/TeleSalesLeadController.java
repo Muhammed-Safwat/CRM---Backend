@@ -5,8 +5,7 @@ import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.leads.dto.AddLeadDTO;
 import com.gws.crm.core.leads.dto.ImportLeadDTO;
 import com.gws.crm.core.leads.dto.LeadCriteria;
-import com.gws.crm.core.leads.service.LeadService;
-import com.gws.crm.core.leads.service.TeleSalesLeadService;
+import com.gws.crm.core.leads.service.TelesalesLeadService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
@@ -22,7 +21,7 @@ import java.util.List;
 @Log
 public class TeleSalesLeadController {
 
-    private final TeleSalesLeadService teleSalesLeadService;
+    private final TelesalesLeadService teleSalesLeadService;
 
     @PostMapping("all")
     public ResponseEntity<?> getAllLeads(@Valid @RequestBody LeadCriteria leadCriteria,

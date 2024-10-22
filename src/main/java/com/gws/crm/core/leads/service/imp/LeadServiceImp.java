@@ -18,6 +18,7 @@ import com.gws.crm.core.leads.mapper.LeadMapper;
 import com.gws.crm.core.leads.mapper.PhoneNumberMapper;
 import com.gws.crm.core.leads.repository.BaseLeadRepository;
 import com.gws.crm.core.leads.repository.LeadRepository;
+import com.gws.crm.core.leads.repository.PhoneNumberRepository;
 import com.gws.crm.core.leads.service.LeadService;
 import com.gws.crm.core.lookups.repository.*;
 import com.gws.crm.core.lookups.service.LeadLookupsService;
@@ -27,8 +28,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -59,6 +62,7 @@ public class LeadServiceImp implements LeadService {
     private final LeadLookupsService leadLookupsService;
     private final ExcelSheetService excelSheetService;
     private final BrokerRepository brokerRepository;
+    private final PhoneNumberRepository phoneNumberRepository;
 
     @Override
     public ResponseEntity<?> getLeadDetails(long leadId, Transition transition) {
@@ -87,6 +91,8 @@ public class LeadServiceImp implements LeadService {
                 .budget(leadDTO.getBudget())
                 .note(leadDTO.getNote())
                 .deleted(false)
+                .campaignId(leadDTO.getCampaignId())
+                .lastStage(leadDTO.getLastStage())
                 .creator(creator);
 
         if (!transition.getRole().equals("ADMIN")) {
@@ -99,6 +105,8 @@ public class LeadServiceImp implements LeadService {
         if (leadDTO.getInvestmentGoal() != null) {
             leadBuilder.investmentGoal(investmentGoalRepository.getReferenceById(leadDTO.getInvestmentGoal()));
         }
+
+
 
         if (leadDTO.getCommunicateWay() != null) {
             leadBuilder.communicateWay(communicateWayRepository.getReferenceById(leadDTO.getCommunicateWay()));
@@ -133,8 +141,77 @@ public class LeadServiceImp implements LeadService {
     }
 
     @Override
+    @Transactional
+    @Modifying
     public ResponseEntity<?> updateLead(AddLeadDTO leadDTO, Transition transition) {
-        return null;
+        Lead existingLead = leadRepository.findById(leadDTO.getId())
+                .orElseThrow(NotFoundResourceException::new);
+
+        User creator = userRepository.findById(transition.getUserId()).orElseThrow(NotFoundResourceException::new);
+        Admin admin = null;
+
+        if (!transition.getRole().equals("ADMIN")) {
+            admin = employeeRepository.getReferenceById(transition.getUserId()).getAdmin();
+            existingLead.setAdmin(admin);
+        } else {
+            existingLead.setAdmin((Admin) creator);
+        }
+
+        existingLead.setName(leadDTO.getName());
+        existingLead.setStatus(leadStatusRepository.getReferenceById(leadDTO.getStatus()));
+        existingLead.setCountry(leadDTO.getCountry());
+        existingLead.setContactTime(leadDTO.getContactTime());
+        existingLead.setWhatsappNumber(leadDTO.getWhatsappNumber());
+        existingLead.setEmail(leadDTO.getEmail());
+        existingLead.setJobTitle(leadDTO.getJobTitle());
+        existingLead.setUpdatedAt(LocalDateTime.now());
+        existingLead.setBudget(leadDTO.getBudget());
+        existingLead.setNote(leadDTO.getNote());
+        existingLead.setDeleted(false);
+        existingLead.setCampaignId(leadDTO.getCampaignId());
+        existingLead.setLastStage(leadDTO.getLastStage());
+        existingLead.setCreator(creator);
+
+        if (leadDTO.getInvestmentGoal() != null) {
+            existingLead.setInvestmentGoal(investmentGoalRepository.getReferenceById(leadDTO.getInvestmentGoal()));
+        }
+
+        if (leadDTO.getCommunicateWay() != null) {
+            existingLead.setCommunicateWay(communicateWayRepository.getReferenceById(leadDTO.getCommunicateWay()));
+        }
+
+        if (leadDTO.getCancelReason() != null) {
+            existingLead.setCancelReasons(cancelReasonsRepository.getReferenceById(leadDTO.getCancelReason()));
+        }
+
+        if (leadDTO.getSalesRep() != null) {
+            existingLead.setSalesRep(employeeRepository.getReferenceById(leadDTO.getSalesRep()));
+        }
+
+        if (leadDTO.getChannel() != null) {
+            existingLead.setChannel(channelRepository.getReferenceById(leadDTO.getChannel()));
+        }
+
+        if (leadDTO.getProject() != null) {
+            existingLead.setProject(projectRepository.getReferenceById(leadDTO.getProject()));
+        }
+
+        if (leadDTO.getBroker() != null) {
+            existingLead.setBroker(brokerRepository.getReferenceById(leadDTO.getBroker()));
+        }
+
+        phoneNumberRepository.deleteAllById(existingLead.getPhoneNumbers().stream().map(PhoneNumber::getId).toList());
+
+        existingLead.getPhoneNumbers().clear();
+
+        List<PhoneNumber> updatedPhoneNumbers = phoneNumberMapper.toEntityList(leadDTO.getPhoneNumbers(), existingLead);
+        existingLead.setPhoneNumbers(updatedPhoneNumbers);
+
+        Lead updatedLead = leadRepository.save(existingLead);
+
+        LeadResponse leadResponse = leadMapper.toDTO(updatedLead);
+
+        return ResponseEntity.ok(leadResponse);
     }
 
     @Override

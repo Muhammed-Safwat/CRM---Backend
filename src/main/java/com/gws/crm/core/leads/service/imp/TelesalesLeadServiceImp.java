@@ -17,8 +17,9 @@ import com.gws.crm.core.leads.entity.TeleSalesLead;
 import com.gws.crm.core.leads.mapper.PhoneNumberMapper;
 import com.gws.crm.core.leads.mapper.TeleSalesLeadMapper;
 import com.gws.crm.core.leads.repository.BaseLeadRepository;
+import com.gws.crm.core.leads.repository.PhoneNumberRepository;
 import com.gws.crm.core.leads.repository.TeleSalesLeadRepository;
-import com.gws.crm.core.leads.service.TeleSalesLeadService;
+import com.gws.crm.core.leads.service.TelesalesLeadService;
 import com.gws.crm.core.lookups.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +27,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -41,7 +44,7 @@ import static com.gws.crm.core.leads.specification.TeleSalesLeadSpecification.fi
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class TeleSalesLeadServiceImp implements TeleSalesLeadService {
+public class TelesalesLeadServiceImp implements TelesalesLeadService {
 
     private final TeleSalesLeadRepository leadRepository;
     private final BaseLeadRepository baseLeadRepository;
@@ -56,10 +59,16 @@ public class TeleSalesLeadServiceImp implements TeleSalesLeadService {
     private final TeleSalesLeadMapper leadMapper;
     private final PhoneNumberMapper phoneNumberMapper;
     private final ExcelSheetService excelSheetService;
+    private final PhoneNumberRepository phoneNumberRepository;
+    private final  BrokerRepository brokerRepository;
+
 
     @Override
     public ResponseEntity<?> getLeadDetails(long leadId, Transition transition) {
-        return null;
+        TeleSalesLead lead = leadRepository.findById(leadId)
+                .orElseThrow(NotFoundResourceException::new);
+        LeadResponse leadResponse  = leadMapper.toDTO(lead);
+        return success(leadResponse);
     }
 
 
@@ -81,6 +90,8 @@ public class TeleSalesLeadServiceImp implements TeleSalesLeadService {
                 .budget(leadDTO.getBudget())
                 .note(leadDTO.getNote())
                 .deleted(false)
+                .campaignId(leadDTO.getCampaignId())
+                .lastStage(leadDTO.getLastStage())
                 .creator(creator);
 
         if (!transition.getRole().equals("ADMIN")) {
@@ -114,6 +125,10 @@ public class TeleSalesLeadServiceImp implements TeleSalesLeadService {
             leadBuilder.project(projectRepository.getReferenceById(leadDTO.getProject()));
         }
 
+        if(leadDTO.getBroker() != null){
+            leadBuilder.broker(brokerRepository.getReferenceById(leadDTO.getBroker()));
+        }
+
         TeleSalesLead lead = leadBuilder.build();
         List<PhoneNumber> phoneNumbers = phoneNumberMapper.toEntityList(leadDTO.getPhoneNumbers(), lead);
         lead.setPhoneNumbers(phoneNumbers);
@@ -123,10 +138,78 @@ public class TeleSalesLeadServiceImp implements TeleSalesLeadService {
     }
 
     @Override
+    @Transactional
+    @Modifying
     public ResponseEntity<?> updateLead(AddLeadDTO leadDTO, Transition transition) {
-        return null;
-    }
+        TeleSalesLead existingLead = leadRepository.findById(leadDTO.getId())
+                .orElseThrow(NotFoundResourceException::new);
 
+        User creator = userRepository.findById(transition.getUserId()).orElseThrow(NotFoundResourceException::new);
+        Admin admin = null;
+
+        if (!transition.getRole().equals("ADMIN")) {
+            admin = employeeRepository.getReferenceById(transition.getUserId()).getAdmin();
+            existingLead.setAdmin(admin);
+        } else {
+            existingLead.setAdmin((Admin) creator);
+        }
+
+        existingLead.setName(leadDTO.getName());
+        existingLead.setStatus(leadStatusRepository.getReferenceById(leadDTO.getStatus()));
+        existingLead.setCountry(leadDTO.getCountry());
+        existingLead.setContactTime(leadDTO.getContactTime());
+        existingLead.setWhatsappNumber(leadDTO.getWhatsappNumber());
+        existingLead.setEmail(leadDTO.getEmail());
+        existingLead.setJobTitle(leadDTO.getJobTitle());
+        existingLead.setUpdatedAt(LocalDateTime.now());
+        existingLead.setBudget(leadDTO.getBudget());
+        existingLead.setNote(leadDTO.getNote());
+        existingLead.setDeleted(false);
+        existingLead.setCampaignId(leadDTO.getCampaignId());
+        existingLead.setLastStage(leadDTO.getLastStage());
+        existingLead.setCreator(creator);
+
+        if (leadDTO.getInvestmentGoal() != null) {
+            existingLead.setInvestmentGoal(investmentGoalRepository.getReferenceById(leadDTO.getInvestmentGoal()));
+        }
+
+        if (leadDTO.getCommunicateWay() != null) {
+            existingLead.setCommunicateWay(communicateWayRepository.getReferenceById(leadDTO.getCommunicateWay()));
+        }
+
+        if (leadDTO.getCancelReason() != null) {
+            existingLead.setCancelReasons(cancelReasonsRepository.getReferenceById(leadDTO.getCancelReason()));
+        }
+
+        if (leadDTO.getSalesRep() != null) {
+            existingLead.setSalesRep(employeeRepository.getReferenceById(leadDTO.getSalesRep()));
+        }
+
+        if (leadDTO.getChannel() != null) {
+            existingLead.setChannel(channelRepository.getReferenceById(leadDTO.getChannel()));
+        }
+
+        if (leadDTO.getProject() != null) {
+            existingLead.setProject(projectRepository.getReferenceById(leadDTO.getProject()));
+        }
+
+        if (leadDTO.getBroker() != null) {
+            existingLead.setBroker(brokerRepository.getReferenceById(leadDTO.getBroker()));
+        }
+
+        phoneNumberRepository.deleteAllById(existingLead.getPhoneNumbers().stream().map(PhoneNumber::getId).toList());
+
+        existingLead.getPhoneNumbers().clear();
+
+        List<PhoneNumber> updatedPhoneNumbers = phoneNumberMapper.toEntityList(leadDTO.getPhoneNumbers(), existingLead);
+        existingLead.setPhoneNumbers(updatedPhoneNumbers);
+
+        TeleSalesLead updatedLead = leadRepository.save(existingLead);
+
+        LeadResponse leadResponse = leadMapper.toDTO(updatedLead);
+
+        return ResponseEntity.ok(leadResponse);
+    }
     @Override
     public ResponseEntity<?> deleteLead(long leadId, Transition transition) {
         baseLeadRepository.deleteLead(leadId);

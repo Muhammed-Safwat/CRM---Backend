@@ -60,6 +60,13 @@ public class TeleSalesLeadMapper {
                         .build()
                 : null;
 
+        LookupDTO brokerDTO = lead.getBroker() != null ?
+                LookupDTO.builder()
+                        .id(lead.getBroker().getId())
+                        .name(lead.getBroker().getName())
+                        .build()
+                : null;
+
         ProjectDTO projectDTO = lead.getProject() != null ?
                 ProjectDTO.builder()
                         .id(lead.getProject().getId())
@@ -73,12 +80,14 @@ public class TeleSalesLeadMapper {
                         .name(lead.getCreator().getName())
                         .build()
                 : null;
+
         LeadStatusDto leadStatusDto = lead.getStatus() != null ?
                 LeadStatusDto.builder()
                         .name(lead.getStatus().getName())
                         .id(lead.getStatus().getId())
                         .build()
                 : null;
+
         return LeadResponse.builder()
                 .id(lead.getId())
                 .phoneNumbers(phoneNumberMapper.toDtoList(lead.getPhoneNumbers()))
@@ -101,6 +110,9 @@ public class TeleSalesLeadMapper {
                 .project(projectDTO)
                 .deleted(lead.isDeleted())
                 .creator(creatorDTO)
+                .broker(brokerDTO)
+                .campaignId(lead.getCampaignId())
+                .lastStage(lead.getLastStage())
                 .build();
     }
 
