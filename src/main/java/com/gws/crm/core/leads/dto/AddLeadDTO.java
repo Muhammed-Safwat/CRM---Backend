@@ -42,9 +42,9 @@ public class AddLeadDTO {
 
     private Long project;
 
-    private Long type ;
+    private Long type;
 
-    private Long broker ;
+    private Long broker;
 
     private String campaignId;
 

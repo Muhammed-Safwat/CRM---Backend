@@ -10,44 +10,31 @@ import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.leads.dto.AddLeadDTO;
 import com.gws.crm.core.leads.dto.ImportLeadDTO;
-import com.gws.crm.core.leads.dto.LeadCriteria;
 import com.gws.crm.core.leads.dto.LeadResponse;
 import com.gws.crm.core.leads.entity.PhoneNumber;
 import com.gws.crm.core.leads.entity.TeleSalesLead;
 import com.gws.crm.core.leads.mapper.PhoneNumberMapper;
 import com.gws.crm.core.leads.mapper.TeleSalesLeadMapper;
-import com.gws.crm.core.leads.repository.BaseLeadRepository;
 import com.gws.crm.core.leads.repository.PhoneNumberRepository;
 import com.gws.crm.core.leads.repository.TeleSalesLeadRepository;
-import com.gws.crm.core.leads.service.TelesalesLeadService;
 import com.gws.crm.core.lookups.repository.*;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.gws.crm.common.handler.ApiResponseHandler.created;
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
 import static com.gws.crm.common.utils.ExcelFileUtils.generateHeader;
-import static com.gws.crm.core.leads.specification.TeleSalesLeadSpecification.filter;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
-public class TelesalesLeadServiceImp implements TelesalesLeadService {
+public class TelesalesLeadService extends SalesLeadServiceImp<TeleSalesLead, AddLeadDTO> {
 
     private final TeleSalesLeadRepository leadRepository;
-    private final BaseLeadRepository baseLeadRepository;
     private final LeadStatusRepository leadStatusRepository;
     private final InvestmentGoalRepository investmentGoalRepository;
     private final CommunicateWayRepository communicateWayRepository;
@@ -60,20 +47,30 @@ public class TelesalesLeadServiceImp implements TelesalesLeadService {
     private final PhoneNumberMapper phoneNumberMapper;
     private final ExcelSheetService excelSheetService;
     private final PhoneNumberRepository phoneNumberRepository;
-    private final  BrokerRepository brokerRepository;
+    private final BrokerRepository brokerRepository;
 
 
-    @Override
-    public ResponseEntity<?> getLeadDetails(long leadId, Transition transition) {
-        TeleSalesLead lead = leadRepository.findById(leadId)
-                .orElseThrow(NotFoundResourceException::new);
-        LeadResponse leadResponse  = leadMapper.toDTO(lead);
-        return success(leadResponse);
+    protected TelesalesLeadService(TeleSalesLeadRepository leadRepository, LeadStatusRepository leadStatusRepository
+            , InvestmentGoalRepository investmentGoalRepository, CommunicateWayRepository communicateWayRepository, CancelReasonsRepository cancelReasonsRepository, EmployeeRepository employeeRepository, ChannelRepository channelRepository, ProjectRepository projectRepository, UserRepository userRepository, TeleSalesLeadMapper leadMapper, PhoneNumberMapper phoneNumberMapper, ExcelSheetService excelSheetService, PhoneNumberRepository phoneNumberRepository, BrokerRepository brokerRepository) {
+        super(leadRepository);
+        this.leadRepository = leadRepository;
+        this.leadStatusRepository = leadStatusRepository;
+        this.investmentGoalRepository = investmentGoalRepository;
+        this.communicateWayRepository = communicateWayRepository;
+        this.cancelReasonsRepository = cancelReasonsRepository;
+        this.employeeRepository = employeeRepository;
+        this.channelRepository = channelRepository;
+        this.projectRepository = projectRepository;
+        this.userRepository = userRepository;
+        this.leadMapper = leadMapper;
+        this.phoneNumberMapper = phoneNumberMapper;
+        this.excelSheetService = excelSheetService;
+        this.phoneNumberRepository = phoneNumberRepository;
+        this.brokerRepository = brokerRepository;
     }
 
-
     @Override
-    public ResponseEntity<?> addLead(AddLeadDTO leadDTO, Transition transition) {
+    protected TeleSalesLead mapDtoToEntity(AddLeadDTO leadDTO, Transition transition) {
         User creator = userRepository.findById(transition.getUserId()).orElseThrow(NotFoundResourceException::new);
         Admin admin = null;
 
@@ -125,22 +122,28 @@ public class TelesalesLeadServiceImp implements TelesalesLeadService {
             leadBuilder.project(projectRepository.getReferenceById(leadDTO.getProject()));
         }
 
-        if(leadDTO.getBroker() != null){
+        if (leadDTO.getBroker() != null) {
             leadBuilder.broker(brokerRepository.getReferenceById(leadDTO.getBroker()));
         }
 
         TeleSalesLead lead = leadBuilder.build();
         List<PhoneNumber> phoneNumbers = phoneNumberMapper.toEntityList(leadDTO.getPhoneNumbers(), lead);
         lead.setPhoneNumbers(phoneNumbers);
-        TeleSalesLead savedLead = leadRepository.save(lead);
-        LeadResponse leadResponse = leadMapper.toDTO(savedLead);
-        return created(leadResponse);
+        return lead;
     }
 
     @Override
-    @Transactional
-    @Modifying
-    public ResponseEntity<?> updateLead(AddLeadDTO leadDTO, Transition transition) {
+    protected LeadResponse mapEntityToDto(TeleSalesLead entity) {
+        return leadMapper.toDTO(entity);
+    }
+
+    @Override
+    protected Page<LeadResponse> mapEntityToDto(Page<TeleSalesLead> entityPage) {
+        return leadMapper.toDTOPage(entityPage);
+    }
+
+    @Override
+    protected void updateEntityFromDto(TeleSalesLead entity, AddLeadDTO leadDTO, Transition transition) {
         TeleSalesLead existingLead = leadRepository.findById(leadDTO.getId())
                 .orElseThrow(NotFoundResourceException::new);
 
@@ -204,32 +207,8 @@ public class TelesalesLeadServiceImp implements TelesalesLeadService {
         List<PhoneNumber> updatedPhoneNumbers = phoneNumberMapper.toEntityList(leadDTO.getPhoneNumbers(), existingLead);
         existingLead.setPhoneNumbers(updatedPhoneNumbers);
 
-        TeleSalesLead updatedLead = leadRepository.save(existingLead);
-
-        LeadResponse leadResponse = leadMapper.toDTO(updatedLead);
-
-        return ResponseEntity.ok(leadResponse);
-    }
-    @Override
-    public ResponseEntity<?> deleteLead(long leadId, Transition transition) {
-        baseLeadRepository.deleteLead(leadId);
-        return success("Lead Deleted Successfully");
     }
 
-    @Override
-    public ResponseEntity<?> getLeads(LeadCriteria leadCriteria, Transition transition) {
-        Specification<TeleSalesLead> leadSpecification = filter(leadCriteria, transition);
-        Pageable pageable = PageRequest.of(leadCriteria.getPage(), leadCriteria.getSize());
-        Page<TeleSalesLead> leadPage = leadRepository.findAll(leadSpecification, pageable);
-        Page<LeadResponse> leadResponses = leadMapper.toDTOPage(leadPage);
-        return success(leadResponses);
-    }
-
-    @Override
-    public ResponseEntity<?> restoreLead(Long leadId, Transition transition) {
-        baseLeadRepository.restoreLead(leadId);
-        return success("Lead restored Successfully");
-    }
 
     @Override
     public ResponseEntity<?> generateExcel(Transition transition) {
@@ -272,6 +251,7 @@ public class TelesalesLeadServiceImp implements TelesalesLeadService {
                     .whatsappNumber(leadDTO.getWhatsappNumber())
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now())
+                    .actions(new ArrayList<>())
                     .status(leadStatusRepository.findByName(leadDTO.getStatus()));
 
             if (leadDTO.getInvestmentGoal() != null) {

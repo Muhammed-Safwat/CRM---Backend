@@ -141,7 +141,7 @@ public class ResaleServiceImp implements ResaleService {
 
     @Override
     public ResponseEntity<?> importResale(List<ImportResaleDTO> resales, Transition transition) {
-        log.info("Resale List {}",resales);
+        log.info("Resale List {}", resales);
 
         List<Resale> resaleList = createResaleList(resales, transition);
         resaleRepository.saveAll(resaleList);
@@ -164,7 +164,7 @@ public class ResaleServiceImp implements ResaleService {
 
         importResaleDTOS.forEach(resaleDTO -> {
             ResaleStatus resaleStatus = resaleStatusRepository.findByName(resaleDTO.getStatus());
-            log.info("status {}",resaleStatus);
+            log.info("status {}", resaleStatus);
             Resale.ResaleBuilder resaleBuilder = Resale.builder()
                     .name(resaleDTO.getName())
                     .status(resaleStatus)

@@ -5,5 +5,5 @@ import com.gws.crm.core.notification.services.NotificationService;
 
 public interface Subscriber {
 
-    void notify(EventType eventType , String message, NotificationService notificationService);
+    void notify(EventType eventType, String message, NotificationService notificationService);
 }

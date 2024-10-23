@@ -1,8 +1,7 @@
 package com.gws.crm.core.leads.specification;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.leads.dto.LeadCriteria;
-import com.gws.crm.core.leads.entity.Lead;
+import com.gws.crm.core.leads.dto.SalesLeadCriteria;
 import com.gws.crm.core.leads.entity.TeleSalesLead;
 import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
@@ -14,39 +13,39 @@ import java.util.List;
 
 public class TeleSalesLeadSpecification {
 
-    public static Specification<TeleSalesLead> filter(LeadCriteria leadCriteria, Transition transition) {
+    public static Specification<TeleSalesLead> filter(SalesLeadCriteria salesLeadCriteria, Transition transition) {
         List<Specification<TeleSalesLead>> specs = new ArrayList<>();
 
-        if (leadCriteria != null) {
-            specs.add(fullTextSearch(leadCriteria.getKeyword()));
-            specs.add(filterByStatus(leadCriteria.getStatus()));
-            specs.add(filterByInvestmentGoals(leadCriteria.getInvestmentGoal()));
-            specs.add(filterByCommunicateWays(leadCriteria.getCommunicateWay()));
-            specs.add(filterByCancelReasons(leadCriteria.getCancelReasons()));
-            specs.add(filterByChannels(leadCriteria.getChannel()));
-            specs.add(filterByBrokers(leadCriteria.getBroker()));
-            specs.add(filterByProjects(leadCriteria.getProject()));
-            specs.add(filterByCountry(leadCriteria.getCountry()));
-            specs.add(filterByDeleted(leadCriteria.isDeleted()));
-            specs.add(filterByCampaignId(leadCriteria.getCampaignId()));
+        if (salesLeadCriteria != null) {
+            specs.add(fullTextSearch(salesLeadCriteria.getKeyword()));
+            specs.add(filterByStatus(salesLeadCriteria.getStatus()));
+            specs.add(filterByInvestmentGoals(salesLeadCriteria.getInvestmentGoal()));
+            specs.add(filterByCommunicateWays(salesLeadCriteria.getCommunicateWay()));
+            specs.add(filterByCancelReasons(salesLeadCriteria.getCancelReasons()));
+            specs.add(filterByChannels(salesLeadCriteria.getChannel()));
+            specs.add(filterByBrokers(salesLeadCriteria.getBroker()));
+            specs.add(filterByProjects(salesLeadCriteria.getProject()));
+            specs.add(filterByCountry(salesLeadCriteria.getCountry()));
+            specs.add(filterByDeleted(salesLeadCriteria.isDeleted()));
+            specs.add(filterByCampaignId(salesLeadCriteria.getCampaignId()));
             // specs.add(filterByLastActionDate(leadCriteria.getLastActionDate()));
             // specs.add(filterByLastActionNoAction(leadCriteria.getLastActionNoAction()));
             // specs.add(filterByStageDate(leadCriteria.getStageDate()));
             // specs.add(filterByActionDate(leadCriteria.getActionDate()));
             // specs.add(filterByAssignDate(leadCriteria.getAssignDate()));
-            specs.add(filterByBudget(leadCriteria.getBudget()));
+            specs.add(filterByBudget(salesLeadCriteria.getBudget()));
             // specs.add(filterByHasPayment(leadCriteria.getHasPayment()));
             // specs.add(filterByNoAnswers(leadCriteria.getNoAnswers()));
-            specs.add(filterByCreatedAt(leadCriteria.getCreatedAt()));
-            specs.add(filterByUser(leadCriteria, transition));
-            specs.add(filterByCreator(leadCriteria.getCreator()));
+            specs.add(filterByCreatedAt(salesLeadCriteria.getCreatedAt()));
+            specs.add(filterByUser(salesLeadCriteria, transition));
+            specs.add(filterByCreator(salesLeadCriteria.getCreator()));
         }
 
         return Specification.allOf(specs);
     }
 
-    private static Specification<TeleSalesLead> filterByUser(LeadCriteria leadCriteria, Transition transition) {
-        if (leadCriteria.isMyLead()) {
+    private static Specification<TeleSalesLead> filterByUser(SalesLeadCriteria salesLeadCriteria, Transition transition) {
+        if (salesLeadCriteria.isMyLead()) {
             return filterByCreator(transition.getUserId());
         } else if (transition.getRole().equals("ADMIN")) {
             return filterByAdminId(transition.getUserId());

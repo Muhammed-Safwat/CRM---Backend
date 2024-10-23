@@ -2,6 +2,7 @@ package com.gws.crm.core.employee.entity;
 
 
 import com.gws.crm.core.leads.entity.BaseLead;
+import com.gws.crm.core.leads.entity.SalesLead;
 import com.gws.crm.core.lookups.entity.CallOutcome;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -24,7 +25,7 @@ public class ActionOnLead extends UserAction {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(nullable = false)
-    private BaseLead baseLead ;
+    private SalesLead lead;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(nullable = true)
@@ -34,7 +35,7 @@ public class ActionOnLead extends UserAction {
 
     private String cancellationReason;
 
-    private String stage ;
+    private String stage;
 
     private LocalDateTime callBackTime;
 

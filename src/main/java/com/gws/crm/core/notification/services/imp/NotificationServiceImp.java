@@ -1,6 +1,5 @@
 package com.gws.crm.core.notification.services.imp;
 
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
@@ -9,7 +8,6 @@ import com.gws.crm.core.admin.entity.EventType;
 import com.gws.crm.core.notification.dtos.NotificationRequest;
 import com.gws.crm.core.notification.services.NotificationService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -33,6 +31,7 @@ public class NotificationServiceImp implements NotificationService {
     public ResponseEntity<?> countClientNotification() {
         return null;
     }
+
     public void sendNotification() {
         Notification notification = Notification
                 .builder()
@@ -55,6 +54,7 @@ public class NotificationServiceImp implements NotificationService {
             log.error("Error sending FCM message: {}", e.getMessage(), e);
         }
     }
+
     @Override
     public ResponseEntity<String> sendNot(NotificationRequest request) throws FirebaseMessagingException {
         sendNotification();
@@ -71,13 +71,13 @@ public class NotificationServiceImp implements NotificationService {
             Message message = Message.builder()
                     .setToken("fWcvSwCqS3WIrQZwv8RwHQ:APA91bG44kFw9DfE-gEEAQrc7YfdOmqujpC_XQAfh6UG58oDxLCVbxJQl6OBWv5EbhQE3LFB36dW2Zb80xxtlQAAS2HRMDsuMrXpv8QPZpIM5LEjrAaMb_pKfGfh0Xk3SDdc9bSGZniR")
                     .setNotification(notification)
-                    .putData("type","Test Notification Type")
-                    .putData("link","Test Notification link")
+                    .putData("type", "Test Notification Type")
+                    .putData("link", "Test Notification link")
                     .build();
 
             try {
                 String response = FirebaseMessaging.getInstance().send(message);
-                log.info("instance not null ",response);
+                log.info("instance not null ", response);
                 log.info("Notification sent successfully, response: " + response);
                 return ResponseEntity.ok(response);
             } catch (FirebaseMessagingException e) {

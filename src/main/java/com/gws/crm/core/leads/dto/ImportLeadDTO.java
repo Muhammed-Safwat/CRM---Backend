@@ -22,5 +22,5 @@ public class ImportLeadDTO {
     private String salesRep;
     private String status;
     private String budget;
-    private String type ;
+    private String type;
 }

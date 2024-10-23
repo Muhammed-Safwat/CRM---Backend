@@ -1,8 +1,8 @@
 package com.gws.crm.core.leads.specification;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.leads.dto.LeadCriteria;
-import com.gws.crm.core.leads.entity.Lead;
+import com.gws.crm.core.leads.dto.SalesLeadCriteria;
+import com.gws.crm.core.leads.entity.SalesLead;
 import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
@@ -11,40 +11,40 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LeadSpecification {
+public class SalesLeadSpecification<T extends SalesLead> {
 
-    public static Specification<Lead> filter(LeadCriteria leadCriteria, Transition transition) {
-        List<Specification<Lead>> specs = new ArrayList<>();
+    public static <T extends SalesLead> Specification<T> filter(SalesLeadCriteria salesLeadCriteria, Transition transition) {
+        List<Specification<T>> specs = new ArrayList<>();
 
-        if (leadCriteria != null) {
-            specs.add(fullTextSearch(leadCriteria.getKeyword()));
-            specs.add(filterByStatus(leadCriteria.getStatus()));
-            specs.add(filterByInvestmentGoals(leadCriteria.getInvestmentGoal()));
-            specs.add(filterByCommunicateWays(leadCriteria.getCommunicateWay()));
-            specs.add(filterByCancelReasons(leadCriteria.getCancelReasons()));
-            specs.add(filterByChannels(leadCriteria.getChannel()));
-            specs.add(filterByBrokers(leadCriteria.getBroker()));
-            specs.add(filterByProjects(leadCriteria.getProject()));
-            specs.add(filterByCountry(leadCriteria.getCountry()));
-            specs.add(filterByDeleted(leadCriteria.isDeleted()));
-            specs.add(filterByCampaignId(leadCriteria.getCampaignId()));
+        if (salesLeadCriteria != null) {
+            specs.add(fullTextSearch(salesLeadCriteria.getKeyword()));
+            specs.add(filterByStatus(salesLeadCriteria.getStatus()));
+            specs.add(filterByInvestmentGoals(salesLeadCriteria.getInvestmentGoal()));
+            specs.add(filterByCommunicateWays(salesLeadCriteria.getCommunicateWay()));
+            specs.add(filterByCancelReasons(salesLeadCriteria.getCancelReasons()));
+            specs.add(filterByChannels(salesLeadCriteria.getChannel()));
+            specs.add(filterByBrokers(salesLeadCriteria.getBroker()));
+            specs.add(filterByProjects(salesLeadCriteria.getProject()));
+            specs.add(filterByCountry(salesLeadCriteria.getCountry()));
+            specs.add(filterByDeleted(salesLeadCriteria.isDeleted()));
+            specs.add(filterByCampaignId(salesLeadCriteria.getCampaignId()));
             // specs.add(filterByLastActionDate(leadCriteria.getLastActionDate()));
             // specs.add(filterByLastActionNoAction(leadCriteria.getLastActionNoAction()));
             // specs.add(filterByStageDate(leadCriteria.getStageDate()));
             // specs.add(filterByActionDate(leadCriteria.getActionDate()));
             // specs.add(filterByAssignDate(leadCriteria.getAssignDate()));
-            specs.add(filterByBudget(leadCriteria.getBudget()));
+            specs.add(filterByBudget(salesLeadCriteria.getBudget()));
             // specs.add(filterByHasPayment(leadCriteria.getHasPayment()));
             // specs.add(filterByNoAnswers(leadCriteria.getNoAnswers()));
-            specs.add(filterByCreatedAt(leadCriteria.getCreatedAt()));
-            specs.add(filterByUser(leadCriteria, transition));
-            specs.add(filterByCreator(leadCriteria.getCreator()));
+            specs.add(filterByCreatedAt(salesLeadCriteria.getCreatedAt()));
+            specs.add(filterByUser(salesLeadCriteria, transition));
+            specs.add(filterByCreator(salesLeadCriteria.getCreator()));
         }
 
         return Specification.allOf(specs);
     }
 
-    private static Specification<Lead> filterByUser(LeadCriteria leadCriteria, Transition transition) {
+    private static <T extends SalesLead> Specification<T> filterByUser(SalesLeadCriteria leadCriteria, Transition transition) {
         if (leadCriteria.isMyLead()) {
             return filterByCreator(transition.getUserId());
         } else if (transition.getRole().equals("ADMIN")) {
@@ -54,7 +54,7 @@ public class LeadSpecification {
     }
 
     // Full text search specification
-    private static Specification<Lead> fullTextSearch(String keyword) {
+    private static <T extends SalesLead> Specification<T> fullTextSearch(String keyword) {
         return (root, query, criteriaBuilder) -> {
             if (!StringUtils.hasText(keyword)) {
                 return criteriaBuilder.conjunction();
@@ -73,7 +73,7 @@ public class LeadSpecification {
     }
 
 
-    private static Specification<Lead> filterByStatus(Long statusId) {
+    private static <T extends SalesLead> Specification<T> filterByStatus(Long statusId) {
         return (root, query, criteriaBuilder) -> {
             if (statusId == null || statusId <= 0) {
                 return null;
@@ -82,7 +82,7 @@ public class LeadSpecification {
         };
     }
 
-    private static Specification<Lead> filterByInvestmentGoals(List<Long> investmentGoals) {
+    private static <T extends SalesLead> Specification<T> filterByInvestmentGoals(List<Long> investmentGoals) {
         return (root, query, criteriaBuilder) -> {
             if (investmentGoals == null || investmentGoals.isEmpty()) {
                 return criteriaBuilder.conjunction();
@@ -92,7 +92,7 @@ public class LeadSpecification {
         };
     }
 
-    private static Specification<Lead> filterByCommunicateWays(List<Long> communicateWays) {
+    private static <T extends SalesLead> Specification<T> filterByCommunicateWays(List<Long> communicateWays) {
         return (root, query, criteriaBuilder) -> {
             if (communicateWays == null || communicateWays.isEmpty()) {
                 return criteriaBuilder.conjunction();
@@ -102,7 +102,7 @@ public class LeadSpecification {
         };
     }
 
-    private static Specification<Lead> filterByCancelReasons(List<Long> cancelReasons) {
+    private static <T extends SalesLead> Specification<T> filterByCancelReasons(List<Long> cancelReasons) {
         return (root, query, criteriaBuilder) -> {
             if (cancelReasons == null || cancelReasons.isEmpty()) {
                 return criteriaBuilder.conjunction();
@@ -112,7 +112,7 @@ public class LeadSpecification {
         };
     }
 
-    private static Specification<Lead> filterBySalesReps(List<Long> salesReps) {
+    private static <T extends SalesLead> Specification<T> filterBySalesReps(List<Long> salesReps) {
         return (root, query, criteriaBuilder) -> {
             if (salesReps == null || salesReps.isEmpty()) {
                 return criteriaBuilder.conjunction();
@@ -122,7 +122,7 @@ public class LeadSpecification {
         };
     }
 
-    private static Specification<Lead> filterByChannels(List<Long> channels) {
+    private static <T extends SalesLead> Specification<T> filterByChannels(List<Long> channels) {
         return (root, query, criteriaBuilder) -> {
             if (channels == null || channels.isEmpty()) {
                 return criteriaBuilder.conjunction();
@@ -132,7 +132,7 @@ public class LeadSpecification {
         };
     }
 
-    private static Specification<Lead> filterByBrokers(List<Long> brokers) {
+    private static <T extends SalesLead> Specification<T> filterByBrokers(List<Long> brokers) {
         return (root, query, criteriaBuilder) -> {
             if (brokers == null || brokers.isEmpty()) {
                 return criteriaBuilder.conjunction();
@@ -142,7 +142,7 @@ public class LeadSpecification {
         };
     }
 
-    private static Specification<Lead> filterByProjects(List<Long> projects) {
+    private static <T extends SalesLead> Specification<T> filterByProjects(List<Long> projects) {
         return (root, query, criteriaBuilder) -> {
             if (projects == null || projects.isEmpty()) {
                 return criteriaBuilder.conjunction();
@@ -152,7 +152,7 @@ public class LeadSpecification {
         };
     }
 
-    private static Specification<Lead> filterByCountry(String country) {
+    private static <T extends SalesLead> Specification<T> filterByCountry(String country) {
         return (root, query, criteriaBuilder) -> {
             if (!StringUtils.hasText(country)) {
                 return null;
@@ -161,7 +161,7 @@ public class LeadSpecification {
         };
     }
 
-    private static Specification<Lead> filterByCreator(Long creatorId) {
+    private static <T extends SalesLead> Specification<T> filterByCreator(Long creatorId) {
         return (root, query, criteriaBuilder) -> {
             if (creatorId == null) {
                 return null;
@@ -170,11 +170,11 @@ public class LeadSpecification {
         };
     }
 
-    private static Specification<Lead> filterByDeleted(boolean deleted) {
+    private static <T extends SalesLead> Specification<T> filterByDeleted(boolean deleted) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("deleted"), deleted);
     }
 
-    private static Specification<Lead> filterByCampaignId(String campaignId) {
+    private static <T extends SalesLead> Specification<T> filterByCampaignId(String campaignId) {
         return (root, query, criteriaBuilder) -> {
             if (!StringUtils.hasText(campaignId)) {
                 return null;
@@ -184,7 +184,7 @@ public class LeadSpecification {
     }
 
     /*
-      private static Specification<Lead> filterByLastActionDate(LocalDate lastActionDate) {
+      private static <T extends SalesLead>  Specification<SalesLead> filterByLastActionDate(LocalDate lastActionDate) {
           return (root, query, criteriaBuilder) -> {
               if (lastActionDate == null) {
                   return null;
@@ -193,7 +193,7 @@ public class LeadSpecification {
           };
       }
 
-      private static Specification<Lead> filterByLastActionNoAction(LocalDate lastActionNoAction) {
+      private static <T extends SalesLead>  Specification<SalesLead> filterByLastActionNoAction(LocalDate lastActionNoAction) {
           return (root, query, criteriaBuilder) -> {
               if (lastActionNoAction == null) {
                   return null;
@@ -203,7 +203,7 @@ public class LeadSpecification {
       }
 
 
-          private static Specification<Lead> filterByStageDate(LocalDate stageDate) {
+          private static <T extends SalesLead>  Specification<SalesLead> filterByStageDate(LocalDate stageDate) {
               return (root, query, criteriaBuilder) -> {
                   if (stageDate == null) {
                       return null;
@@ -212,7 +212,7 @@ public class LeadSpecification {
               };
           }
 
-          private static Specification<Lead> filterByActionDate(LocalDate actionDate) {
+          private static <T extends SalesLead>  Specification<SalesLead> filterByActionDate(LocalDate actionDate) {
               return (root, query, criteriaBuilder) -> {
                   if (actionDate == null) {
                       return null;
@@ -221,7 +221,7 @@ public class LeadSpecification {
               };
           }
 
-          private static Specification<Lead> filterByAssignDate(LocalDate assignDate) {
+          private static <T extends SalesLead>  Specification<SalesLead> filterByAssignDate(LocalDate assignDate) {
               return (root, query, criteriaBuilder) -> {
                   if (assignDate == null) {
                       return null;
@@ -230,7 +230,7 @@ public class LeadSpecification {
               };
           }
       */
-    private static Specification<Lead> filterByBudget(String budget) {
+    private static <T extends SalesLead> Specification<T> filterByBudget(String budget) {
         return (root, query, criteriaBuilder) -> {
             if (!StringUtils.hasText(budget)) {
                 return null;
@@ -240,7 +240,7 @@ public class LeadSpecification {
     }
 
     /*
-        private static Specification<Lead> filterByHasPayment(String hasPayment) {
+        private static <T extends SalesLead>  Specification<SalesLead> filterByHasPayment(String hasPayment) {
             return (root, query, criteriaBuilder) -> {
                 if (!StringUtils.hasText(hasPayment)) {
                     return null;
@@ -249,7 +249,7 @@ public class LeadSpecification {
             };
         }
 
-        private static Specification<Lead> filterByNoAnswers(String noAnswers) {
+        private static <T extends SalesLead>  Specification<SalesLead> filterByNoAnswers(String noAnswers) {
             return (root, query, criteriaBuilder) -> {
                 if (!StringUtils.hasText(noAnswers)) {
                     return null;
@@ -258,7 +258,7 @@ public class LeadSpecification {
             };
         }
     */
-    private static Specification<Lead> filterByCreatedAt(LocalDate createdAt) {
+    private static <T extends SalesLead> Specification<T> filterByCreatedAt(LocalDate createdAt) {
         return (root, query, criteriaBuilder) -> {
             if (createdAt == null) {
                 return null;
@@ -267,7 +267,7 @@ public class LeadSpecification {
         };
     }
 
-    private static Specification<Lead> filterByAdminId(Long id) {
+    private static <T extends SalesLead> Specification<T> filterByAdminId(Long id) {
         return (root, query, criteriaBuilder) -> {
             if (id == null || id == 0) {
                 return null;

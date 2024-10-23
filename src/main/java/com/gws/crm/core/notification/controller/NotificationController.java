@@ -9,8 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/notifications")
 @RequiredArgsConstructor
@@ -28,7 +26,7 @@ public class NotificationController {
 
     @GetMapping
     public ResponseEntity<?> getAllNotification(@RequestParam("page") int page,
-                                              @RequestParam("size") int size) {
+                                                @RequestParam("size") int size) {
         return notificationService.getAllNotification(page, size);
     }
 

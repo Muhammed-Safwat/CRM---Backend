@@ -25,8 +25,8 @@ import java.util.List;
 @Getter
 @Setter
 @SuperBuilder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class BaseLead {
 
     @Id

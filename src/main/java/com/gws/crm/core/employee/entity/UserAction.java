@@ -2,7 +2,10 @@ package com.gws.crm.core.employee.entity;
 
 import com.gws.crm.authentication.entity.User;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
@@ -31,6 +34,7 @@ public abstract class UserAction {
     private User creator;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 20)
     private ActionType type;
 
     @Column(columnDefinition = "TEXT")

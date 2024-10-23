@@ -4,8 +4,6 @@ package com.gws.crm.core.admin.entity;
 import com.gws.crm.authentication.entity.User;
 import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.leads.entity.BaseLead;
-import com.gws.crm.core.leads.entity.Lead;
-import com.gws.crm.core.notification.entities.Subscriber;
 import com.gws.crm.core.notification.services.NotificationService;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -20,7 +18,6 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.List;
-import java.util.Map;
 
 @Entity
 @Getter

@@ -7,7 +7,7 @@ import java.util.List;
 
 
 @Data
-public class LeadCriteria {
+public class SalesLeadCriteria {
     private String keyword;
     private Long id;
     private Long status;
@@ -32,7 +32,7 @@ public class LeadCriteria {
     private String hasPayment;
     private String noAnswers;
     private LocalDate createdAt;
-    private Long type ;
+    private Long type;
     private int page;
     private int size;
 }

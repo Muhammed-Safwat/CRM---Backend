@@ -39,6 +39,6 @@ public class Employee extends User {
 
     @Override
     public void notify(EventType eventType, String message, NotificationService notificationService) {
-        notificationService.notifyUser(eventType,message,getName(),getId());
+        notificationService.notifyUser(eventType, message, getName(), getId());
     }
 }

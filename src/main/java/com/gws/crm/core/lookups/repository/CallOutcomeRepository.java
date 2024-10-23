@@ -1,6 +1,5 @@
 package com.gws.crm.core.lookups.repository;
 
-import com.gws.crm.core.lookups.entity.Broker;
 import com.gws.crm.core.lookups.entity.CallOutcome;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

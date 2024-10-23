@@ -3,7 +3,6 @@ package com.gws.crm.core.leads.mapper;
 import com.gws.crm.core.employee.dto.EmployeeSimpleDTO;
 import com.gws.crm.core.leads.dto.LeadResponse;
 import com.gws.crm.core.leads.dto.LeadStatusDto;
-import com.gws.crm.core.leads.entity.Lead;
 import com.gws.crm.core.leads.entity.TeleSalesLead;
 import com.gws.crm.core.lookups.dto.LookupDTO;
 import com.gws.crm.core.lookups.dto.ProjectDTO;
