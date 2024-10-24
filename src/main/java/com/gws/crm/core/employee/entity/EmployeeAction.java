@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class UserAction {
+public abstract class EmployeeAction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,11 +31,13 @@ public abstract class UserAction {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH,
             CascadeType.MERGE, CascadeType.REFRESH},
             fetch = FetchType.LAZY)
-    private User creator;
+    private Employee creator;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private ActionType type;
+
+    private String description;
 
     @Column(columnDefinition = "TEXT")
     private String comment;

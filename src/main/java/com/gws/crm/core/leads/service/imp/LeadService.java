@@ -8,16 +8,20 @@ import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.common.service.ExcelSheetService;
 import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
+import com.gws.crm.core.employee.service.imp.ActionServiceImp;
+import com.gws.crm.core.employee.service.imp.LeadActionService;
 import com.gws.crm.core.leads.dto.AddLeadDTO;
 import com.gws.crm.core.leads.dto.ImportLeadDTO;
 import com.gws.crm.core.leads.dto.LeadResponse;
 import com.gws.crm.core.leads.entity.Lead;
 import com.gws.crm.core.leads.entity.PhoneNumber;
+import com.gws.crm.core.leads.entity.SalesLead;
 import com.gws.crm.core.leads.mapper.LeadMapper;
 import com.gws.crm.core.leads.mapper.PhoneNumberMapper;
 import com.gws.crm.core.leads.repository.LeadRepository;
 import com.gws.crm.core.leads.repository.PhoneNumberRepository;
 import com.gws.crm.core.lookups.repository.*;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -46,9 +50,15 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
     private final BrokerRepository brokerRepository;
     private final PhoneNumberRepository phoneNumberRepository;
     private final LeadMapper leadMapper;
+    private final  ActionServiceImp<Lead> leadActionService;
 
-    protected LeadService(LeadRepository leadRepository, LeadStatusRepository leadStatusRepository, InvestmentGoalRepository investmentGoalRepository, CommunicateWayRepository communicateWayRepository, CancelReasonsRepository cancelReasonsRepository, EmployeeRepository employeeRepository, ChannelRepository channelRepository, ProjectRepository projectRepository, UserRepository userRepository, PhoneNumberMapper phoneNumberMapper, ExcelSheetService excelSheetService, BrokerRepository brokerRepository, PhoneNumberRepository phoneNumberRepository, LeadMapper leadMapper) {
-        super(leadRepository);
+    protected LeadService(LeadRepository leadRepository,
+                          LeadStatusRepository leadStatusRepository, InvestmentGoalRepository investmentGoalRepository,
+                          CommunicateWayRepository communicateWayRepository, CancelReasonsRepository cancelReasonsRepository,
+                          EmployeeRepository employeeRepository, ChannelRepository channelRepository, ProjectRepository projectRepository,
+                          UserRepository userRepository, PhoneNumberMapper phoneNumberMapper, ExcelSheetService excelSheetService,
+                          BrokerRepository brokerRepository, PhoneNumberRepository phoneNumberRepository, LeadMapper leadMapper, ActionServiceImp<Lead> leadActionService) {
+        super(leadRepository, leadActionService,employeeRepository);
         this.leadRepository = leadRepository;
         this.leadStatusRepository = leadStatusRepository;
         this.investmentGoalRepository = investmentGoalRepository;
@@ -63,8 +73,8 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
         this.brokerRepository = brokerRepository;
         this.phoneNumberRepository = phoneNumberRepository;
         this.leadMapper = leadMapper;
+        this.leadActionService = leadActionService;
     }
-
 
     @Override
     public ResponseEntity<?> generateExcel(Transition transition) {
@@ -80,7 +90,6 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
         leadRepository.saveAll(leadList);
         return success("Lead Imported Successfully");
     }
-
 
     private List<Lead> createLeadsList(List<ImportLeadDTO> importLeadDTOS, Transition transition) {
         List<Lead> leads = new ArrayList<>();
@@ -265,8 +274,9 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
             existingLead.setCancelReasons(cancelReasonsRepository.getReferenceById(leadDTO.getCancelReason()));
         }
 
-        if (leadDTO.getSalesRep() != null) {
+        if (!(existingLead.getId() == leadDTO.getSalesRep())) {
             existingLead.setSalesRep(employeeRepository.getReferenceById(leadDTO.getSalesRep()));
+            leadActionService.setSalesAssignAction(existingLead, transition);
         }
 
         if (leadDTO.getChannel() != null) {

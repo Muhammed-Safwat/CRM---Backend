@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface SalesLeadService<T extends SalesLead, D extends AddLeadDTO> {
+
     ResponseEntity<?> getLeadDetails(long leadId, Transition transition);
 
     ResponseEntity<?> addLead(D leadDTO, Transition transition);
@@ -25,4 +26,6 @@ public interface SalesLeadService<T extends SalesLead, D extends AddLeadDTO> {
     ResponseEntity<?> generateExcel(Transition transition);
 
     ResponseEntity<?> importLead(List<ImportLeadDTO> leads, Transition transition);
+
+    ResponseEntity<?> assignSalesToLead(long leadId, long salesId, Transition transition);
 }

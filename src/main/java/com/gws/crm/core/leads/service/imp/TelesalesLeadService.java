@@ -8,9 +8,12 @@ import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.common.service.ExcelSheetService;
 import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
+import com.gws.crm.core.employee.service.imp.ActionServiceImp;
+import com.gws.crm.core.employee.service.imp.TeleSalesLeadActionService;
 import com.gws.crm.core.leads.dto.AddLeadDTO;
 import com.gws.crm.core.leads.dto.ImportLeadDTO;
 import com.gws.crm.core.leads.dto.LeadResponse;
+import com.gws.crm.core.leads.entity.Lead;
 import com.gws.crm.core.leads.entity.PhoneNumber;
 import com.gws.crm.core.leads.entity.TeleSalesLead;
 import com.gws.crm.core.leads.mapper.PhoneNumberMapper;
@@ -19,6 +22,7 @@ import com.gws.crm.core.leads.repository.PhoneNumberRepository;
 import com.gws.crm.core.leads.repository.TeleSalesLeadRepository;
 import com.gws.crm.core.lookups.repository.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -48,11 +52,11 @@ public class TelesalesLeadService extends SalesLeadServiceImp<TeleSalesLead, Add
     private final ExcelSheetService excelSheetService;
     private final PhoneNumberRepository phoneNumberRepository;
     private final BrokerRepository brokerRepository;
-
+    private final  ActionServiceImp<TeleSalesLead> leadActionService;
 
     protected TelesalesLeadService(TeleSalesLeadRepository leadRepository, LeadStatusRepository leadStatusRepository
-            , InvestmentGoalRepository investmentGoalRepository, CommunicateWayRepository communicateWayRepository, CancelReasonsRepository cancelReasonsRepository, EmployeeRepository employeeRepository, ChannelRepository channelRepository, ProjectRepository projectRepository, UserRepository userRepository, TeleSalesLeadMapper leadMapper, PhoneNumberMapper phoneNumberMapper, ExcelSheetService excelSheetService, PhoneNumberRepository phoneNumberRepository, BrokerRepository brokerRepository) {
-        super(leadRepository);
+            , InvestmentGoalRepository investmentGoalRepository, CommunicateWayRepository communicateWayRepository, CancelReasonsRepository cancelReasonsRepository, EmployeeRepository employeeRepository, ChannelRepository channelRepository, ProjectRepository projectRepository, UserRepository userRepository, TeleSalesLeadMapper leadMapper, PhoneNumberMapper phoneNumberMapper, ExcelSheetService excelSheetService, PhoneNumberRepository phoneNumberRepository, BrokerRepository brokerRepository, ActionServiceImp<TeleSalesLead> leadActionService) {
+        super(leadRepository, leadActionService ,employeeRepository);
         this.leadRepository = leadRepository;
         this.leadStatusRepository = leadStatusRepository;
         this.investmentGoalRepository = investmentGoalRepository;
@@ -67,6 +71,7 @@ public class TelesalesLeadService extends SalesLeadServiceImp<TeleSalesLead, Add
         this.excelSheetService = excelSheetService;
         this.phoneNumberRepository = phoneNumberRepository;
         this.brokerRepository = brokerRepository;
+        this.leadActionService = leadActionService;
     }
 
     @Override
@@ -184,8 +189,9 @@ public class TelesalesLeadService extends SalesLeadServiceImp<TeleSalesLead, Add
             existingLead.setCancelReasons(cancelReasonsRepository.getReferenceById(leadDTO.getCancelReason()));
         }
 
-        if (leadDTO.getSalesRep() != null) {
+        if (!(existingLead.getId() == leadDTO.getSalesRep())) {
             existingLead.setSalesRep(employeeRepository.getReferenceById(leadDTO.getSalesRep()));
+            leadActionService.setSalesAssignAction(existingLead, transition);
         }
 
         if (leadDTO.getChannel() != null) {
