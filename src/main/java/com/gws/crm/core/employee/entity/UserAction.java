@@ -1,5 +1,6 @@
 package com.gws.crm.core.employee.entity;
 
+import com.gws.crm.authentication.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,7 +22,7 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class EmployeeAction {
+public abstract class UserAction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +31,7 @@ public abstract class EmployeeAction {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH,
             CascadeType.MERGE, CascadeType.REFRESH},
             fetch = FetchType.LAZY)
-    private Employee creator;
+    private User creator;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)

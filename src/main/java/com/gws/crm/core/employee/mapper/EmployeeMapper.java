@@ -1,5 +1,6 @@
 package com.gws.crm.core.employee.mapper;
 
+import com.gws.crm.authentication.entity.User;
 import com.gws.crm.core.employee.dto.EmployeeInfoResponse;
 import com.gws.crm.core.employee.dto.EmployeeSimpleDTO;
 import com.gws.crm.core.employee.entity.Employee;
@@ -27,6 +28,22 @@ public interface EmployeeMapper {
         employeeSimpleDTO.id(employee.getId());
         employeeSimpleDTO.name(employee.getName());
         employeeSimpleDTO.jobName(employee.getJobName().getJobName());
+        employeeSimpleDTO.username(employee.getUsername());
+        return employeeSimpleDTO.build();
+    }
+
+    default EmployeeSimpleDTO toSimpleDto(User user) {
+
+        if (user == null) {
+            return null;
+        }
+
+        EmployeeSimpleDTO.EmployeeSimpleDTOBuilder employeeSimpleDTO = EmployeeSimpleDTO.builder();
+
+        employeeSimpleDTO.id(user.getId());
+        employeeSimpleDTO.name(user.getName());
+        employeeSimpleDTO.image(user.getImage());
+        employeeSimpleDTO.username(user.getUsername());
 
         return employeeSimpleDTO.build();
     }

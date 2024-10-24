@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @DynamicUpdate
 @DynamicInsert
 @SuperBuilder
-public class ActionOnLead extends EmployeeAction {
+public class ActionOnLead extends UserAction {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(nullable = false)

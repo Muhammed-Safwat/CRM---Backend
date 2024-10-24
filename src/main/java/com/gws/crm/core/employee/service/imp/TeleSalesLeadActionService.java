@@ -1,5 +1,6 @@
 package com.gws.crm.core.employee.service.imp;
 
+import com.gws.crm.authentication.repository.UserRepository;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.leads.entity.TeleSalesLead;
 import com.gws.crm.core.leads.repository.TeleSalesLeadRepository;
@@ -11,8 +12,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class TeleSalesLeadActionService extends ActionServiceImp<TeleSalesLead> {
 
-    public TeleSalesLeadActionService(EmployeeRepository employeeRepository, TeleSalesLeadRepository leadRepository,
+    public TeleSalesLeadActionService(UserRepository userRepository, TeleSalesLeadRepository leadRepository,
                                       CallOutcomeRepository callOutcomeRepository, CancelReasonsRepository cancelReasonsRepository, StageRepository stageRepository) {
-        super(employeeRepository, leadRepository, callOutcomeRepository, cancelReasonsRepository, stageRepository);
+        super(userRepository, leadRepository, callOutcomeRepository, cancelReasonsRepository, stageRepository);
     }
 }

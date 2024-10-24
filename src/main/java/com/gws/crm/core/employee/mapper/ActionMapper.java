@@ -24,10 +24,10 @@ public class ActionMapper {
     }
 
     public List<ActionResponse> toDto(List<ActionOnLead> actionOnLeadList) {
-        return null;
+        return actionOnLeadList.stream().map(this::toDto).toList();
     }
 
     public Page<ActionResponse> toDto(Page<ActionOnLead> actionOnLeadPage) {
-        return null;
+        return actionOnLeadPage.map(this::toDto);
     }
 }

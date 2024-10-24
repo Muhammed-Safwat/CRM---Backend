@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface ActionOnLeadRepository extends JpaRepository<ActionOnLead, Long> {
 
-    List<ActionOnLead> getAllByLeadIdAndOrderByCreatedAtDesc(long leadId);
+    List<ActionOnLead> getAllByLeadIdOrderByCreatedAtDesc(long leadId);
+
 }

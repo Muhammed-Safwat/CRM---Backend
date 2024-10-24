@@ -1,6 +1,7 @@
 package com.gws.crm.core.employee.service.imp;
 
 import com.gws.crm.authentication.entity.User;
+import com.gws.crm.authentication.repository.UserRepository;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.core.employee.dto.ActionOnLeadDTO;
@@ -36,7 +37,7 @@ import static com.gws.crm.common.handler.ApiResponseHandler.success;
 @Log
 public abstract class ActionServiceImp<T extends SalesLead> implements ActionService<T> {
 
-    private final EmployeeRepository employeeRepository;
+    private final UserRepository userRepository;
     private final SalesLeadRepository<T> leadRepository;
     private final CallOutcomeRepository callOutcomeRepository;
     private final CancelReasonsRepository cancelReasonsRepository;
@@ -47,8 +48,9 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
     @Autowired
     private ActionMapper actionMapper;
 
-    protected ActionServiceImp(EmployeeRepository employeeRepository, SalesLeadRepository<T> leadRepository, CallOutcomeRepository callOutcomeRepository, CancelReasonsRepository cancelReasonsRepository, StageRepository stageRepository) {
-        this.employeeRepository = employeeRepository;
+    protected ActionServiceImp(UserRepository userRepository, SalesLeadRepository<T> leadRepository,
+                               CallOutcomeRepository callOutcomeRepository, CancelReasonsRepository cancelReasonsRepository, StageRepository stageRepository) {
+        this.userRepository = userRepository;
         this.leadRepository = leadRepository;
         this.callOutcomeRepository = callOutcomeRepository;
         this.cancelReasonsRepository = cancelReasonsRepository;
@@ -60,7 +62,7 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
     public ResponseEntity<?> setActionOnLead(ActionOnLeadDTO actionDTO, Transition transition) {
         log.info(actionDTO.toString());
 
-        Employee creator = employeeRepository.findById(transition.getUserId())
+        User creator = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
 
         T lead = leadRepository.findById(actionDTO.getLeadId())
@@ -104,14 +106,14 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
 
     @Override
     public ResponseEntity<?> getActions(long leadId, Transition transition) {
-        List<ActionOnLead> actionOnLeadList = actionOnLeadRepository.getAllByLeadIdAndOrderByCreatedAtDesc(leadId);
+        List<ActionOnLead> actionOnLeadList = actionOnLeadRepository.getAllByLeadIdOrderByCreatedAtDesc(leadId);
         List<ActionResponse> actionResponsesList = actionMapper.toDto(actionOnLeadList);
         return success(actionResponsesList);
     }
 
     @Override
     public void setLeadCreationAction(SalesLead salesLead, Transition transition) {
-        Employee creator = employeeRepository.findById(transition.getUserId())
+        User creator = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
 
         T lead = (T) salesLead;
@@ -142,7 +144,7 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
     @Transactional
     @Override
     public void setLeadEditAction(SalesLead salesLead, Transition transition) {
-        Employee creator = employeeRepository.findById(transition.getUserId())
+        User creator = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
 
         T lead = (T) salesLead;
@@ -163,7 +165,7 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
     @Transactional
     @Override
     public void setSalesAssignAction(SalesLead salesLead, Transition transition) {
-        Employee creator = employeeRepository.findById(transition.getUserId())
+        User creator = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
 
         T lead = (T) salesLead;
@@ -198,7 +200,7 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
 
     @Override
     public void setSalesViewLeadAction(SalesLead salesLead, Transition transition) {
-        Employee creator = employeeRepository.findById(transition.getUserId())
+        User creator = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
 
         T lead = (T) salesLead;
@@ -219,7 +221,7 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
 
     @Override
     public void setLeadDeletionAction(SalesLead salesLead, Transition transition) {
-        Employee creator = employeeRepository.findById(transition.getUserId())
+        User creator = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
 
         T lead = (T) salesLead;
@@ -240,7 +242,7 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
 
     @Override
     public void setLeadRestoreAction(SalesLead salesLead, Transition transition) {
-        Employee creator = employeeRepository.findById(transition.getUserId())
+        User creator = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
 
         T lead = (T) salesLead;
