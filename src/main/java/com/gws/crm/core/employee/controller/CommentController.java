@@ -19,18 +19,18 @@ public class CommentController {
     public ResponseEntity<?> getComments(@PathVariable long leadId,
                                          @RequestParam(value = "page", defaultValue = "0") int page,
                                          Transition transition) {
-        return commentService.getComments(leadId,page,transition);
+        return commentService.getComments(leadId, page, transition);
     }
 
     @PostMapping
     public ResponseEntity<?> addComment(@RequestBody CommentDto commentDto,
                                         Transition transition) {
-        return commentService.addComment(commentDto,transition);
+        return commentService.addComment(commentDto, transition);
     }
 
     @PostMapping("reply")
     public ResponseEntity<?> addReply(@RequestBody ReplyDto replyDto,
-                                      Transition transition){
-        return commentService.addReply(replyDto,transition);
+                                      Transition transition) {
+        return commentService.addReply(replyDto, transition);
     }
 }

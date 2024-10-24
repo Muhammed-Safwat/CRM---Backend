@@ -19,8 +19,8 @@ public abstract class ActionController<T extends SalesLead> {
     }
 
     @GetMapping("{leadId}")
-    public ResponseEntity<?> getActions(@PathVariable long leadId,Transition transition){
-        return actionService.getActions(leadId,transition);
+    public ResponseEntity<?> getActions(@PathVariable long leadId, Transition transition) {
+        return actionService.getActions(leadId, transition);
     }
 
     @PostMapping("/lead")

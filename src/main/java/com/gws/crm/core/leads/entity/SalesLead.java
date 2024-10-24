@@ -1,7 +1,6 @@
 package com.gws.crm.core.leads.entity;
 
 import com.gws.crm.core.employee.entity.ActionOnLead;
-import com.gws.crm.core.employee.entity.Comment;
 import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.lookups.entity.*;
 import jakarta.persistence.*;

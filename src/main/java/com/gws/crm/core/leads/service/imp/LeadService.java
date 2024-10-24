@@ -9,19 +9,16 @@ import com.gws.crm.common.service.ExcelSheetService;
 import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.employee.service.imp.ActionServiceImp;
-import com.gws.crm.core.employee.service.imp.LeadActionService;
 import com.gws.crm.core.leads.dto.AddLeadDTO;
 import com.gws.crm.core.leads.dto.ImportLeadDTO;
 import com.gws.crm.core.leads.dto.LeadResponse;
 import com.gws.crm.core.leads.entity.Lead;
 import com.gws.crm.core.leads.entity.PhoneNumber;
-import com.gws.crm.core.leads.entity.SalesLead;
 import com.gws.crm.core.leads.mapper.LeadMapper;
 import com.gws.crm.core.leads.mapper.PhoneNumberMapper;
 import com.gws.crm.core.leads.repository.LeadRepository;
 import com.gws.crm.core.leads.repository.PhoneNumberRepository;
 import com.gws.crm.core.lookups.repository.*;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -50,7 +47,7 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
     private final BrokerRepository brokerRepository;
     private final PhoneNumberRepository phoneNumberRepository;
     private final LeadMapper leadMapper;
-    private final  ActionServiceImp<Lead> leadActionService;
+    private final ActionServiceImp<Lead> leadActionService;
 
     protected LeadService(LeadRepository leadRepository,
                           LeadStatusRepository leadStatusRepository, InvestmentGoalRepository investmentGoalRepository,
@@ -58,7 +55,7 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
                           EmployeeRepository employeeRepository, ChannelRepository channelRepository, ProjectRepository projectRepository,
                           UserRepository userRepository, PhoneNumberMapper phoneNumberMapper, ExcelSheetService excelSheetService,
                           BrokerRepository brokerRepository, PhoneNumberRepository phoneNumberRepository, LeadMapper leadMapper, ActionServiceImp<Lead> leadActionService) {
-        super(leadRepository, leadActionService,employeeRepository);
+        super(leadRepository, leadActionService, employeeRepository);
         this.leadRepository = leadRepository;
         this.leadStatusRepository = leadStatusRepository;
         this.investmentGoalRepository = investmentGoalRepository;

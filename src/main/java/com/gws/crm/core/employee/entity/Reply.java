@@ -1,6 +1,5 @@
 package com.gws.crm.core.employee.entity;
 
-import com.gws.crm.authentication.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

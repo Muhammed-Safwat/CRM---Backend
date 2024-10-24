@@ -1,6 +1,5 @@
 package com.gws.crm.core.employee.service.imp;
 
-import com.gws.crm.authentication.repository.UserRepository;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.leads.entity.TeleSalesLead;
 import com.gws.crm.core.leads.repository.TeleSalesLeadRepository;

@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class User implements UserDetails , Subscriber {
+public abstract class User implements UserDetails, Subscriber {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

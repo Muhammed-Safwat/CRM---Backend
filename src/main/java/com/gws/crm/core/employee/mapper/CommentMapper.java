@@ -26,11 +26,11 @@ public class CommentMapper {
                 .build();
     }
 
-    public List<CommentResponse> toDto(List<Comment> comments){
+    public List<CommentResponse> toDto(List<Comment> comments) {
         return comments.stream().map(this::toDto).collect(Collectors.toList());
     }
 
-    public Page<CommentResponse> toDto(Page<Comment> comments){
+    public Page<CommentResponse> toDto(Page<Comment> comments) {
         return comments.map(this::toDto);
     }
 

@@ -20,12 +20,9 @@ import com.gws.crm.core.lookups.entity.Stage;
 import com.gws.crm.core.lookups.repository.CallOutcomeRepository;
 import com.gws.crm.core.lookups.repository.CancelReasonsRepository;
 import com.gws.crm.core.lookups.repository.StageRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
-import org.hibernate.query.sql.internal.ParameterRecognizerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -126,7 +123,7 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
                 .createdAt(LocalDateTime.now());
 
         ActionOnLead actionOnLead = actionOnLeadBuilder.build();
-        if(lead.getSalesRep()!=null){
+        if (lead.getSalesRep() != null) {
             ActionOnLead.ActionOnLeadBuilder assignActionBuilder = ActionOnLead.builder()
                     .creator(creator)
                     .lead(lead)
@@ -153,7 +150,7 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
                 .creator(creator)
                 .lead(lead)
                 .type(ActionType.ASSIGN)
-                .description(creator.getName() + " Assign Lead for "+lead.getSalesRep().getName())
+                .description(creator.getName() + " Assign Lead for " + lead.getSalesRep().getName())
                 .createdAt(LocalDateTime.now());
 
         ActionOnLead actionOnLead = actionOnLeadBuilder.build();

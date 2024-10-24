@@ -75,8 +75,8 @@ public abstract class SalesLeadController<T extends SalesLead, D extends AddLead
     }
 
     @PutMapping("{leadId}/assign")
-    public ResponseEntity<?> assignSalesToLead(@PathVariable long leadId, @RequestParam long salesId,Transition transition){
-        return service.assignSalesToLead(leadId,salesId,transition);
+    public ResponseEntity<?> assignSalesToLead(@PathVariable long leadId, @RequestParam long salesId, Transition transition) {
+        return service.assignSalesToLead(leadId, salesId, transition);
     }
 
 }

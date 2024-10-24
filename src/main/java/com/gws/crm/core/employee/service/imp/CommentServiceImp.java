@@ -42,8 +42,8 @@ public class CommentServiceImp implements CommentService {
 
     @Override
     public ResponseEntity<?> getComments(long leadId, int page, Transition transition) {
-        Pageable pageable = PageRequest.of(page,10);
-        Page<Comment> commentPage = commentRepository.getCommentByLeadId(leadId,pageable);
+        Pageable pageable = PageRequest.of(page, 10);
+        Page<Comment> commentPage = commentRepository.getCommentByLeadId(leadId, pageable);
         Page<CommentResponse> commentResponses = commentMapper.toDto(commentPage);
         return success(commentResponses);
     }
@@ -61,7 +61,7 @@ public class CommentServiceImp implements CommentService {
                 .employee(employee)
                 .lead(salesLead)
                 .build();
-        Comment savedComment =  commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
         CommentResponse commentResponse = commentMapper.toDto(savedComment);
         return success(commentResponse);
     }

@@ -13,6 +13,6 @@ public class CommentResponse {
     private LocalDateTime createdAt;
     private String name;
     private String jobTile;
-    private String image ;
+    private String image;
     private List<ReplayResponse> replies;
 }
