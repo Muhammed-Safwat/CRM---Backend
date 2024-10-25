@@ -61,7 +61,10 @@ public abstract class SalesLead extends BaseLead {
     @JoinColumn(nullable = true)
     private Broker broker;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<ActionOnLead> actions = new ArrayList<>();
-
+/*
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
+*/
 }

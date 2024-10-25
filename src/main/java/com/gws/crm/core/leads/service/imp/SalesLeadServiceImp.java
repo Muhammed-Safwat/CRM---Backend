@@ -2,6 +2,9 @@ package com.gws.crm.core.leads.service.imp;
 
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
+import com.gws.crm.core.employee.entity.Employee;
+import com.gws.crm.core.employee.repository.EmployeeRepository;
+import com.gws.crm.core.employee.service.imp.ActionServiceImp;
 import com.gws.crm.core.leads.dto.AddLeadDTO;
 import com.gws.crm.core.leads.dto.LeadResponse;
 import com.gws.crm.core.leads.dto.SalesLeadCriteria;
@@ -24,34 +27,28 @@ import static com.gws.crm.core.leads.specification.SalesLeadSpecification.filter
 
 @Slf4j
 @Service
+@Transactional
 public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLeadDTO> implements SalesLeadService<T, D> {
 
-    private final SalesLeadRepository<T> repository;
 
-    protected SalesLeadServiceImp(SalesLeadRepository<T> repository) {
+    private final SalesLeadRepository<T> repository;
+    private final ActionServiceImp<T> actionServiceImp;
+    private final EmployeeRepository employeeRepository;
+
+    protected SalesLeadServiceImp(SalesLeadRepository<T> repository,
+                                  ActionServiceImp<T> actionServiceImp, EmployeeRepository employeeRepository) {
         this.repository = repository;
+        this.actionServiceImp = actionServiceImp;
+        this.employeeRepository = employeeRepository;
     }
 
-    /*
-        private final LeadStatusRepository leadStatusRepository;
-        private final InvestmentGoalRepository investmentGoalRepository;
-        private final CommunicateWayRepository communicateWayRepository;
-        private final CancelReasonsRepository cancelReasonsRepository;
-        private final EmployeeRepository employeeRepository;
-        private final ChannelRepository channelRepository;
-        private final ProjectRepository projectRepository;
-        private final UserRepository userRepository;
-        private final PhoneNumberMapper phoneNumberMapper;
-        private final ExcelSheetService excelSheetService;
-        private final BrokerRepository brokerRepository;
-        private final PhoneNumberRepository phoneNumberRepository;
-    */
+
     @Override
     public ResponseEntity<?> getLeadDetails(long leadId, Transition transition) {
         T lead = repository.findById(leadId)
                 .orElseThrow(NotFoundResourceException::new);
-        // LeadResponse leadResponse  = leadMapper.toDTO(lead);
         LeadResponse leadResponse = mapEntityToDto(lead);
+        actionServiceImp.setSalesViewLeadAction(lead, transition);
         return success(leadResponse);
     }
 
@@ -61,6 +58,7 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
         T entity = mapDtoToEntity(leadDTO, transition);
         T savedLead = repository.save(entity);
         LeadResponse leadResponse = mapEntityToDto(savedLead);
+        actionServiceImp.setLeadCreationAction(savedLead, transition);
         return created(leadResponse);
     }
 
@@ -72,13 +70,16 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
                 .orElseThrow(NotFoundResourceException::new);
         updateEntityFromDto(existingEntity, leadDTO, transition);
         T updatedEntity = repository.save(existingEntity);
+        actionServiceImp.setLeadEditAction(updatedEntity, transition);
         LeadResponse leadResponse = mapEntityToDto(updatedEntity);
         return ResponseEntity.ok(leadResponse);
     }
 
     @Override
     public ResponseEntity<?> deleteLead(long leadId, Transition transition) {
+        T lead = repository.findById(leadId).orElseThrow(NotFoundResourceException::new);
         repository.deleteLead(leadId);
+        actionServiceImp.setLeadDeletionAction(lead, transition);
         return success("Lead Deleted Successfully");
     }
 
@@ -93,8 +94,19 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
 
     @Override
     public ResponseEntity<?> restoreLead(Long leadId, Transition transition) {
+        T lead = repository.findById(leadId).orElseThrow(NotFoundResourceException::new);
         repository.restoreLead(leadId);
+        actionServiceImp.setLeadRestoreAction(lead, transition);
         return success("Lead restored Successfully");
+    }
+
+    @Override
+    public ResponseEntity<?> assignSalesToLead(long leadId, long salesId, Transition transition) {
+        T lead = repository.findById(leadId).orElseThrow(NotFoundResourceException::new);
+        Employee employee = employeeRepository.findById(leadId).orElseThrow(NotFoundResourceException::new);
+        lead.setSalesRep(employee);
+        actionServiceImp.setSalesAssignAction(lead, transition);
+        return success("Assign success");
     }
 
     protected abstract T mapDtoToEntity(D dto, Transition transition);

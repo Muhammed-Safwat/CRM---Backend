@@ -6,10 +6,7 @@ import com.gws.crm.core.employee.service.ActionService;
 import com.gws.crm.core.leads.entity.SalesLead;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/actions")
@@ -21,6 +18,10 @@ public abstract class ActionController<T extends SalesLead> {
         this.actionService = actionService;
     }
 
+    @GetMapping("{leadId}")
+    public ResponseEntity<?> getActions(@PathVariable long leadId, Transition transition) {
+        return actionService.getActions(leadId, transition);
+    }
 
     @PostMapping("/lead")
     public ResponseEntity<?> setActionOnLead(@Valid @RequestBody ActionOnLeadDTO action, Transition transition) {

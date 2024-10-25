@@ -10,6 +10,7 @@ public enum ActionType {
     CREATE("Create"),
     EDIT("Edit"),
     DELETE("Delete"),
+    RESTORE("Restore"),
     ASSIGN("Assign"),
     ANSWERED("Add Answer"),
     NO_ANSWER("No Answer"),

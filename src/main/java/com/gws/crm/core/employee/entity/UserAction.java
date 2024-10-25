@@ -37,6 +37,8 @@ public abstract class UserAction {
     @Column(length = 20)
     private ActionType type;
 
+    private String description;
+
     @Column(columnDefinition = "TEXT")
     private String comment;
 

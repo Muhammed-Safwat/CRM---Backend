@@ -15,5 +15,9 @@ public class EmployeeSimpleDTO {
 
     private String name;
 
+    private String username ;
+
     private String jobName;
+
+    private String image ;
 }
