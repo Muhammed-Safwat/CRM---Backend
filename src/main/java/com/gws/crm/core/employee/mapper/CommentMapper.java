@@ -18,9 +18,9 @@ public class CommentMapper {
     public CommentResponse toDto(Comment comment) {
         return CommentResponse.builder()
                 .comment(comment.getComment())
-                .name(comment.getEmployee().getName())
-                .image(comment.getEmployee().getImage())
-                .jobTile(comment.getEmployee().getJobName().getJobName())
+                .name(comment.getUser().getName())
+                .image(comment.getUser().getImage())
+                //.jobTile(comment.getEmployee().getJobName().getJobName())
                 .createdAt(comment.getCreatedAt())
                 .replies(replyMapper.toDto(comment.getReplies()))
                 .build();

@@ -15,9 +15,9 @@ public class ReplyMapper {
         return ReplayResponse.builder()
                 .reply(reply.getReply())
                 .createdAt(reply.getCreatedAt())
-                .name(reply.getEmployee().getName())
-                .image(reply.getEmployee().getImage())
-                .jobTile(reply.getEmployee().getJobName().getJobName())
+                .name(reply.getUser().getName())
+                .image(reply.getUser().getImage())
+               // .jobTile(reply.getEmployee().getJobName().getJobName())
                 .build();
     }
 

@@ -1,5 +1,7 @@
 package com.gws.crm.core.employee.service.imp;
 
+import com.gws.crm.authentication.entity.User;
+import com.gws.crm.authentication.repository.UserRepository;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.core.employee.dto.CommentDto;
@@ -39,6 +41,7 @@ public class CommentServiceImp implements CommentService {
     private final EmployeeRepository employeeRepository;
     private final CommentMapper commentMapper;
     private final ReplyMapper replyMapper;
+    private final UserRepository userRepository;
 
     @Override
     public ResponseEntity<?> getComments(long leadId, int page, Transition transition) {
@@ -52,13 +55,13 @@ public class CommentServiceImp implements CommentService {
     public ResponseEntity<?> addComment(CommentDto commentDto, Transition transition) {
         SalesLead salesLead = leadRepository.findById(commentDto.getLeadId())
                 .orElseThrow(NotFoundResourceException::new);
-        Employee employee = employeeRepository.findById(transition.getUserId())
+        User user  = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
         Comment comment = Comment.builder()
                 .comment(commentDto.getComment())
                 .createdAt(LocalDateTime.now())
                 .replies(new ArrayList<>())
-                .employee(employee)
+                .user(user)
                 .lead(salesLead)
                 .build();
         Comment savedComment = commentRepository.save(comment);
@@ -70,11 +73,11 @@ public class CommentServiceImp implements CommentService {
     public ResponseEntity<?> addReply(ReplyDto replyDto, Transition transition) {
         Comment comment = commentRepository.findById(replyDto.getCommentId())
                 .orElseThrow(NotFoundResourceException::new);
-        Employee employee = employeeRepository.findById(transition.getUserId())
+        User user  = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
         Reply reply = Reply.builder()
                 .reply(replyDto.getReply())
-                .employee(employee)
+                .user(user)
                 .createdAt(LocalDateTime.now())
                 .build();
         comment.getReplies().add(reply);
