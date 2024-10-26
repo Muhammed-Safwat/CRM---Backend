@@ -2,6 +2,7 @@ package com.gws.crm.core.leads.controller;
 
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.leads.dto.AddLeadDTO;
+import com.gws.crm.core.leads.dto.AssignDTO;
 import com.gws.crm.core.leads.dto.ImportLeadDTO;
 import com.gws.crm.core.leads.dto.SalesLeadCriteria;
 import com.gws.crm.core.leads.entity.SalesLead;
@@ -74,9 +75,9 @@ public abstract class SalesLeadController<T extends SalesLead, D extends AddLead
         return service.importLead(leads, transition);
     }
 
-    @PutMapping("{leadId}/assign")
-    public ResponseEntity<?> assignSalesToLead(@PathVariable long leadId, @RequestParam long salesId, Transition transition) {
-        return service.assignSalesToLead(leadId, salesId, transition);
+    @PutMapping("/assign")
+    public ResponseEntity<?> assignSalesToLead(@RequestBody AssignDTO assignDTO, Transition transition) {
+        return service.assignSalesToLead(assignDTO, transition);
     }
 
 }

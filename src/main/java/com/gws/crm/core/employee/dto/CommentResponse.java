@@ -9,6 +9,7 @@ import java.util.List;
 @Data
 @Builder
 public class CommentResponse {
+    private long id;
     private String comment;
     private LocalDateTime createdAt;
     private String name;

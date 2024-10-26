@@ -5,9 +5,7 @@ import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.employee.service.imp.ActionServiceImp;
-import com.gws.crm.core.leads.dto.AddLeadDTO;
-import com.gws.crm.core.leads.dto.LeadResponse;
-import com.gws.crm.core.leads.dto.SalesLeadCriteria;
+import com.gws.crm.core.leads.dto.*;
 import com.gws.crm.core.leads.entity.SalesLead;
 import com.gws.crm.core.leads.repository.SalesLeadRepository;
 import com.gws.crm.core.leads.service.SalesLeadService;
@@ -20,6 +18,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.created;
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
@@ -48,7 +48,7 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
         T lead = repository.findById(leadId)
                 .orElseThrow(NotFoundResourceException::new);
         LeadResponse leadResponse = mapEntityToDto(lead);
-        actionServiceImp.setSalesViewLeadAction(lead, transition);
+        // actionServiceImp.setSalesViewLeadAction(lead, transition);
         return success(leadResponse);
     }
 
@@ -101,12 +101,20 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
     }
 
     @Override
-    public ResponseEntity<?> assignSalesToLead(long leadId, long salesId, Transition transition) {
-        T lead = repository.findById(leadId).orElseThrow(NotFoundResourceException::new);
-        Employee employee = employeeRepository.findById(leadId).orElseThrow(NotFoundResourceException::new);
+    public ResponseEntity<?> assignSalesToLead(AssignDTO assignDTO, Transition transition) {
+        T lead = repository.findById(assignDTO.getLeadId())
+                .orElseThrow(NotFoundResourceException::new);
+        Employee employee = employeeRepository.findById(assignDTO.getSalesId())
+                .orElseThrow(NotFoundResourceException::new);
         lead.setSalesRep(employee);
+        lead.setAssignAt(LocalDateTime.now());
         actionServiceImp.setSalesAssignAction(lead, transition);
-        return success("Assign success");
+        AssignResponse response = AssignResponse.builder()
+                .salesName(employee.getName())
+                .jobTitle(employee.getJobName().getJobName())
+                .assignAt(LocalDateTime.now())
+                .build();
+        return success(response);
     }
 
     protected abstract T mapDtoToEntity(D dto, Transition transition);

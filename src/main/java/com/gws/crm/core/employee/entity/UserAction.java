@@ -42,7 +42,6 @@ public abstract class UserAction {
     @Column(columnDefinition = "TEXT")
     private String comment;
 
-    @CreationTimestamp
     private LocalDateTime createdAt;
 
 }

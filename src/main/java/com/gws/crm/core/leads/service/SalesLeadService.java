@@ -2,6 +2,7 @@ package com.gws.crm.core.leads.service;
 
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.leads.dto.AddLeadDTO;
+import com.gws.crm.core.leads.dto.AssignDTO;
 import com.gws.crm.core.leads.dto.ImportLeadDTO;
 import com.gws.crm.core.leads.dto.SalesLeadCriteria;
 import com.gws.crm.core.leads.entity.SalesLead;
@@ -27,5 +28,5 @@ public interface SalesLeadService<T extends SalesLead, D extends AddLeadDTO> {
 
     ResponseEntity<?> importLead(List<ImportLeadDTO> leads, Transition transition);
 
-    ResponseEntity<?> assignSalesToLead(long leadId, long salesId, Transition transition);
+    ResponseEntity<?> assignSalesToLead(AssignDTO assignDTO, Transition transition);
 }
