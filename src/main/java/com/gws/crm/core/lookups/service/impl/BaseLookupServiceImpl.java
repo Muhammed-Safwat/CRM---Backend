@@ -39,7 +39,7 @@ public abstract class BaseLookupServiceImpl<T extends BaseLookup, D extends Look
 
         Page<T> lookupPage = repository.findAll(specification, pageable);
 
-        log.info("keyword ====== {}", keyword);
+        log.info("keyword ====== {}", lookupPage);
 
         return success(lookupPage);
     }
@@ -47,6 +47,7 @@ public abstract class BaseLookupServiceImpl<T extends BaseLookup, D extends Look
     @Override
     public ResponseEntity<?> getAll(Transition transition) {
         List<T> lookupList = repository.findAllByAdminId(transition.getUserId());
+        log.info(lookupList.toString());
         return success(lookupList);
     }
 

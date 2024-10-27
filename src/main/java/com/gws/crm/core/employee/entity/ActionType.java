@@ -12,7 +12,7 @@ public enum ActionType {
     DELETE("Delete"),
     RESTORE("Restore"),
     ASSIGN("Assign"),
-    ANSWERED("Add Answer"),
+    ANSWERED("Answered"),
     NO_ANSWER("No Answer"),
 
     VIEW("View"),

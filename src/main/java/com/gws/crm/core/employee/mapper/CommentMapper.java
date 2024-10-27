@@ -17,6 +17,7 @@ public class CommentMapper {
 
     public CommentResponse toDto(Comment comment) {
         return CommentResponse.builder()
+                .id(comment.getId())
                 .comment(comment.getComment())
                 .name(comment.getUser().getName())
                 .image(comment.getUser().getImage())

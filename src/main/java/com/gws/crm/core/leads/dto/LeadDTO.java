@@ -47,5 +47,5 @@ public class LeadDTO {
     private Channel channel;
 
     private Project project;
-
+    private LocalDateTime assignAt;
 }

@@ -16,7 +16,7 @@ public class NotificationInitializer {
 
     @Value("${firebase.config.path}")
     private String firebaseConfigPath;
-
+/*
     @PostConstruct
     public void initialize() {
         try {
@@ -30,4 +30,5 @@ public class NotificationInitializer {
             e.printStackTrace();
         }
     }
+ */
 }

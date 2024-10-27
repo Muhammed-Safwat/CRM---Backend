@@ -60,6 +60,6 @@ public class LeadResponse {
     private ProjectDTO project;
 
     private boolean deleted;
-
+    private LocalDateTime assignAt;
     private EmployeeSimpleDTO creator;
 }

@@ -17,6 +17,7 @@ public class SalesLeadSpecification<T extends SalesLead> {
         List<Specification<T>> specs = new ArrayList<>();
 
         if (salesLeadCriteria != null) {
+            specs.add(orderByCreatedOrUpdated());
             specs.add(fullTextSearch(salesLeadCriteria.getKeyword()));
             specs.add(filterByStatus(salesLeadCriteria.getStatus()));
             specs.add(filterByInvestmentGoals(salesLeadCriteria.getInvestmentGoal()));
@@ -42,6 +43,16 @@ public class SalesLeadSpecification<T extends SalesLead> {
         }
 
         return Specification.allOf(specs);
+    }
+
+    public static <T extends SalesLead> Specification<T> orderByCreatedOrUpdated() {
+        return (root, query, criteriaBuilder) -> {
+            query.orderBy(
+                    criteriaBuilder.desc(root.get("createdAt")),
+                    criteriaBuilder.desc(root.get("updatedAt"))
+            );
+            return criteriaBuilder.conjunction();
+        };
     }
 
     private static <T extends SalesLead> Specification<T> filterByUser(SalesLeadCriteria leadCriteria, Transition transition) {

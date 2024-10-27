@@ -45,6 +45,7 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
 
     @Autowired
     private ActionOnLeadRepository actionOnLeadRepository;
+
     @Autowired
     private ActionMapper actionMapper;
 
@@ -57,7 +58,6 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
         this.stageRepository = stageRepository;
     }
 
-
     @Override
     public ResponseEntity<?> setActionOnLead(ActionOnLeadDTO actionDTO, Transition transition) {
         log.info(actionDTO.toString());
@@ -67,19 +67,24 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
 
         T lead = leadRepository.findById(actionDTO.getLeadId())
                 .orElseThrow(NotFoundResourceException::new);
-
+        String commentStr = actionDTO.getComment() != null
+                ? actionDTO.getComment()
+                : "No comment provided";
         ActionOnLead.ActionOnLeadBuilder actionOnLeadBuilder = ActionOnLead.builder()
                 .creator(creator)
                 .lead(lead)
                 .nextActionDate(actionDTO.getNextActionDate())
                 .callBackTime(actionDTO.getCallBackTime())
-                .comment(actionDTO.getComment())
+                .comment(commentStr)
                 .type(actionDTO.getActionType().equals("answered") ? ActionType.ANSWERED : ActionType.NO_ANSWER)
                 .createdAt(LocalDateTime.now());
 
-        if (actionDTO.getCallOutcome() != null) {
+        if (actionDTO.getActionType().equals("noAnswer")) {
+            String description = "No Answer recorded. Callback scheduled";
+            actionOnLeadBuilder.description(description);
+        } else if (actionDTO.getCallOutcome() != null && actionDTO.getActionType().equals("answered")) {
             CallOutcome outcome = callOutcomeRepository.getReferenceById(actionDTO.getCallOutcome());
-            String outcomeDescription = generateDescriptionBasedOnOutcome(outcome.getName(), creator, lead);
+            String outcomeDescription = generateDescriptionBasedOnOutcome(outcome.getName());
             actionOnLeadBuilder.callOutcome(outcome)
                     .description(outcomeDescription);
         }
@@ -106,7 +111,7 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
 
     @Override
     public ResponseEntity<?> getActions(long leadId, Transition transition) {
-        List<ActionOnLead> actionOnLeadList = actionOnLeadRepository.getAllByLeadIdOrderByCreatedAtDesc(leadId);
+        List<ActionOnLead> actionOnLeadList = actionOnLeadRepository.getAllByLeadIdOrderByCreatedAtAsc(leadId);
         List<ActionResponse> actionResponsesList = actionMapper.toDto(actionOnLeadList);
         return success(actionResponsesList);
     }
@@ -121,22 +126,24 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
                 .creator(creator)
                 .lead(lead)
                 .type(ActionType.CREATE)
-                .description(creator.getName() + " create Lead")
+                .description("Created this lead")
                 .createdAt(LocalDateTime.now());
 
         ActionOnLead actionOnLead = actionOnLeadBuilder.build();
+        lead.getActions().add(actionOnLead);
+
         if (lead.getSalesRep() != null) {
             ActionOnLead.ActionOnLeadBuilder assignActionBuilder = ActionOnLead.builder()
                     .creator(creator)
                     .lead(lead)
-                    .type(ActionType.EDIT)
-                    .description(creator.getName() + " update Lead")
-                    .createdAt(LocalDateTime.now());
+                    .type(ActionType.ASSIGN)
+                    .description("Assigned lead to " + lead.getSalesRep().getName())
+                    .createdAt(LocalDateTime.now().plusSeconds(1));
 
             ActionOnLead editAction = assignActionBuilder.build();
             lead.getActions().add(editAction);
         }
-        lead.getActions().add(actionOnLead);
+
         leadRepository.save(lead);
     }
 
@@ -144,15 +151,15 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
     @Transactional
     @Override
     public void setLeadEditAction(SalesLead salesLead, Transition transition) {
-        User creator = userRepository.findById(transition.getUserId())
+        User editor = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
 
         T lead = (T) salesLead;
         ActionOnLead.ActionOnLeadBuilder actionOnLeadBuilder = ActionOnLead.builder()
-                .creator(creator)
+                .creator(editor)
                 .lead(lead)
-                .type(ActionType.ASSIGN)
-                .description(creator.getName() + " Assign Lead for " + lead.getSalesRep().getName())
+                .type(ActionType.EDIT)
+                .description("Updated lead details")
                 .createdAt(LocalDateTime.now());
 
         ActionOnLead actionOnLead = actionOnLeadBuilder.build();
@@ -173,7 +180,7 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
                 .creator(creator)
                 .lead(lead)
                 .type(ActionType.ASSIGN)
-                .description(creator.getName() + " update Lead")
+                .description("Assign Lead for " + lead.getSalesRep().getName())
                 .createdAt(LocalDateTime.now());
 
         ActionOnLead actionOnLead = actionOnLeadBuilder.build();
@@ -182,21 +189,32 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
         leadRepository.save(lead);
     }
 
-    private String generateDescriptionBasedOnOutcome(String outcome, User creator, T lead) {
-        return switch (outcome) {
-            case "Call Back Later" ->
-                    "Call back scheduled by " + creator.getName() + " for lead (Lead ID: " + lead.getId() + ").";
-            case "Meeting Scheduled" ->
-                    "Meeting scheduled by " + creator.getName() + " for lead (Lead ID: " + lead.getId() + ").";
-            case "Information Sent" ->
-                    "Information sent by " + creator.getName() + " to lead (Lead ID: " + lead.getId() + ").";
-            case "Request for More Information" ->
-                    "Lead (Lead ID: " + lead.getId() + ") requested more information. Handled by " + creator.getName() + ".";
-            case "Cancellation" -> "Lead (Lead ID: " + lead.getId() + ") canceled by " + creator.getName() + ".";
-            default -> "Action taken by " + creator.getName() + " for lead (Lead ID: " + lead.getId() + ").";
-        };
-    }
+    private String generateDescriptionBasedOnOutcome(String outcome) {
+        StringBuilder description = new StringBuilder();
+        description.append("Recorded an outcome: ").append(outcome) ;
 
+        switch (outcome) {
+            case "Call Back Later":
+                description.append(". A follow-up call has been scheduled for later.");
+                break;
+            case "Meeting Scheduled":
+                description.append(". A meeting has been scheduled with the lead.");
+                break;
+            case "Information Sent":
+                description.append(". Relevant information has been sent to the lead.");
+                break;
+            case "Request for More Information":
+                description.append(". The lead requested additional information.");
+                break;
+            case "Cancellation":
+                description.append(". The lead has requested cancellation.");
+                break;
+            default:
+                description.append(". Outcome recorded.");
+                break;
+        }
+        return description.toString();
+    }
 
     @Override
     public void setSalesViewLeadAction(SalesLead salesLead, Transition transition) {
@@ -209,7 +227,7 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
                 .creator(creator)
                 .lead(lead)
                 .type(ActionType.VIEW)
-                .description(creator.getName() + " viewed the lead")
+                .description("Viewed the lead")
                 .createdAt(LocalDateTime.now());
 
         ActionOnLead actionOnLead = actionOnLeadBuilder.build();
@@ -221,16 +239,16 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
 
     @Override
     public void setLeadDeletionAction(SalesLead salesLead, Transition transition) {
-        User creator = userRepository.findById(transition.getUserId())
+        User deleter = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
 
         T lead = (T) salesLead;
 
         ActionOnLead.ActionOnLeadBuilder actionOnLeadBuilder = ActionOnLead.builder()
-                .creator(creator)
+                .creator(deleter)
                 .lead(lead)
                 .type(ActionType.DELETE)
-                .description(creator.getName() + " deleted the lead")
+                .description("Deleted the lead record")
                 .createdAt(LocalDateTime.now());
 
         ActionOnLead actionOnLead = actionOnLeadBuilder.build();
@@ -238,20 +256,19 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
 
         leadRepository.save(lead);
     }
-
 
     @Override
     public void setLeadRestoreAction(SalesLead salesLead, Transition transition) {
-        User creator = userRepository.findById(transition.getUserId())
+        User restorer = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
 
         T lead = (T) salesLead;
 
         ActionOnLead.ActionOnLeadBuilder actionOnLeadBuilder = ActionOnLead.builder()
-                .creator(creator)
+                .creator(restorer)
                 .lead(lead)
                 .type(ActionType.RESTORE)
-                .description(creator.getName() + " restore the lead")
+                .description("Restored the lead record")
                 .createdAt(LocalDateTime.now());
 
         ActionOnLead actionOnLead = actionOnLeadBuilder.build();
@@ -259,5 +276,6 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
 
         leadRepository.save(lead);
     }
+
 
 }

@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    Page<Comment> getCommentByLeadId(long leadId, Pageable pageable);
+    Page<Comment> getCommentByLeadIdOrderByCreatedAtDesc(long leadId, Pageable pageable);
 }

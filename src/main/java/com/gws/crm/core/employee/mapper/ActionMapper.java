@@ -20,6 +20,14 @@ public class ActionMapper {
                 .id(actionOnLead.getId())
                 .type(actionOnLead.getType().getDisplayValue())
                 .creator(employeeMapper.toSimpleDto(actionOnLead.getCreator()))
+                .comment(actionOnLead.getComment())
+                .callBackTime(actionOnLead.getCallBackTime())
+                .description(actionOnLead.getDescription())
+                .createdAt(actionOnLead.getCreatedAt())
+                .cancellationReason(actionOnLead.getCancellationReason())
+                .stage(actionOnLead.getStage())
+                .nextActionDate(actionOnLead.getNextActionDate())
+                .callOutcome(actionOnLead.getCallOutcome()!=null ? actionOnLead.getCallOutcome().getName() : null)
                 .build();
     }
 
