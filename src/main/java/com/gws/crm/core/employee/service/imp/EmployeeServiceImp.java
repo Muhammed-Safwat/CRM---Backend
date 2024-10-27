@@ -178,5 +178,11 @@ public class EmployeeServiceImp implements EmployeeService {
         return success(employeeInfoResponsesPage);
     }
 
+    @Override
+    public ResponseEntity<?> restoreEmployee(long employeeId, Transition transition) {
+        long adminId = transition.getUserId();
+        employeeRepository.restoreByIdAndAdminId(employeeId, adminId);
+        return success("User Restored");
+    }
 
 }

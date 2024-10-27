@@ -65,6 +65,9 @@ public class EmployeeController {
         return employeeService.deleteEmployee(employeeId, transition);
     }
 
-
+    @PutMapping("restore/{employeeId}")
+    public ResponseEntity<?> restoreEmployee(@PathVariable long employeeId, Transition transition) {
+        return employeeService.restoreEmployee(employeeId, transition);
+    }
 
 }

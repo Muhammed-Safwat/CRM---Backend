@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -57,6 +58,10 @@ public class CommonAuthServiceImp implements CommonAuthService {
             ));
             if (authentication.isAuthenticated()) {
                 Optional<User> userOptional = userRepository.findByUsername(signInRequest.getUsername());
+                User user = userOptional.get();
+                if(user.isDeleted()){
+                    throw new DisabledException("UnKnown user");
+                }
                 SignInResponse signInResponse = SignInResponse.builder()
                         .accessToken(jwtTokenService.generateAccessToken(userOptional.get()))
                         .refreshToken(jwtTokenService.generateRefreshToken(userOptional.get()))

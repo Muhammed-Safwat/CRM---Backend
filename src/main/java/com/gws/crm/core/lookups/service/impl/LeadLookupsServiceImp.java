@@ -50,6 +50,8 @@ public class LeadLookupsServiceImp implements LeadLookupsService {
                 .collect(Collectors.toList());
         List<Channel> channels = channelRepository.findAllByAdminId(transition.getUserId());
         List<CommunicateWay> communicateWays = communicateWayRepository.findAllByAdminId(transition.getUserId());
+        List<CallOutcome> callOutcomes = callOutcomeRepository.findAllByAdminId(transition.getUserId());
+        List<Stage> stages = stageRepository.findAllByAdminId(transition.getUserId());
 
         LeadLookupsDTO leadLookupsDTO = LeadLookupsDTO.builder()
                 .brokers(brokers)
@@ -60,6 +62,8 @@ public class LeadLookupsServiceImp implements LeadLookupsService {
                 .salesReps(salesReps)
                 .channels(channels)
                 .communicateWays(communicateWays)
+                .actions(callOutcomes)
+                .stages(stages)
                 .build();
 
         return success(leadLookupsDTO);

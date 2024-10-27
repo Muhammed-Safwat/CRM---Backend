@@ -53,7 +53,8 @@ public abstract class User implements UserDetails, Subscriber {
 
     @Column(nullable = false)
     private boolean enabled = false;
-
+    @Column(nullable = false)
+    private boolean deleted = false;
     @Column(nullable = false)
     private LocalDateTime accountNonExpired = LocalDateTime.MAX;
 

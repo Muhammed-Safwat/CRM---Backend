@@ -62,6 +62,8 @@ public abstract class SalesLead extends BaseLead {
 
     private String lastStage;
 
+    private LocalDateTime lastActionDate;
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(nullable = true)
     private Broker broker;

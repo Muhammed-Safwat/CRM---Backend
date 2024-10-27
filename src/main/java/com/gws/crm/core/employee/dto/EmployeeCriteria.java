@@ -7,6 +7,7 @@ public class EmployeeCriteria {
     private String jobName;
     private String enabled;
     private String keyword;
+    private boolean deleted ;
     private int page;
     private int size;
 }

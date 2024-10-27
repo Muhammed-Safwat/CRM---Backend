@@ -25,4 +25,6 @@ public interface EmployeeService {
     ResponseEntity<?> getEmployee(long employeeId, Transition transition);
 
     ResponseEntity<?> getAllEmployee(EmployeeCriteria employeeCriteria, Transition transition);
+
+    ResponseEntity<?> restoreEmployee(long employeeId, Transition transition);
 }

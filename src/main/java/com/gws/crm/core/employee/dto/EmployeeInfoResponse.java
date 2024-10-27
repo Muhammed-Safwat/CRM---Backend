@@ -26,6 +26,8 @@ public class EmployeeInfoResponse {
 
     private boolean enabled = false;
 
+    private boolean deleted = false;
+
     private LocalDateTime accountNonExpired;
 
     private LocalDateTime credentialsNonExpired;

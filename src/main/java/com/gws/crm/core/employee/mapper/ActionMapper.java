@@ -27,7 +27,7 @@ public class ActionMapper {
                 .cancellationReason(actionOnLead.getCancellationReason())
                 .stage(actionOnLead.getStage())
                 .nextActionDate(actionOnLead.getNextActionDate())
-                .callOutcome(actionOnLead.getCallOutcome()!=null ? actionOnLead.getCallOutcome().getName() : null)
+                .callOutcome(actionOnLead.getCallOutcome() != null ? actionOnLead.getCallOutcome().getName() : null)
                 .build();
     }
 

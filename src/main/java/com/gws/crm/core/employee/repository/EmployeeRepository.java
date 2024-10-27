@@ -28,7 +28,13 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
 
     @Transactional
     @Modifying
+    @Query("UPDATE Employee e SET e.deleted = true WHERE e.id = :id and e.admin.id = :adminId")
     void deleteByIdAndAdminId(long id, long adminId);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Employee e SET e.deleted = true WHERE e.id = :id and e.admin.id = :adminId")
+    void restoreByIdAndAdminId(long id, long adminId);
 
     Employee findByNameAndAdminId(String salesRep, long id);
 }

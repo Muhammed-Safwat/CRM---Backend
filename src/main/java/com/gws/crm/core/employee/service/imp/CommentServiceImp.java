@@ -9,7 +9,6 @@ import com.gws.crm.core.employee.dto.CommentResponse;
 import com.gws.crm.core.employee.dto.ReplayResponse;
 import com.gws.crm.core.employee.dto.ReplyDto;
 import com.gws.crm.core.employee.entity.Comment;
-import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.employee.entity.Reply;
 import com.gws.crm.core.employee.mapper.CommentMapper;
 import com.gws.crm.core.employee.mapper.ReplyMapper;
@@ -55,7 +54,7 @@ public class CommentServiceImp implements CommentService {
     public ResponseEntity<?> addComment(CommentDto commentDto, Transition transition) {
         SalesLead salesLead = leadRepository.findById(commentDto.getLeadId())
                 .orElseThrow(NotFoundResourceException::new);
-        User user  = userRepository.findById(transition.getUserId())
+        User user = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
         Comment comment = Comment.builder()
                 .comment(commentDto.getComment())
@@ -73,7 +72,7 @@ public class CommentServiceImp implements CommentService {
     public ResponseEntity<?> addReply(ReplyDto replyDto, Transition transition) {
         Comment comment = commentRepository.findById(replyDto.getCommentId())
                 .orElseThrow(NotFoundResourceException::new);
-        User user  = userRepository.findById(transition.getUserId())
+        User user = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
         Reply reply = Reply.builder()
                 .reply(replyDto.getReply())

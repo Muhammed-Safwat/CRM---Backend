@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class AdminRegistrationDto {
+    private long id;
 
     @NotBlank(message = "name is required")
     private String name;
@@ -20,8 +21,6 @@ public class AdminRegistrationDto {
     @Email(message = "Email should be valid")
     private String username;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 8, max = 50, message = "Password should be between 6 and 50 characters")
     private String password;
 
     @NotBlank(message = "Phone number is required")

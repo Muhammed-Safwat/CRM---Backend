@@ -17,7 +17,7 @@ public class ReplyMapper {
                 .createdAt(reply.getCreatedAt())
                 .name(reply.getUser().getName())
                 .image(reply.getUser().getImage())
-               // .jobTile(reply.getEmployee().getJobName().getJobName())
+                // .jobTile(reply.getEmployee().getJobName().getJobName())
                 .build();
     }
 

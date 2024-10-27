@@ -20,4 +20,6 @@ public class LeadLookupsDTO {
     private List<EmployeeSimpleDTO> salesReps;
     private List<Channel> channels;
     private List<CommunicateWay> communicateWays;
+    private List<CallOutcome> actions;
+    private List<Stage> stages;
 }

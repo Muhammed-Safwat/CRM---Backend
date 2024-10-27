@@ -8,10 +8,8 @@ import com.gws.crm.core.employee.dto.ActionOnLeadDTO;
 import com.gws.crm.core.employee.dto.ActionResponse;
 import com.gws.crm.core.employee.entity.ActionOnLead;
 import com.gws.crm.core.employee.entity.ActionType;
-import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.employee.mapper.ActionMapper;
 import com.gws.crm.core.employee.repository.ActionOnLeadRepository;
-import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.employee.service.ActionService;
 import com.gws.crm.core.leads.entity.SalesLead;
 import com.gws.crm.core.leads.repository.SalesLeadRepository;
@@ -103,7 +101,7 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
 
         ActionOnLead actionOnLead = actionOnLeadBuilder.build();
         lead.getActions().add(actionOnLead);
-
+        lead.setLastActionDate(LocalDateTime.now());
         leadRepository.save(lead);
 
         return success("Action Added");
@@ -191,7 +189,7 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
 
     private String generateDescriptionBasedOnOutcome(String outcome) {
         StringBuilder description = new StringBuilder();
-        description.append("Recorded an outcome: ").append(outcome) ;
+        description.append("Recorded an outcome: ").append(outcome);
 
         switch (outcome) {
             case "Call Back Later":

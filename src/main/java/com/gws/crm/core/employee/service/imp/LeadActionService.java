@@ -1,7 +1,6 @@
 package com.gws.crm.core.employee.service.imp;
 
 import com.gws.crm.authentication.repository.UserRepository;
-import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.leads.entity.Lead;
 import com.gws.crm.core.leads.repository.SalesLeadRepository;
 import com.gws.crm.core.lookups.repository.CallOutcomeRepository;

@@ -19,13 +19,17 @@ public class AdminBasicsInfo {
 
     private String phone;
 
-    private boolean locked = false;
+    private boolean locked  ;
 
-    private boolean enabled = false;
+    private boolean enabled ;
+
+    private boolean deleted;
 
     private LocalDateTime accountNonExpired;
 
     private LocalDateTime credentialsNonExpired;
+
+    private int maxNumberOfUsers;
 
 
 }
