@@ -8,19 +8,23 @@ import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.common.handler.ApiResponseHandler;
 import com.gws.crm.common.service.ExcelSheetService;
 import com.gws.crm.core.admin.entity.Admin;
+import com.gws.crm.core.admin.repository.AdminRepository;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
-import com.gws.crm.core.leads.dto.AddPreLeadDTO;
-import com.gws.crm.core.leads.dto.ImportPreLeadDTO;
-import com.gws.crm.core.leads.dto.PreLeadCriteria;
-import com.gws.crm.core.leads.dto.PreLeadResponse;
+import com.gws.crm.core.employee.service.imp.ActionServiceImp;
+import com.gws.crm.core.employee.service.imp.LeadActionService;
+import com.gws.crm.core.leads.dto.*;
+import com.gws.crm.core.leads.entity.Lead;
 import com.gws.crm.core.leads.entity.PhoneNumber;
 import com.gws.crm.core.leads.entity.PreLead;
+import com.gws.crm.core.leads.entity.SalesLead;
 import com.gws.crm.core.leads.mapper.PhoneNumberMapper;
 import com.gws.crm.core.leads.mapper.PreLeadMapper;
 import com.gws.crm.core.leads.repository.BaseLeadRepository;
+import com.gws.crm.core.leads.repository.LeadRepository;
 import com.gws.crm.core.leads.repository.PreLeadRepository;
 import com.gws.crm.core.leads.service.PreLeadService;
 import com.gws.crm.core.lookups.repository.ChannelRepository;
+import com.gws.crm.core.lookups.repository.LeadStatusRepository;
 import com.gws.crm.core.lookups.repository.ProjectRepository;
 import com.gws.crm.core.lookups.service.LeadLookupsService;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +59,10 @@ public class PreLeadServiceImp implements PreLeadService {
     private final BaseLeadRepository baseLeadRepository;
     private final LeadLookupsService leadLookupsService;
     private final ExcelSheetService excelSheetService;
+    private final AdminRepository adminRepository;
+    private final LeadRepository leadRepository ;
+    private final LeadActionService actionServiceImp;
+    private final LeadStatusRepository leadStatusRepository;
 
     @Override
     public ResponseEntity<?> getAllPreLead(PreLeadCriteria preLeadCriteria, Transition transition) {
@@ -177,5 +185,45 @@ public class PreLeadServiceImp implements PreLeadService {
                 .dropdowns(excelSheetService.generatePreLeadExcelSheetMap(transition))
                 .build();
         return success(excelFile);
+    }
+
+    @Override
+    public ResponseEntity<?> assignToSales(AssignToSalesDTO assignToSalesDTO, Transition transition) {
+        List<PreLead> preLeads = preLeadRepository.findAllById(assignToSalesDTO.getLeadsIds());
+        Admin admin = adminRepository.findById(transition.getUserId())
+                .orElseThrow(NotFoundResourceException::new);
+        List<Lead> leads = new ArrayList<>();
+        preLeads.forEach(lead ->{
+            lead.setImported(true);
+            leads.add(toSalesLead(lead,admin,transition));
+        });
+        leadRepository.saveAll(leads);
+        preLeadRepository.saveAll(preLeads);
+        return success("Pre Lead Assigned Successfully");
+    }
+
+
+    public Lead toSalesLead(PreLead preLeads,Admin admin,Transition transition) {
+
+        Lead lead = Lead.builder()
+                .name(preLeads.getName())
+                .admin(admin)
+                .project(preLeads.getProject())
+                .channel(preLeads.getChannel())
+                .creator(admin)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .country(preLeads.getCountry())
+                .email(preLeads.getEmail())
+                .deleted(false)
+                .actions(new ArrayList<>())
+                .status(leadStatusRepository.findByName("Fresh"))
+                .build();
+        List<PhoneNumber> phoneNumbers = preLeads.getPhoneNumbers().stream().map(num ->{
+            return PhoneNumber.builder().phone(num.getPhone()).code(num.getCode()).lead(lead).build();
+        }).toList();
+        lead.setPhoneNumbers(phoneNumbers);
+        actionServiceImp.setActionForImportedPreLead(lead,transition);
+        return lead;
     }
 }

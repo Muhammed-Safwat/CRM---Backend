@@ -3,6 +3,7 @@ package com.gws.crm.core.leads.service;
 
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.leads.dto.AddPreLeadDTO;
+import com.gws.crm.core.leads.dto.AssignToSalesDTO;
 import com.gws.crm.core.leads.dto.ImportPreLeadDTO;
 import com.gws.crm.core.leads.dto.PreLeadCriteria;
 import jakarta.validation.Valid;
@@ -22,4 +23,6 @@ public interface PreLeadService {
     ResponseEntity<?> importLead(@Valid List<ImportPreLeadDTO> leads, Transition transition);
 
     ResponseEntity<?> generateExcel(Transition transition);
+
+    ResponseEntity<?> assignToSales(@Valid AssignToSalesDTO assignToSalesDTO, Transition transition);
 }

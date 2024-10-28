@@ -19,8 +19,9 @@ public class PreLeadSpecification {
 
         if (leadCriteria != null) {
             specs.add(fullTextSearch(leadCriteria.getKeyword()));
-            specs.add(filterByDeleted(leadCriteria.isDeleted()));
             specs.add(filterByCampaignId(leadCriteria.getCampaignId()));
+            specs.add(filterByDeleted(leadCriteria.isDeleted()));
+            specs.add(filterByImported(leadCriteria.isImported()));
             specs.add(filterByCreatedAt(leadCriteria.getCreatedAt()));
             specs.add(filterByUser(leadCriteria, transition));
             specs.add(filterByCreator(leadCriteria.getCreator()));
@@ -77,6 +78,10 @@ public class PreLeadSpecification {
 
     private static Specification<PreLead> filterByDeleted(Boolean deleted) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("deleted"), deleted);
+    }
+
+    private static Specification<PreLead> filterByImported(Boolean imported) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("imported"), imported);
     }
 
     private static Specification<PreLead> filterByCampaignId(List<Integer> campaignId) {

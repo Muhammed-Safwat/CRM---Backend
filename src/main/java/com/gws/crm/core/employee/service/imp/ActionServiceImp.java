@@ -145,6 +145,34 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
         leadRepository.save(lead);
     }
 
+    public void setActionForImportedPreLead(SalesLead salesLead, Transition transition){
+        User creator = userRepository.findById(transition.getUserId())
+                .orElseThrow(NotFoundResourceException::new);
+
+        T lead = (T) salesLead;
+        ActionOnLead.ActionOnLeadBuilder actionOnLeadBuilder = ActionOnLead.builder()
+                .creator(creator)
+                .lead(lead)
+                .type(ActionType.CREATE)
+                .description("Created this lead")
+                .createdAt(LocalDateTime.now());
+
+        ActionOnLead actionOnLead = actionOnLeadBuilder.build();
+        lead.getActions().add(actionOnLead);
+
+        if (lead.getSalesRep() != null) {
+            ActionOnLead.ActionOnLeadBuilder assignActionBuilder = ActionOnLead.builder()
+                    .creator(creator)
+                    .lead(lead)
+                    .type(ActionType.ASSIGN)
+                    .description("Assigned lead to " + lead.getSalesRep().getName())
+                    .createdAt(LocalDateTime.now().plusSeconds(1));
+
+            ActionOnLead editAction = assignActionBuilder.build();
+            lead.getActions().add(editAction);
+        }
+    }
+
 
     @Transactional
     @Override

@@ -86,6 +86,7 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
     @Override
     public ResponseEntity<?> getLeads(SalesLeadCriteria salesLeadCriteria, Transition transition) {
         Specification<T> leadSpecification = filter(salesLeadCriteria, transition);
+
         Pageable pageable = PageRequest.of(salesLeadCriteria.getPage(), salesLeadCriteria.getSize());
         Page<T> leadPage = repository.findAll(leadSpecification, pageable);
         Page<LeadResponse> leadResponses = mapEntityToDto(leadPage);

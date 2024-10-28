@@ -3,6 +3,7 @@ package com.gws.crm.core.leads.dto;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -21,17 +22,18 @@ public class SalesLeadCriteria {
     private boolean myLead;
     private List<Long> project;
     private String country;
-    private Long creator;
+    private List<Long> creator;
     private String campaignId;
-    private LocalDate lastActionDate;
-    private LocalDate lastActionNoAction;
-    private LocalDate stageDate;
-    private LocalDate actionDate;
-    private LocalDate assignDate;
+    private List<LocalDateTime> lastActionDate;
+    private List<Long> lastAction;
+    private List<Long> stage;
+    private List<LocalDateTime> stageDate;
+    private List<LocalDateTime> actionDate;
+    private List<LocalDateTime> assignDate;
     private String budget;
     private String hasPayment;
     private String noAnswers;
-    private LocalDate createdAt;
+    private List<LocalDateTime> createdAt;
     private Long type;
     private int page;
     private int size;

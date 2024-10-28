@@ -2,6 +2,7 @@ package com.gws.crm.core.leads.controller;
 
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.leads.dto.AddPreLeadDTO;
+import com.gws.crm.core.leads.dto.AssignToSalesDTO;
 import com.gws.crm.core.leads.dto.ImportPreLeadDTO;
 import com.gws.crm.core.leads.dto.PreLeadCriteria;
 import com.gws.crm.core.leads.service.PreLeadService;
@@ -58,4 +59,9 @@ public class PreLeadController {
         return preLeadService.importLead(leads, transition);
     }
 
+    @PostMapping("/assignToSales")
+    public ResponseEntity<?> assignToSales(@Valid @RequestBody AssignToSalesDTO assignToSalesDTO,
+                                           Transition transition){
+        return preLeadService.assignToSales(assignToSalesDTO,transition);
+    }
 }

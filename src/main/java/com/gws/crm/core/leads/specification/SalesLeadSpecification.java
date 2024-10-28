@@ -4,18 +4,21 @@ import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.leads.dto.SalesLeadCriteria;
 import com.gws.crm.core.leads.entity.SalesLead;
 import jakarta.persistence.criteria.JoinType;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class SalesLeadSpecification<T extends SalesLead> {
 
     public static <T extends SalesLead> Specification<T> filter(SalesLeadCriteria salesLeadCriteria, Transition transition) {
         List<Specification<T>> specs = new ArrayList<>();
-
+        log.info(salesLeadCriteria.toString());
         if (salesLeadCriteria != null) {
             specs.add(orderByCreatedOrUpdated());
             specs.add(fullTextSearch(salesLeadCriteria.getKeyword()));
@@ -37,11 +40,16 @@ public class SalesLeadSpecification<T extends SalesLead> {
             specs.add(filterByBudget(salesLeadCriteria.getBudget()));
             // specs.add(filterByHasPayment(leadCriteria.getHasPayment()));
             // specs.add(filterByNoAnswers(leadCriteria.getNoAnswers()));
+            // specs.add(filterByCreatedAt(salesLeadCriteria.getCreatedAt()));
             specs.add(filterByCreatedAt(salesLeadCriteria.getCreatedAt()));
+            specs.add(filterByStageDate(salesLeadCriteria.getStageDate()));
+            specs.add(filterByActionDate(salesLeadCriteria.getActionDate()));
+            specs.add(filterByAssignDate(salesLeadCriteria.getAssignDate()));
+            specs.add(filterByStage(salesLeadCriteria.getStage()));
             specs.add(filterByUser(salesLeadCriteria, transition));
-            specs.add(filterByCreator(salesLeadCriteria.getCreator()));
+            specs.add(filterBySalesReps(salesLeadCriteria.getSalesRep()));
+            specs.add(filterByCreators(salesLeadCriteria.getCreator()));
         }
-
         return Specification.allOf(specs);
     }
 
@@ -57,7 +65,7 @@ public class SalesLeadSpecification<T extends SalesLead> {
 
     private static <T extends SalesLead> Specification<T> filterByUser(SalesLeadCriteria leadCriteria, Transition transition) {
         if (leadCriteria.isMyLead()) {
-            return filterByCreator(transition.getUserId());
+            return filterByCreators(List.of(transition.getUserId()));
         } else if (transition.getRole().equals("ADMIN")) {
             return filterByAdminId(transition.getUserId());
         }
@@ -133,6 +141,29 @@ public class SalesLeadSpecification<T extends SalesLead> {
         };
     }
 
+
+
+    private static <T extends SalesLead> Specification<T> filterByStage(List<Long> stage) {
+        return (root, query, criteriaBuilder) -> {
+            if (stage == null || stage.isEmpty()) {
+                return criteriaBuilder.conjunction();
+            }
+            return root.join("stage", JoinType.INNER).get("id").in(stage);
+        };
+    }
+
+
+
+    private static <T extends SalesLead> Specification<T> filterByCreators(List<Long> creatorId) {
+        return (root, query, criteriaBuilder) -> {
+            if (creatorId == null || creatorId.isEmpty()) {
+                return criteriaBuilder.conjunction();
+            }
+            return root.join("creator", JoinType.INNER).get("id").in(creatorId);
+        };
+    }
+
+
     private static <T extends SalesLead> Specification<T> filterByChannels(List<Long> channels) {
         return (root, query, criteriaBuilder) -> {
             if (channels == null || channels.isEmpty()) {
@@ -169,15 +200,6 @@ public class SalesLeadSpecification<T extends SalesLead> {
                 return null;
             }
             return criteriaBuilder.equal(root.get("country"), country);
-        };
-    }
-
-    private static <T extends SalesLead> Specification<T> filterByCreator(Long creatorId) {
-        return (root, query, criteriaBuilder) -> {
-            if (creatorId == null) {
-                return null;
-            }
-            return criteriaBuilder.equal(root.get("creator").get("id"), creatorId);
         };
     }
 
@@ -249,34 +271,90 @@ public class SalesLeadSpecification<T extends SalesLead> {
             return criteriaBuilder.equal(root.get("budget"), budget);
         };
     }
-
-    /*
-        private static <T extends SalesLead>  Specification<SalesLead> filterByHasPayment(String hasPayment) {
-            return (root, query, criteriaBuilder) -> {
-                if (!StringUtils.hasText(hasPayment)) {
-                    return null;
-                }
-                return criteriaBuilder.equal(root.get("hasPayment"), hasPayment);
-            };
-        }
-
-        private static <T extends SalesLead>  Specification<SalesLead> filterByNoAnswers(String noAnswers) {
-            return (root, query, criteriaBuilder) -> {
-                if (!StringUtils.hasText(noAnswers)) {
-                    return null;
-                }
-                return criteriaBuilder.equal(root.get("noAnswers"), noAnswers);
-            };
-        }
-    */
-    private static <T extends SalesLead> Specification<T> filterByCreatedAt(LocalDate createdAt) {
+    private static <T extends SalesLead> Specification<T> filterByCreatedAt(List<LocalDateTime> createdAt) {
         return (root, query, criteriaBuilder) -> {
-            if (createdAt == null) {
-                return null;
+            if (createdAt == null || createdAt.isEmpty()) {
+                return criteriaBuilder.conjunction();
             }
-            return criteriaBuilder.equal(root.get("createdAt"), createdAt);
+
+            LocalDateTime startDate = createdAt.size() > 0 ? createdAt.get(0) : null;
+            LocalDateTime endDate = createdAt.size() > 1 ? createdAt.get(1) : null;
+
+            if (startDate != null && endDate != null) {
+                return criteriaBuilder.between(root.get("createdAt"), startDate, endDate);
+            } else if (startDate != null) {
+                return criteriaBuilder.lessThanOrEqualTo(root.get("createdAt"), LocalDateTime.now());
+            } else if (endDate != null) {
+                return criteriaBuilder.lessThanOrEqualTo(root.get("createdAt"), endDate);
+            }
+
+            return criteriaBuilder.conjunction();
         };
     }
+
+    private static <T extends SalesLead> Specification<T> filterByStageDate(List<LocalDateTime> stageDate) {
+        return (root, query, criteriaBuilder) -> {
+            if (stageDate == null || stageDate.isEmpty()) {
+                return criteriaBuilder.conjunction();
+            }
+
+            LocalDateTime startDate = stageDate.size() > 0 ? stageDate.get(0) : null;
+            LocalDateTime endDate = stageDate.size() > 1 ? stageDate.get(1) : null;
+
+            if (startDate != null && endDate != null) {
+                return criteriaBuilder.between(root.get("stageDate"), startDate, endDate);
+            } else if (startDate != null) {
+                return criteriaBuilder.lessThanOrEqualTo(root.get("stageDate"), LocalDateTime.now());
+            } else if (endDate != null) {
+                return criteriaBuilder.lessThanOrEqualTo(root.get("stageDate"), endDate);
+            }
+
+            return criteriaBuilder.conjunction();
+        };
+    }
+
+    private static <T extends SalesLead> Specification<T> filterByActionDate(List<LocalDateTime> actionDate) {
+        return (root, query, criteriaBuilder) -> {
+            if (actionDate == null || actionDate.isEmpty()) {
+                return criteriaBuilder.conjunction();
+            }
+
+            LocalDateTime startDate = actionDate.size() > 0 ? actionDate.get(0) : null;
+            LocalDateTime endDate = actionDate.size() > 1 ? actionDate.get(1) : null;
+
+            if (startDate != null && endDate != null) {
+                return criteriaBuilder.between(root.get("actionDate"), startDate, endDate);
+            } else if (startDate != null) {
+                return criteriaBuilder.lessThanOrEqualTo(root.get("actionDate"), LocalDateTime.now());
+            } else if (endDate != null) {
+                return criteriaBuilder.lessThanOrEqualTo(root.get("actionDate"), endDate);
+            }
+
+            return criteriaBuilder.conjunction();
+        };
+    }
+
+    private static <T extends SalesLead> Specification<T> filterByAssignDate(List<LocalDateTime> assignDate) {
+        return (root, query, criteriaBuilder) -> {
+            if (assignDate == null || assignDate.isEmpty()) {
+                return criteriaBuilder.conjunction();
+            }
+
+            LocalDateTime startDate = assignDate.size() > 0 ? assignDate.get(0) : null;
+            LocalDateTime endDate = assignDate.size() > 1 ? assignDate.get(1) : null;
+
+            if (startDate != null && endDate != null) {
+                return criteriaBuilder.between(root.get("assignDate"), startDate, endDate);
+            } else if (startDate != null) {
+                return criteriaBuilder.lessThanOrEqualTo(root.get("assignDate"), LocalDateTime.now());
+            } else if (endDate != null) {
+                return criteriaBuilder.lessThanOrEqualTo(root.get("assignDate"), endDate);
+            }
+
+            return criteriaBuilder.conjunction();
+        };
+    }
+
 
     private static <T extends SalesLead> Specification<T> filterByAdminId(Long id) {
         return (root, query, criteriaBuilder) -> {
