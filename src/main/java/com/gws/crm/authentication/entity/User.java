@@ -40,9 +40,9 @@ public abstract class User implements UserDetails, Subscriber {
 
     private String password;
 
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
 
     private String phone;
 
@@ -61,13 +61,13 @@ public abstract class User implements UserDetails, Subscriber {
     @Column(nullable = false)
     private LocalDateTime credentialsNonExpired = LocalDateTime.MAX;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(name = "users_privileges",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "privilege_id"))
@@ -79,11 +79,10 @@ public abstract class User implements UserDetails, Subscriber {
 
         for (Role role : roles) {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
-
-            authorities.addAll(getPrivileges().stream()
-                    .map(privilege -> new SimpleGrantedAuthority("PRIV_" + privilege.getName()))
-                    .collect(Collectors.toSet()));
         }
+        authorities.addAll(getPrivileges().stream()
+                .map(privilege -> new SimpleGrantedAuthority("PRIV_" + privilege.getName()))
+                .collect(Collectors.toSet()));
 
         return authorities;
     }

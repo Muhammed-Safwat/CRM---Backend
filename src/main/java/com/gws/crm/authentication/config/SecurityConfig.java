@@ -86,9 +86,9 @@ public class SecurityConfig {
                                 .requestMatchers("/api/super-admin/admins/**").hasRole("SUPER_ADMIN")
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/api/employees/**").hasRole("ADMIN")
-                                .requestMatchers("/api/lookups/**").hasRole("ADMIN")
+                                //  .requestMatchers("/api/lookups/**").hasRole("ADMIN")
                                 .requestMatchers("/api/privileges/**").hasRole("ADMIN")
-                                .anyRequest().permitAll())
+                                .anyRequest().authenticated())
                 .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(transitionBuilderFilter(), UsernamePasswordAuthenticationFilter.class);
         http.httpBasic(Customizer.withDefaults());

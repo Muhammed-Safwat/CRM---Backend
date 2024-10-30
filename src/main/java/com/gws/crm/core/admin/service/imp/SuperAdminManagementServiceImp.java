@@ -57,7 +57,7 @@ public class SuperAdminManagementServiceImp implements SuperAdminManagementServi
         admin.setPhone(adminRegistrationDto.getPhone());
         admin.setAccountNonExpired(adminRegistrationDto.getAccountExpirationDate());
         admin.setMaxNumberOfUsers(adminRegistrationDto.getNumberOfUsers());
-        admin.setUpdateAt(LocalDateTime.now());
+        admin.setUpdatedAt(LocalDateTime.now());
         adminRepository.save(admin);
         AdminBasicsInfo adminBasicsInfo = adminMapper.toDto(admin);
         return success(adminBasicsInfo, "Admin updated successfully");
@@ -92,8 +92,8 @@ public class SuperAdminManagementServiceImp implements SuperAdminManagementServi
         return Admin.builder()
                 .maxNumberOfUsers(adminRegistrationDto.getNumberOfUsers())
                 .name(adminRegistrationDto.getName())
-                .createAt(LocalDateTime.now())
-                .updateAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .enabled(true)
                 .locked(false)
                 .credentialsNonExpired(adminRegistrationDto.getAccountExpirationDate())
@@ -118,6 +118,5 @@ public class SuperAdminManagementServiceImp implements SuperAdminManagementServi
         adminRepository.deleteAdminById(id);
         return success("Deleted");
     }
-
 
 }

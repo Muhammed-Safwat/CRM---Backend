@@ -62,6 +62,10 @@ public class CommonAuthServiceImp implements CommonAuthService {
                 if(user.isDeleted()){
                     throw new DisabledException("UnKnown user");
                 }
+                log.info("*****************************************");
+                log.info(user.getRoles().isEmpty()+"");
+                log.info("*****************************************");
+                user.getRoles().forEach(el->log.info("********************************** "+el.toString()));
                 SignInResponse signInResponse = SignInResponse.builder()
                         .accessToken(jwtTokenService.generateAccessToken(userOptional.get()))
                         .refreshToken(jwtTokenService.generateRefreshToken(userOptional.get()))

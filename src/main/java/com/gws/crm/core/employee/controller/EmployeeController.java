@@ -23,7 +23,6 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAllEmployee(Transition transition) {
         return employeeService.getAllEmployee(transition);
     }
@@ -33,7 +32,6 @@ public class EmployeeController {
                                             Transition transition) {
         return employeeService.getAllEmployee(employeeCriteria, transition);
     }
-
 
     @GetMapping("{employeeId}")
     public ResponseEntity<?> getEmployee(@PathVariable long employeeId, Transition transition) {

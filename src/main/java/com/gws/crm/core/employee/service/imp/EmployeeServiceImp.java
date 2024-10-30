@@ -17,6 +17,7 @@ import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.employee.service.EmployeeService;
 import com.gws.crm.core.employee.spcification.EmployeeSpecification;
 import com.gws.crm.core.leads.repository.PrivilegeGroupRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -57,6 +58,7 @@ public class EmployeeServiceImp implements EmployeeService {
 
     private final PrivilegeGroupRepository privilegeGroupRepository;
 
+    @Transactional
     @Override
     public ResponseEntity<?> saveEmployee(EmployeeDto employeeDto, Transition transition) {
         if (userRepository.existsByUsername(employeeDto.getEmail())) {
@@ -64,12 +66,13 @@ public class EmployeeServiceImp implements EmployeeService {
         }
         log.info("Transition send {}", transition.getUserId());
         Admin admin = adminRepository.findById(transition.getUserId()).orElseThrow(NotFoundResourceException::new);
+
         if (admin.getMaxNumberOfUsers() <= admin.getEmployees().size()) {
             return error("The maximum number of users for this account has been reached. No additional users can be added.");
         }
 
         // LocalDateTime accountExpirationDateTime = employeeDto.getAccountExpirationDate().atStartOfDay();
-        Role role = roleRepository.findByName(RoleName.EMPLOYEE.toString());
+        Role role = roleRepository.findByName(RoleName.USER.toString());
         Set<Role> roles = new HashSet<>();
         roles.add(role);
         Set<Privilege> privileges = new HashSet<>(privilegeRepository.findAllById(employeeDto.getPrivileges()));
@@ -79,13 +82,15 @@ public class EmployeeServiceImp implements EmployeeService {
                 .phone(employeeDto.getPhone())
                 .password(passwordEncoder.encode(employeeDto.getPassword()))
                 .jobName(privilegeGroupRepository.getReferenceById(employeeDto.getJobTitleId()))
-                .createAt(LocalDateTime.now())
-                .updateAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .enabled(true)
                 .locked(false).
                 accountNonExpired(admin.getAccountNonExpired())
                 .credentialsNonExpired(admin.getCredentialsNonExpired())
-                .roles(roles).privileges(privileges).build();
+                .roles(roles)
+                .privileges(privileges)
+                .build();
         admin.getEmployees().add(employee);
         adminRepository.save(admin);
         EmployeeInfoResponse employeeResponse = employeeMapper.toDto(employee);

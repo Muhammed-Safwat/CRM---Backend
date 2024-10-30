@@ -21,8 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
-import static com.gws.crm.common.handler.ApiResponseHandler.created;
-import static com.gws.crm.common.handler.ApiResponseHandler.success;
+import static com.gws.crm.common.handler.ApiResponseHandler.*;
 import static com.gws.crm.core.leads.specification.SalesLeadSpecification.filter;
 
 @Slf4j
@@ -105,6 +104,9 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
     public ResponseEntity<?> assignSalesToLead(AssignDTO assignDTO, Transition transition) {
         T lead = repository.findById(assignDTO.getLeadId())
                 .orElseThrow(NotFoundResourceException::new);
+        if(lead.getSalesRep().getId() == assignDTO.getSalesId()){
+            return badRequest();
+        }
         Employee employee = employeeRepository.findById(assignDTO.getSalesId())
                 .orElseThrow(NotFoundResourceException::new);
         lead.setSalesRep(employee);

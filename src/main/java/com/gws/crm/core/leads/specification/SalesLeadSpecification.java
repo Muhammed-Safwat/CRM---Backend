@@ -46,9 +46,10 @@ public class SalesLeadSpecification<T extends SalesLead> {
             specs.add(filterByActionDate(salesLeadCriteria.getActionDate()));
             specs.add(filterByAssignDate(salesLeadCriteria.getAssignDate()));
             specs.add(filterByStage(salesLeadCriteria.getStage()));
+
             specs.add(filterByUser(salesLeadCriteria, transition));
             specs.add(filterBySalesReps(salesLeadCriteria.getSalesRep()));
-            specs.add(filterByCreators(salesLeadCriteria.getCreator()));
+            specs.add(filterByCreators(salesLeadCriteria.getCreator(),transition));
         }
         return Specification.allOf(specs);
     }
@@ -65,7 +66,7 @@ public class SalesLeadSpecification<T extends SalesLead> {
 
     private static <T extends SalesLead> Specification<T> filterByUser(SalesLeadCriteria leadCriteria, Transition transition) {
         if (leadCriteria.isMyLead()) {
-            return filterByCreators(List.of(transition.getUserId()));
+            return filterByCreators(List.of(transition.getUserId()),transition);
         } else if (transition.getRole().equals("ADMIN")) {
             return filterByAdminId(transition.getUserId());
         }
@@ -154,12 +155,14 @@ public class SalesLeadSpecification<T extends SalesLead> {
 
 
 
-    private static <T extends SalesLead> Specification<T> filterByCreators(List<Long> creatorId) {
+    private static <T extends SalesLead> Specification<T> filterByCreators(List<Long> creatorId,Transition transition) {
         return (root, query, criteriaBuilder) -> {
-            if (creatorId == null || creatorId.isEmpty()) {
+            if ((creatorId == null || creatorId.isEmpty()) && transition.getRole().equals("ADMIN")) {
                 return criteriaBuilder.conjunction();
+            }else if((creatorId == null || creatorId.isEmpty()) && transition.getRole().equals("USER")){
+                return root.join("creator", JoinType.INNER).get("id").in(transition.getUserId());
             }
-            return root.join("creator", JoinType.INNER).get("id").in(creatorId);
+             return root.join("creator", JoinType.INNER).get("id").in(creatorId);
         };
     }
 
@@ -271,6 +274,7 @@ public class SalesLeadSpecification<T extends SalesLead> {
             return criteriaBuilder.equal(root.get("budget"), budget);
         };
     }
+
     private static <T extends SalesLead> Specification<T> filterByCreatedAt(List<LocalDateTime> createdAt) {
         return (root, query, criteriaBuilder) -> {
             if (createdAt == null || createdAt.isEmpty()) {
