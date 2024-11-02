@@ -1,5 +1,7 @@
 package com.gws.crm.core.resale.dto;
 
+import com.gws.crm.core.employee.dto.EmployeeSimpleDTO;
+import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.lookups.entity.Category;
 import com.gws.crm.core.lookups.entity.Project;
 import com.gws.crm.core.resale.entities.ResaleStatus;
@@ -19,4 +21,5 @@ public class ResaleLookupsDTO {
     private List<Project> projects;
     private List<ResaleType> types;
     private List<ResaleStatus> statuses;
+    private List<EmployeeSimpleDTO> employees;
 }

@@ -5,6 +5,7 @@ import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.leads.dto.PreLeadCriteria;
 import com.gws.crm.core.leads.entity.PreLead;
 import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
@@ -24,20 +25,45 @@ public class PreLeadSpecification {
             specs.add(filterByImported(leadCriteria.isImported()));
             specs.add(filterByCreatedAt(leadCriteria.getCreatedAt()));
             specs.add(filterByUser(leadCriteria, transition));
-            specs.add(filterByCreator(leadCriteria.getCreator()));
+            specs.add(filterByCreators(leadCriteria.getCreator(), transition));
             specs.add(filterByCountry(leadCriteria.getCountry()));
+
         }
 
         return Specification.allOf(specs);
     }
 
     private static Specification<PreLead> filterByUser(PreLeadCriteria leadCriteria, Transition transition) {
-        if (leadCriteria.isMyLead()) {
-            return filterByCreator(List.of(transition.getUserId()));
-        } else if (transition.getRole().equals("ADMIN")) {
-            return filterByAdminId(transition.getUserId());
-        }
-        return null;
+        return (root, query, criteriaBuilder) -> {
+            Predicate predicate = criteriaBuilder.conjunction();
+
+            if (transition.getRole().equals("USER")) {
+
+                predicate = criteriaBuilder.and(predicate,
+                        criteriaBuilder.equal(root.get("creator").get("id"), transition.getUserId())
+                );
+            } else if (leadCriteria.isMyLead() && transition.getRole().equals("ADMIN")) {
+
+                predicate = criteriaBuilder.and(predicate,
+                        criteriaBuilder.equal(root.get("creator").get("id"), transition.getUserId())
+                );
+            }else if (!leadCriteria.isMyLead() && transition.getRole().equals("ADMIN")) {
+
+                predicate = criteriaBuilder.and(predicate,
+                        criteriaBuilder.equal(root.get("admin").get("id"), transition.getUserId())
+                );
+            }
+            return predicate;
+        };
+    }
+
+    private static Specification<PreLead> filterByCreators(List<Long> creatorId, Transition transition) {
+        return (root, query, criteriaBuilder) -> {
+            if (creatorId == null || creatorId.isEmpty() || !transition.getRole().equals("ADMIN")) {
+                return criteriaBuilder.conjunction();
+            }
+            return root.join("creator", JoinType.INNER).get("id").in(creatorId);
+        };
     }
 
     // Full text search specification
@@ -67,14 +93,6 @@ public class PreLeadSpecification {
         });
     }
 
-    private static Specification<PreLead> filterByCreator(List<Long> creatorId) {
-        return (root, query, criteriaBuilder) -> {
-            if (creatorId == null || creatorId.isEmpty()) {
-                return criteriaBuilder.conjunction();
-            }
-            return root.join("creator", JoinType.INNER).get("id").in(creatorId);
-        };
-    }
 
     private static Specification<PreLead> filterByDeleted(Boolean deleted) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("deleted"), deleted);

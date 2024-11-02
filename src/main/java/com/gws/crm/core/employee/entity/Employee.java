@@ -22,6 +22,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @SuperBuilder
 public class Employee extends User {
 
+    /*
     @ManyToOne(fetch = FetchType.EAGER, cascade = {
             CascadeType.PERSIST,
             CascadeType.DETACH,
@@ -30,6 +31,9 @@ public class Employee extends User {
     })
     @JoinColumn(name = "job_name_id")
     private PrivilegeGroup jobName;
+
+     */
+    private String jobName;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH,
             CascadeType.MERGE, CascadeType.REFRESH},

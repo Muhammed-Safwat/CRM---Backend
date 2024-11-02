@@ -14,6 +14,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 @Service
@@ -27,6 +28,8 @@ public class JwtTokenService {
 
     @Value("${security.jwt.access.expiration}")
     private int accessExpirationTime;
+
+    private static final Set<String> ALLOWED_ROLES = Set.of("USER", "ADMIN", "SUPER_ADMIN");
 
     public String generateRefreshToken(User user) {
         return generateToken(user, generateExtraClaims(user), refreshExpirationTime);
@@ -46,12 +49,17 @@ public class JwtTokenService {
         }
     }
 
+
+
+
     private Map<String, Object> generateExtraClaims(User user) {
         String roleName = user.getRoles().stream()
-                .findFirst()
                 .map(Role::getName)
+                .filter(ALLOWED_ROLES::contains)
+                .findFirst()
                 .orElse("USER");
-        return Map.of("authority", user.getAuthorities(), "role", roleName);
+
+        return Map.of("authority", user.getMainRoles(), "role", roleName);
     }
 
     public Claims extractAllClaims(String token) {
@@ -83,6 +91,7 @@ public class JwtTokenService {
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setId(String.valueOf(user.getId()))
+                .setIssuer(user.getName())
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))

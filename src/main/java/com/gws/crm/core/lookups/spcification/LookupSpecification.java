@@ -11,10 +11,10 @@ import java.util.List;
 
 public class LookupSpecification<T extends BaseLookup> {
 
-    public static <T extends BaseLookup> Specification<T> filter(String keyword, Transition transition) {
+    public static <T extends BaseLookup> Specification<T> filter(String keyword,long userId, Transition transition) {
         List<Specification<T>> specs = new ArrayList<>();
         specs.add(fullTextSearch(keyword));
-        specs.add(filterByAdminId(transition.getUserId()));
+        specs.add(filterByAdminId(userId));
         return Specification.allOf(specs);
     }
 
@@ -42,7 +42,7 @@ public class LookupSpecification<T extends BaseLookup> {
         };
     }
 
-    private static <T extends BaseLookup> Specification<T> filterByAdminId(Long id) {
+    private static <T extends BaseLookup> Specification<T> filterByAdminId(long id) {
         return (root, query, criteriaBuilder) -> {
             return criteriaBuilder.equal(root.get("admin").get("id"), id);
         };

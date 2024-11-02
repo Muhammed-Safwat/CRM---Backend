@@ -3,6 +3,8 @@ package com.gws.crm.core.lookups.service.impl;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.core.admin.repository.AdminRepository;
+import com.gws.crm.core.employee.entity.Employee;
+import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.lookups.dto.LookupDTO;
 import com.gws.crm.core.lookups.entity.BaseLookup;
 import com.gws.crm.core.lookups.repository.BaseLookupRepository;
@@ -31,11 +33,20 @@ public abstract class BaseLookupServiceImpl<T extends BaseLookup, D extends Look
     @Autowired
     private AdminRepository adminRepository;
 
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
     @Override
     public ResponseEntity<?> getAll(int page, int size, String keyword, Transition transition) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
+        long id = transition.getUserId();
+        if("USER".equals(transition.getRole())){
+          Employee employee = employeeRepository.findById(transition.getUserId())
+                  .orElseThrow(NotFoundResourceException::new);
+          id = employee.getAdmin().getId();
+        }
 
-        Specification<T> specification = LookupSpecification.filter(keyword, transition);
+        Specification<T> specification = LookupSpecification.filter(keyword,id, transition);
 
         Page<T> lookupPage = repository.findAll(specification, pageable);
 
@@ -46,7 +57,13 @@ public abstract class BaseLookupServiceImpl<T extends BaseLookup, D extends Look
 
     @Override
     public ResponseEntity<?> getAll(Transition transition) {
-        List<T> lookupList = repository.findAllByAdminId(transition.getUserId());
+        long id = transition.getUserId();
+        if("USER".equals(transition.getRole())){
+            Employee employee = employeeRepository.findById(transition.getUserId())
+                    .orElseThrow(NotFoundResourceException::new);
+            id = employee.getAdmin().getId();
+        }
+        List<T> lookupList = repository.findAllByAdminId(id);
         log.info(lookupList.toString());
         return success(lookupList);
     }

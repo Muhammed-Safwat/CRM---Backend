@@ -2,6 +2,7 @@ package com.gws.crm.core.employee.service.imp;
 
 import com.gws.crm.authentication.constants.RoleName;
 import com.gws.crm.authentication.entity.Privilege;
+import com.gws.crm.authentication.entity.PrivilegeGroup;
 import com.gws.crm.authentication.entity.Role;
 import com.gws.crm.authentication.repository.PrivilegeRepository;
 import com.gws.crm.authentication.repository.RoleRepository;
@@ -65,28 +66,34 @@ public class EmployeeServiceImp implements EmployeeService {
             return error("Email is already exist");
         }
         log.info("Transition send {}", transition.getUserId());
-        Admin admin = adminRepository.findById(transition.getUserId()).orElseThrow(NotFoundResourceException::new);
+        Admin admin = adminRepository.findById(transition.getUserId())
+                .orElseThrow(NotFoundResourceException::new);
 
         if (admin.getMaxNumberOfUsers() <= admin.getEmployees().size()) {
             return error("The maximum number of users for this account has been reached. No additional users can be added.");
         }
 
         // LocalDateTime accountExpirationDateTime = employeeDto.getAccountExpirationDate().atStartOfDay();
+
+        Set<Privilege> privileges = new HashSet<>(privilegeRepository.findAllById(employeeDto.getPrivileges()));
+        PrivilegeGroup jobName = privilegeGroupRepository.getReferenceById(employeeDto.getJobTitleId());
         Role role = roleRepository.findByName(RoleName.USER.toString());
+        Role jobNameRole = roleRepository.findByName(jobName.getJobName().replace(" ","_").toUpperCase());
         Set<Role> roles = new HashSet<>();
         roles.add(role);
-        Set<Privilege> privileges = new HashSet<>(privilegeRepository.findAllById(employeeDto.getPrivileges()));
-        Employee employee = Employee.builder().name(employeeDto.getName())
+        roles.add(jobNameRole);
+        Employee employee = Employee.builder()
+                .name(employeeDto.getName())
                 .admin(admin)
                 .username(employeeDto.getEmail())
                 .phone(employeeDto.getPhone())
                 .password(passwordEncoder.encode(employeeDto.getPassword()))
-                .jobName(privilegeGroupRepository.getReferenceById(employeeDto.getJobTitleId()))
+                .jobName(jobName.getJobName())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .enabled(true)
-                .locked(false).
-                accountNonExpired(admin.getAccountNonExpired())
+                .locked(false)
+                .accountNonExpired(admin.getAccountNonExpired())
                 .credentialsNonExpired(admin.getCredentialsNonExpired())
                 .roles(roles)
                 .privileges(privileges)
@@ -127,7 +134,7 @@ public class EmployeeServiceImp implements EmployeeService {
         employee.setName(employeeDto.getName());
         employee.setPhone(employeeDto.getPhone());
         employee.setUsername(employeeDto.getEmail());
-        employee.setJobName(privilegeGroupRepository.getReferenceById(employeeDto.getJobTitleId()));
+        employee.setJobName(privilegeGroupRepository.getReferenceById(employeeDto.getJobTitleId()).getJobName());
 
         Set<Privilege> privileges = new HashSet<>(privilegeRepository.findAllById(employeeDto.getPrivileges()));
         if (privileges.isEmpty()) {

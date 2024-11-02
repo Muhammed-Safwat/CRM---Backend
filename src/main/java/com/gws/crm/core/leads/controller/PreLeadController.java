@@ -17,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/leads/pre")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN') or hasRole('MARKETING_MANAGER') or hasRole('MARKETING')")
 public class PreLeadController {
 
     private final PreLeadService preLeadService;

@@ -32,7 +32,7 @@ public class EmployeeInfoResponse {
 
     private LocalDateTime credentialsNonExpired;
 
-    private PrivilegeGroupResponse jobName;
+    private String jobName;
 
     private Set<Privilege> privileges;
 }

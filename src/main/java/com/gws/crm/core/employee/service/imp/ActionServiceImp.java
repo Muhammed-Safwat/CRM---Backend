@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
@@ -128,7 +129,14 @@ public abstract class ActionServiceImp<T extends SalesLead> implements ActionSer
                 .createdAt(LocalDateTime.now());
 
         ActionOnLead actionOnLead = actionOnLeadBuilder.build();
-        lead.getActions().add(actionOnLead);
+        if(lead.getActions() !=null){
+            lead.getActions().add(actionOnLead);
+        }else {
+           ArrayList<ActionOnLead> actions =  new ArrayList<>();
+                   actions.add(actionOnLead);
+            lead.setActions(actions);
+        }
+
 
         if (lead.getSalesRep() != null) {
             ActionOnLead.ActionOnLeadBuilder assignActionBuilder = ActionOnLead.builder()

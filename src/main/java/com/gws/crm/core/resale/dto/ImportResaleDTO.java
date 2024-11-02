@@ -44,4 +44,6 @@ public class ImportResaleDTO {
     private String property;
 
     private String note;
+
+    private Long salesRep;
 }

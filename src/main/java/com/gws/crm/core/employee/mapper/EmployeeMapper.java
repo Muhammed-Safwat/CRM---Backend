@@ -29,7 +29,7 @@ public interface EmployeeMapper {
 
         employeeSimpleDTO.id(employee.getId());
         employeeSimpleDTO.name(employee.getName());
-        employeeSimpleDTO.jobName(employee.getJobName().getJobName());
+        employeeSimpleDTO.jobName(employee.getJobName());
         employeeSimpleDTO.username(employee.getUsername());
         return employeeSimpleDTO.build();
     }

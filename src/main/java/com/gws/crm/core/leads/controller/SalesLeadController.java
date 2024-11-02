@@ -38,7 +38,6 @@ public abstract class SalesLeadController<T extends SalesLead, D extends AddLead
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('ADD_CLIENT') or hasRole('ADMIN')")
     public ResponseEntity<?> addLead(@Valid @RequestBody D leadDTO,
                                      Transition transition) {
         return service.addLead(leadDTO, transition);
@@ -51,14 +50,12 @@ public abstract class SalesLeadController<T extends SalesLead, D extends AddLead
     }
 
     @DeleteMapping("/{leadId}")
-    @PreAuthorize("hasAuthority('ADD_CLIENT') or hasRole('ADMIN')")
     public ResponseEntity<?> deleteLead(@PathVariable Long leadId,
                                         Transition transition) {
         return service.deleteLead(leadId, transition);
     }
 
     @DeleteMapping("restore/{leadId}")
-    @PreAuthorize("hasAuthority('ADD_CLIENT') or hasRole('ADMIN')")
     public ResponseEntity<?> restoreLead(@PathVariable Long leadId,
                                          Transition transition) {
         return service.restoreLead(leadId, transition);

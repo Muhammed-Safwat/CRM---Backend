@@ -1,7 +1,9 @@
 package com.gws.crm.core.lookups.service.impl;
 
 import com.gws.crm.common.entities.Transition;
+import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.core.employee.dto.EmployeeSimpleDTO;
+import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.lookups.dto.ActionLookupDTO;
 import com.gws.crm.core.lookups.dto.LeadLookupsDTO;
@@ -34,24 +36,30 @@ public class LeadLookupsServiceImp implements LeadLookupsService {
 
     @Override
     public ResponseEntity<?> getLeadLookups(Transition transition) {
-        List<Broker> brokers = brokerRepository.findAllByAdminId(transition.getUserId());
+        long id = transition.getUserId();
+        if("USER".equals(transition.getRole())){
+            Employee employee = employeeRepository.findById(id)
+                    .orElseThrow(NotFoundResourceException::new);
+            id = employee.getAdmin().getId();
+        }
+        List<Broker> brokers = brokerRepository.findAllByAdminId(id);
         List<LeadStatus> leadStatuses = leadStatusRepository.findAll();
-        List<InvestmentGoal> investmentGoals = investmentGoalRepository.findAllByAdminId(transition.getUserId());
-        List<Project> projects = projectRepository.findAllByAdminId(transition.getUserId());
-        List<CancelReasons> cancelReasons = cancelReasonsRepository.findAllByAdminId(transition.getUserId());
-        List<EmployeeSimpleDTO> salesReps = employeeRepository.findAllByAdminId(transition.getUserId())
+        List<InvestmentGoal> investmentGoals = investmentGoalRepository.findAllByAdminId(id);
+        List<Project> projects = projectRepository.findAllByAdminId(id);
+        List<CancelReasons> cancelReasons = cancelReasonsRepository.findAllByAdminId(id);
+        List<EmployeeSimpleDTO> salesReps = employeeRepository.findAllByAdminId(id)
                 .stream()
                 .map(employee -> EmployeeSimpleDTO.builder()
                         .id(employee.getId())
                         .name(employee.getName())
-                        .jobName(employee.getJobName().getJobName())
+                        .jobName(employee.getJobName())
                         .build()
                 )
                 .collect(Collectors.toList());
-        List<Channel> channels = channelRepository.findAllByAdminId(transition.getUserId());
-        List<CommunicateWay> communicateWays = communicateWayRepository.findAllByAdminId(transition.getUserId());
-        List<CallOutcome> callOutcomes = callOutcomeRepository.findAllByAdminId(transition.getUserId());
-        List<Stage> stages = stageRepository.findAllByAdminId(transition.getUserId());
+        List<Channel> channels = channelRepository.findAllByAdminId(id);
+        List<CommunicateWay> communicateWays = communicateWayRepository.findAllByAdminId(id);
+        List<CallOutcome> callOutcomes = callOutcomeRepository.findAllByAdminId(id);
+        List<Stage> stages = stageRepository.findAllByAdminId(id);
 
         LeadLookupsDTO leadLookupsDTO = LeadLookupsDTO.builder()
                 .brokers(brokers)
@@ -71,9 +79,15 @@ public class LeadLookupsServiceImp implements LeadLookupsService {
 
     @Override
     public ResponseEntity<?> getActionLookups(Transition transition) {
-        List<CancelReasons> cancelReasons = cancelReasonsRepository.findAllByAdminId(transition.getUserId());
-        List<CallOutcome> callOutcomes = callOutcomeRepository.findAllByAdminId(transition.getUserId());
-        List<Stage> stages = stageRepository.findAllByAdminId(transition.getUserId());
+        long id = transition.getUserId();
+        if("USER".equals(transition.getRole())){
+            Employee employee = employeeRepository.findById(id)
+                    .orElseThrow(NotFoundResourceException::new);
+            id = employee.getAdmin().getId();
+        }
+        List<CancelReasons> cancelReasons = cancelReasonsRepository.findAllByAdminId(id);
+        List<CallOutcome> callOutcomes = callOutcomeRepository.findAllByAdminId(id);
+        List<Stage> stages = stageRepository.findAllByAdminId(id);
 
         ActionLookupDTO actionLookupDTO = ActionLookupDTO.builder()
                 .cancelReasons(cancelReasons)
@@ -83,7 +97,6 @@ public class LeadLookupsServiceImp implements LeadLookupsService {
 
         return success(actionLookupDTO);
     }
-
 
 }
 

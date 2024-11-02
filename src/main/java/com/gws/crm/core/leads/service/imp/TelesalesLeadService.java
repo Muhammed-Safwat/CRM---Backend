@@ -7,6 +7,7 @@ import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.common.service.ExcelSheetService;
 import com.gws.crm.core.admin.entity.Admin;
+import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.employee.service.imp.ActionServiceImp;
 import com.gws.crm.core.leads.dto.AddLeadDTO;
@@ -93,11 +94,16 @@ public class TelesalesLeadService extends SalesLeadServiceImp<TeleSalesLead, Add
                 .lastStage(leadDTO.getLastStage())
                 .creator(creator);
 
-        if (!transition.getRole().equals("ADMIN")) {
-            admin = employeeRepository.getReferenceById(transition.getUserId()).getAdmin();
+        if (transition.getRole().equals("USER")) {
+            Employee sales = employeeRepository.getReferenceById(transition.getUserId());
+            admin =  sales.getAdmin();
             leadBuilder.admin(admin);
+            leadBuilder.salesRep(sales);
         } else {
             leadBuilder.admin((Admin) creator);
+            if (leadDTO.getSalesRep() != null) {
+                leadBuilder.salesRep(employeeRepository.getReferenceById(leadDTO.getSalesRep()));
+            }
         }
 
         if (leadDTO.getInvestmentGoal() != null) {
@@ -110,10 +116,6 @@ public class TelesalesLeadService extends SalesLeadServiceImp<TeleSalesLead, Add
 
         if (leadDTO.getCancelReason() != null) {
             leadBuilder.cancelReasons(cancelReasonsRepository.getReferenceById(leadDTO.getCancelReason()));
-        }
-
-        if (leadDTO.getSalesRep() != null) {
-            leadBuilder.salesRep(employeeRepository.getReferenceById(leadDTO.getSalesRep()));
         }
 
         if (leadDTO.getChannel() != null) {
@@ -151,8 +153,8 @@ public class TelesalesLeadService extends SalesLeadServiceImp<TeleSalesLead, Add
 
         User creator = userRepository.findById(transition.getUserId()).orElseThrow(NotFoundResourceException::new);
         Admin admin = null;
-
-        if (!transition.getRole().equals("ADMIN")) {
+        boolean isAdmin = transition.getRole().equals("ADMIN") ;
+        if (!isAdmin) {
             admin = employeeRepository.getReferenceById(transition.getUserId()).getAdmin();
             existingLead.setAdmin(admin);
         } else {
@@ -186,7 +188,7 @@ public class TelesalesLeadService extends SalesLeadServiceImp<TeleSalesLead, Add
             existingLead.setCancelReasons(cancelReasonsRepository.getReferenceById(leadDTO.getCancelReason()));
         }
 
-        if (!(existingLead.getId() == leadDTO.getSalesRep())) {
+        if (isAdmin && !(existingLead.getId() == leadDTO.getSalesRep())) {
             existingLead.setSalesRep(employeeRepository.getReferenceById(leadDTO.getSalesRep()));
             leadActionService.setSalesAssignAction(existingLead, transition);
         }
@@ -233,7 +235,8 @@ public class TelesalesLeadService extends SalesLeadServiceImp<TeleSalesLead, Add
         User creator = userRepository.findById(transition.getUserId()).orElseThrow(NotFoundResourceException::new);
         Admin admin;
 
-        if (!transition.getRole().equals("ADMIN")) {
+        boolean isAdmin = transition.getRole().equals("ADMIN");
+        if (!isAdmin) {
             admin = employeeRepository.getReferenceById(transition.getUserId()).getAdmin();
         } else {
             admin = (Admin) creator;
@@ -269,8 +272,11 @@ public class TelesalesLeadService extends SalesLeadServiceImp<TeleSalesLead, Add
                 leadBuilder.cancelReasons(cancelReasonsRepository.findByNameAndAdminId(leadDTO.getCancelReason(), finalAdmin.getId()));
             }
 
-            if (leadDTO.getSalesRep() != null) {
+            if (isAdmin && leadDTO.getSalesRep() != null) {
                 leadBuilder.salesRep(employeeRepository.findByNameAndAdminId(leadDTO.getSalesRep(), finalAdmin.getId()));
+            }else {
+                final Employee sales = (Employee) creator;
+                leadBuilder.salesRep(sales);
             }
 
             if (leadDTO.getChannel() != null) {

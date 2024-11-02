@@ -26,6 +26,8 @@ public class AddPreLeadDTO {
 
     private Long channel;
 
+    private Long category;
+
     private Long project;
 
     private String link;

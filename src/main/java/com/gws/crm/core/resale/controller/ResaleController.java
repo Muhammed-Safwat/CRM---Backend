@@ -17,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/resales")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN') or hasRole('RESALE') or hasRole('RESALE_MANAGER')")
 public class ResaleController {
 
     private final ResaleService resaleService;
@@ -35,7 +36,6 @@ public class ResaleController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('ADD_CLIENT') or hasRole('ADMIN')")
     public ResponseEntity<?> addResale(@Valid @RequestBody AddResaleDTO resaleDTO,
                                        Transition transition) {
         return resaleService.addResale(resaleDTO, transition);
@@ -48,14 +48,12 @@ public class ResaleController {
     }
 
     @DeleteMapping("/{resaleId}")
-    @PreAuthorize("hasAuthority('ADD_CLIENT') or hasRole('ADMIN')")
     public ResponseEntity<?> deleteResale(@PathVariable Long resaleId,
                                           Transition transition) {
         return resaleService.deleteResale(resaleId, transition);
     }
 
     @DeleteMapping("restore/{resaleId}")
-    @PreAuthorize("hasAuthority('ADD_CLIENT') or hasRole('ADMIN')")
     public ResponseEntity<?> restoreResale(@PathVariable Long resaleId,
                                            Transition transition) {
         return resaleService.restoreResale(resaleId, transition);

@@ -7,6 +7,7 @@ import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.common.service.ExcelSheetService;
 import com.gws.crm.core.admin.entity.Admin;
+import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.employee.service.imp.ActionServiceImp;
 import com.gws.crm.core.leads.dto.AddLeadDTO;
@@ -92,14 +93,15 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
         List<Lead> leads = new ArrayList<>();
         User creator = userRepository.findById(transition.getUserId()).orElseThrow(NotFoundResourceException::new);
         Admin admin;
-
-        if (!transition.getRole().equals("ADMIN")) {
+        boolean isAdmin = transition.getRole().equals("ADMIN");
+        if (!isAdmin) {
             admin = employeeRepository.getReferenceById(transition.getUserId()).getAdmin();
         } else {
             admin = (Admin) creator;
         }
 
         Admin finalAdmin = admin;
+
 
         importLeadDTOS.forEach(leadDTO -> {
             Lead.LeadBuilder leadBuilder = Lead.builder()
@@ -116,6 +118,13 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
                     .updatedAt(LocalDateTime.now())
                     .status(leadStatusRepository.findByName(leadDTO.getStatus()));
 
+            if (isAdmin && leadDTO.getSalesRep() != null) {
+                leadBuilder.salesRep(employeeRepository.findByNameAndAdminId(leadDTO.getSalesRep(), finalAdmin.getId()));
+            }else {
+                final Employee sales = (Employee) creator;
+                leadBuilder.salesRep(sales);
+            }
+
             if (leadDTO.getInvestmentGoal() != null) {
                 leadBuilder.investmentGoal(investmentGoalRepository.findByNameAndAdminId(leadDTO.getInvestmentGoal(), finalAdmin.getId()));
             }
@@ -126,10 +135,6 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
 
             if (leadDTO.getCancelReason() != null) {
                 leadBuilder.cancelReasons(cancelReasonsRepository.findByNameAndAdminId(leadDTO.getCancelReason(), finalAdmin.getId()));
-            }
-
-            if (leadDTO.getSalesRep() != null) {
-                leadBuilder.salesRep(employeeRepository.findByNameAndAdminId(leadDTO.getSalesRep(), finalAdmin.getId()));
             }
 
             if (leadDTO.getChannel() != null) {
@@ -180,11 +185,16 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
                 .actions(new ArrayList<>())
                 .creator(creator);
 
-        if (!transition.getRole().equals("ADMIN")) {
-            admin = employeeRepository.getReferenceById(transition.getUserId()).getAdmin();
+        if (transition.getRole().equals("USER")) {
+            Employee sales = employeeRepository.getReferenceById(transition.getUserId());
+            admin =  sales.getAdmin();
             leadBuilder.admin(admin);
+            leadBuilder.salesRep(sales);
         } else {
             leadBuilder.admin((Admin) creator);
+            if (leadDTO.getSalesRep() != null) {
+                leadBuilder.salesRep(employeeRepository.getReferenceById(leadDTO.getSalesRep()));
+            }
         }
 
         if (leadDTO.getInvestmentGoal() != null) {
@@ -199,9 +209,7 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
             leadBuilder.cancelReasons(cancelReasonsRepository.getReferenceById(leadDTO.getCancelReason()));
         }
 
-        if (leadDTO.getSalesRep() != null) {
-            leadBuilder.salesRep(employeeRepository.getReferenceById(leadDTO.getSalesRep()));
-        }
+
 
         if (leadDTO.getChannel() != null) {
             leadBuilder.channel(channelRepository.getReferenceById(leadDTO.getChannel()));
@@ -236,8 +244,8 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
         User creator = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
         Admin admin = null;
-
-        if (!transition.getRole().equals("ADMIN")) {
+        boolean isAdmin = transition.getRole().equals("ADMIN");
+        if (!isAdmin) {
             admin = employeeRepository.getReferenceById(transition.getUserId()).getAdmin();
             existingLead.setAdmin(admin);
         } else {
@@ -271,7 +279,7 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
             existingLead.setCancelReasons(cancelReasonsRepository.getReferenceById(leadDTO.getCancelReason()));
         }
 
-        if (!(existingLead.getId() == leadDTO.getSalesRep())) {
+        if (isAdmin && !(existingLead.getId() == leadDTO.getSalesRep())) {
             existingLead.setSalesRep(employeeRepository.getReferenceById(leadDTO.getSalesRep()));
             leadActionService.setSalesAssignAction(existingLead, transition);
         }

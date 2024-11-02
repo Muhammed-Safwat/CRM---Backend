@@ -8,6 +8,7 @@ import com.gws.crm.common.utils.TransitionUtilHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -83,10 +84,11 @@ public class SecurityConfig {
                                         "/webjars/**",
                                         "/swagger-ui/**")
                                 .permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/lookups/**").permitAll()
                                 .requestMatchers("/api/super-admin/admins/**").hasRole("SUPER_ADMIN")
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/api/employees/**").hasRole("ADMIN")
-                                //  .requestMatchers("/api/lookups/**").hasRole("ADMIN")
+                                .requestMatchers("/api/lookups/**").hasRole("ADMIN")
                                 .requestMatchers("/api/privileges/**").hasRole("ADMIN")
                                 .anyRequest().authenticated())
                 .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)

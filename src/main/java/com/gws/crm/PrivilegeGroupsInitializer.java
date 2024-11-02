@@ -69,7 +69,7 @@ public class PrivilegeGroupsInitializer {
         // createSuperAdmin();
 //        addSalesDirectorRole();
 //        addTeamLeadRole();
-//        salesRep();
+//            salesRep();
 //        marketingRole();
 //        dataEntry();
 //        accountant();
@@ -77,7 +77,7 @@ public class PrivilegeGroupsInitializer {
 //        customerServiceManagement();
 //        customerServiceAgent();
 //        marketingManger();
-//        salesManger();
+//         salesManger();
 //        qualityControl();
 //        salesAdminRole();
 //        teleSalesLeader();
@@ -735,7 +735,7 @@ public class PrivilegeGroupsInitializer {
         List<Privilege> privileges = new ArrayList<>();
         // Save the privilege group for "Sales Rep"
         PrivilegeGroup privilegeGroup = PrivilegeGroup.builder()
-                .jobName("Sales Rep")
+                .jobName("Resale")
                 .privileges(privileges)
                 .build();
         // Leads
@@ -2006,7 +2006,7 @@ public class PrivilegeGroupsInitializer {
         List<Privilege> privileges = new ArrayList<>();
         // Create and save the privilege group for "Sales Manager"
         PrivilegeGroup privilegeGroup = PrivilegeGroup.builder()
-                .jobName("Sales Manager")
+                .jobName("Resale Manager")
                 .privileges(privileges)
                 .build();
         // Leads

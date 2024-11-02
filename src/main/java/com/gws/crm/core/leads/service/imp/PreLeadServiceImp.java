@@ -23,6 +23,7 @@ import com.gws.crm.core.leads.repository.BaseLeadRepository;
 import com.gws.crm.core.leads.repository.LeadRepository;
 import com.gws.crm.core.leads.repository.PreLeadRepository;
 import com.gws.crm.core.leads.service.PreLeadService;
+import com.gws.crm.core.lookups.repository.CategoryRepository;
 import com.gws.crm.core.lookups.repository.ChannelRepository;
 import com.gws.crm.core.lookups.repository.LeadStatusRepository;
 import com.gws.crm.core.lookups.repository.ProjectRepository;
@@ -63,13 +64,12 @@ public class PreLeadServiceImp implements PreLeadService {
     private final LeadRepository leadRepository ;
     private final LeadActionService actionServiceImp;
     private final LeadStatusRepository leadStatusRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public ResponseEntity<?> getAllPreLead(PreLeadCriteria preLeadCriteria, Transition transition) {
         Specification<PreLead> leadSpecification = filter(preLeadCriteria, transition);
-        log.info("Page size ====> {}", preLeadCriteria);
         Pageable pageable = PageRequest.of(preLeadCriteria.getPage(), preLeadCriteria.getSize());
-        log.info("Page size ====> {}", pageable);
         Page<PreLead> leadPage = preLeadRepository.findAll(leadSpecification, pageable);
         Page<PreLeadResponse> leadResponses = preLeadMapper.toDTOPage(leadPage);
         return success(leadResponses);
@@ -161,7 +161,6 @@ public class PreLeadServiceImp implements PreLeadService {
             if (leadDTO.getProject() != null) {
                 leadBuilder.project(projectRepository.findByNameAndAdminId(leadDTO.getProject(), finalAdmin.getId()));
             }
-
 
             PreLead lead = leadBuilder.build();
 

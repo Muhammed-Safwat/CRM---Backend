@@ -26,8 +26,9 @@ public class ResaleCriteria {
     private List<Long> category;
     private List<Long> property;
     private String note;
-    private List<Long> creator;
     private LocalDate createdAt;
+    private List<Long> creator;
+    private List<Long> salesRep;
     private boolean deleted;
     private boolean myLead;
 

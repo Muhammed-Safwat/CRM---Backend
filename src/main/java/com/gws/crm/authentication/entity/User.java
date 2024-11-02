@@ -61,6 +61,7 @@ public abstract class User implements UserDetails, Subscriber {
     @Column(nullable = false)
     private LocalDateTime credentialsNonExpired = LocalDateTime.MAX;
 
+    @Getter
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -84,6 +85,14 @@ public abstract class User implements UserDetails, Subscriber {
                 .map(privilege -> new SimpleGrantedAuthority("PRIV_" + privilege.getName()))
                 .collect(Collectors.toSet()));
 
+        return authorities;
+    }
+
+    public  Collection<? extends GrantedAuthority>  getMainRoles() {
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        for (Role role : roles) {
+            authorities.add(new SimpleGrantedAuthority(role.getName()));
+        }
         return authorities;
     }
 

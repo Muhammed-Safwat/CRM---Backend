@@ -114,7 +114,7 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
         actionServiceImp.setSalesAssignAction(lead, transition);
         AssignResponse response = AssignResponse.builder()
                 .salesName(employee.getName())
-                .jobTitle(employee.getJobName().getJobName())
+                .jobTitle(employee.getJobName())
                 .assignAt(LocalDateTime.now())
                 .build();
         return success(response);

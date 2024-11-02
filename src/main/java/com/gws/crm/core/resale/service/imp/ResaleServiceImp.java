@@ -7,7 +7,9 @@ import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.common.service.ExcelSheetService;
 import com.gws.crm.core.admin.entity.Admin;
+import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
+import com.gws.crm.core.leads.repository.SalesLeadRepository;
 import com.gws.crm.core.lookups.repository.CategoryRepository;
 import com.gws.crm.core.lookups.repository.ProjectRepository;
 import com.gws.crm.core.lookups.repository.PropertyTypeRepository;
@@ -54,6 +56,7 @@ public class ResaleServiceImp implements ResaleService {
     private final ExcelSheetService excelSheetService;
     private final ResaleStatusRepository resaleStatusRepository;
     private final ResaleTypeRepository resaleTypeRepository;
+    private final SalesLeadRepository salesLeadRepository;
 
 
     @Override
@@ -67,19 +70,25 @@ public class ResaleServiceImp implements ResaleService {
 
     @Override
     public ResponseEntity<?> getResaleDetails(long resaleId, Transition transition) {
-        return null;
+        Resale resale  = resaleRepository.findById(resaleId)
+                .orElseThrow(NotFoundResourceException::new);
+        ResaleResponse resaleResponse = resaleMapper.toDTO(resale);
+        return success(resaleResponse);
     }
 
     @Override
     public ResponseEntity<?> addResale(AddResaleDTO resaleDTO, Transition transition) {
-        User creator = userRepository.findById(transition.getUserId()).orElseThrow(NotFoundResourceException::new);
+        User creator = userRepository.findById(transition.getUserId())
+                .orElseThrow(NotFoundResourceException::new);
         Admin admin = null;
+        Employee salesRep = null;
+        boolean isAdmin = transition.getRole().equals("ADMIN");
 
         Resale.ResaleBuilder resaleBuilder = Resale.builder()
                 .name(resaleDTO.getName())
                 .status(resaleStatusRepository.getReferenceById(resaleDTO.getStatus()))
                 .type(resaleTypeRepository.getReferenceById(resaleDTO.getType()))
-                .salesRep(employeeRepository.getReferenceById(resaleDTO.getSalesRep()))
+
                 .note(resaleDTO.getNote())
                 .email(resaleDTO.getEmail())
                 .phone(resaleDTO.getPhone())
@@ -88,14 +97,19 @@ public class ResaleServiceImp implements ResaleService {
                 .creator(creator)
                 .budget(resaleDTO.getBudget())
                 .BUA(resaleDTO.getBUA());
+        if(isAdmin){
+            resaleBuilder.admin((Admin) creator);
+            if(resaleDTO.getSalesRep() != null){
+                salesRep = employeeRepository.findById(transition.getUserId())
+                        .orElseThrow(NotFoundResourceException::new);
+            }
 
-        if (!transition.getRole().equals("ADMIN")) {
+        }else {
+            salesRep = (Employee) creator;
             admin = employeeRepository.getReferenceById(transition.getUserId()).getAdmin();
             resaleBuilder.admin(admin);
-        } else {
-            resaleBuilder.admin((Admin) creator);
         }
-
+        resaleBuilder.salesRep(salesRep);
         if (resaleDTO.getCategory() != null) {
             resaleBuilder.category(categoryRepository.getReferenceById(resaleDTO.getCategory()));
         }
@@ -115,7 +129,42 @@ public class ResaleServiceImp implements ResaleService {
 
     @Override
     public ResponseEntity<?> updateResale(AddResaleDTO resaleDTO, Transition transition) {
-        return null;
+        Resale resale = resaleRepository.findById(resaleDTO.getId())
+                .orElseThrow(NotFoundResourceException::new);
+        resale.setEmail(resaleDTO.getEmail());
+        resale.setCode(resale.getCode());
+        resale.setBudget(resale.getBudget());
+        resale.setUpdatedAt(LocalDateTime.now());
+        resale.setNote(resaleDTO.getNote());
+        resale.setName(resaleDTO.getName());
+        resale.setPhase(resaleDTO.getPhase());
+
+        if(resaleDTO.getSalesRep() != null){
+            resale.setSalesRep( employeeRepository.getReferenceById(resaleDTO.getSalesRep()));
+        }
+        if (resaleDTO.getCategory() != null) {
+            resale.setCategory(categoryRepository.getReferenceById(resaleDTO.getCategory()));
+        }
+
+        if (resaleDTO.getProject() != null) {
+            resale.setProject(projectRepository.getReferenceById(resaleDTO.getProject()));
+        }
+
+        if (resaleDTO.getProperty() != null) {
+            resale.setProperty(propertyTypeRepository.getReferenceById(resaleDTO.getProperty()));
+        }
+
+        if (resaleDTO.getType() != null) {
+            resale.setType(resaleTypeRepository.getReferenceById(resaleDTO.getType()));
+        }
+
+        if (resaleDTO.getStatus() != null) {
+            resale.setStatus(resaleStatusRepository.getReferenceById(resaleDTO.getStatus()));
+        }
+
+        resaleRepository.save(resale);
+        ResaleResponse resaleResponse = resaleMapper.toDTO(resale);
+        return success(resaleResponse);
     }
 
     @Override
@@ -153,10 +202,13 @@ public class ResaleServiceImp implements ResaleService {
         User creator = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
         Admin admin;
-
-        if (!transition.getRole().equals("ADMIN")) {
-            admin = employeeRepository.getReferenceById(transition.getUserId()).getAdmin();
+        Employee salesRep;
+        boolean isAdmin = transition.getRole().equals("ADMIN");
+        if (!isAdmin) {
+            salesRep = employeeRepository.getReferenceById(transition.getUserId());
+            admin = salesRep.getAdmin();
         } else {
+            salesRep = null;
             admin = (Admin) creator;
         }
 
@@ -180,7 +232,11 @@ public class ResaleServiceImp implements ResaleService {
                     .deleted(false)
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now());
-
+            if (!isAdmin) {
+               resaleBuilder.salesRep(salesRep);
+            } else if (resaleDTO.getSalesRep() != null) {
+                resaleBuilder.salesRep(employeeRepository.getReferenceById(resaleDTO.getSalesRep()));
+            }
             if (resaleDTO.getProject() != null) {
                 resaleBuilder.project(projectRepository.findByNameAndAdminId(resaleDTO.getProject(), finalAdmin.getId()));
             }

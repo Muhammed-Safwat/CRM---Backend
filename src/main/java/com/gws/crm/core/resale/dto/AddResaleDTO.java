@@ -11,6 +11,8 @@ import lombok.*;
 @AllArgsConstructor
 public class AddResaleDTO {
 
+    private Long id ;
+
     @NotNull
     @NotBlank
     private String name;
@@ -25,8 +27,7 @@ public class AddResaleDTO {
     @NotNull
     private Long type;
 
-    @NotNull
-    private long salesRep;
+    private Long salesRep;
 
     private String email;
 

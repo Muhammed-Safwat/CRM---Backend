@@ -15,6 +15,7 @@ public class ImportPreLeadDTO {
     private String country;
     private String phoneNumbers;
     private String channel;
+    private String category;
     private String link;
     private String note;
     private String project;

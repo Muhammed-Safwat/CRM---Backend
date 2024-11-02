@@ -1,5 +1,6 @@
 package com.gws.crm.authentication.filters;
 
+import com.gws.crm.authentication.config.AuthenticationProviderService;
 import com.gws.crm.authentication.repository.UserRepository;
 import com.gws.crm.authentication.utils.JwtTokenService;
 import com.gws.crm.common.exception.NotFoundResourceException;
@@ -9,7 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.JwtValidationException;
@@ -43,7 +44,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             UserDetails userDetails = userRepository.findById(userId)
                     .orElseThrow(NotFoundResourceException::new);
 
-            if (!userDetails.isEnabled() || !userDetails.isAccountNonLocked()) {
+            if (!isUserValid(userDetails)) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType("application/json");
                 response.getWriter().write("Account expired or missing");
@@ -72,6 +73,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.setContentType("application/json");
         }
+    }
+
+    private boolean isUserValid(UserDetails user) {
+        return user.isEnabled() && user.isAccountNonExpired() &&
+                user.isAccountNonLocked() && user.isCredentialsNonExpired();
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {

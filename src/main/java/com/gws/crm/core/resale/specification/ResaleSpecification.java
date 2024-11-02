@@ -2,9 +2,12 @@ package com.gws.crm.core.resale.specification;
 
 
 import com.gws.crm.common.entities.Transition;
+import com.gws.crm.core.leads.dto.SalesLeadCriteria;
+import com.gws.crm.core.leads.entity.SalesLead;
 import com.gws.crm.core.resale.dto.ResaleCriteria;
 import com.gws.crm.core.resale.entities.Resale;
 import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
@@ -22,7 +25,8 @@ public class ResaleSpecification {
             specs.add(filterByDeleted(resaleCriteria.isDeleted()));
             specs.add(filterByCreatedAt(resaleCriteria.getCreatedAt()));
             specs.add(filterByUser(resaleCriteria, transition));
-            specs.add(filterByCreator(resaleCriteria.getCreator()));
+            specs.add(filterBySalesReps(resaleCriteria.getSalesRep(),transition));
+            specs.add(filterByCreators(resaleCriteria.getCreator(),transition));
             specs.add(filterByCategory(resaleCriteria.getCategory()));
             specs.add(filterByProject(resaleCriteria.getProject()));
             specs.add(filterByProperty(resaleCriteria.getProject()));
@@ -32,14 +36,36 @@ public class ResaleSpecification {
         return Specification.allOf(specs);
     }
 
-    private static Specification<Resale> filterByUser(ResaleCriteria resaleCriteria, Transition transition) {
-        if (resaleCriteria.isMyLead()) {
-            return filterByCreator(List.of(transition.getUserId()));
-        }
-        return filterByAdminId(transition.getUserId());
+    private static Specification<Resale> filterByUser(ResaleCriteria leadCriteria, Transition transition) {
+        return (root, query, criteriaBuilder) -> {
+            Predicate predicate = criteriaBuilder.conjunction();
+
+            if (transition.getRole().equals("USER")) {
+                predicate = criteriaBuilder.and(predicate,
+                        criteriaBuilder.equal(root.get("salesRep").get("id"), transition.getUserId())
+                );
+            } else if (leadCriteria.isMyLead() && transition.getRole().equals("ADMIN")) {
+
+                predicate = criteriaBuilder.and(predicate,
+                        criteriaBuilder.isNull(root.get("salesRep"))
+                );
+            }
+
+
+            return predicate;
+        };
     }
 
-    // Full text search specification
+    private static Specification<Resale> filterBySalesReps(List<Long> salesReps,Transition transition) {
+        return (root, query, criteriaBuilder) -> {
+            if (salesReps == null || salesReps.isEmpty() || !transition.getRole().equals("ADMIN")) {
+                return criteriaBuilder.conjunction();
+            }
+
+            return root.join("salesRep", JoinType.INNER).get("id").in(salesReps);
+        };
+    }
+
     private static Specification<Resale> fullTextSearch(String keyword) {
         return (root, query, criteriaBuilder) -> {
             if (!StringUtils.hasText(keyword)) {
@@ -57,6 +83,15 @@ public class ResaleSpecification {
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("phone")), lowerKeyword)
 
             );
+        };
+    }
+
+    private static Specification<Resale> filterByCreators(List<Long> creatorId,Transition transition) {
+        return (root, query, criteriaBuilder) -> {
+            if(creatorId == null || creatorId.isEmpty() || !transition.getRole().equals("ADMIN")) {
+                return criteriaBuilder.conjunction();
+            }
+            return root.join("creator", JoinType.INNER).get("id").in(creatorId);
         };
     }
 

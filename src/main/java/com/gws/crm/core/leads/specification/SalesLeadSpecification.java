@@ -4,6 +4,7 @@ import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.leads.dto.SalesLeadCriteria;
 import com.gws.crm.core.leads.entity.SalesLead;
 import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
@@ -48,7 +49,7 @@ public class SalesLeadSpecification<T extends SalesLead> {
             specs.add(filterByStage(salesLeadCriteria.getStage()));
 
             specs.add(filterByUser(salesLeadCriteria, transition));
-            specs.add(filterBySalesReps(salesLeadCriteria.getSalesRep()));
+            specs.add(filterBySalesReps(salesLeadCriteria.getSalesRep(),transition));
             specs.add(filterByCreators(salesLeadCriteria.getCreator(),transition));
         }
         return Specification.allOf(specs);
@@ -65,12 +66,24 @@ public class SalesLeadSpecification<T extends SalesLead> {
     }
 
     private static <T extends SalesLead> Specification<T> filterByUser(SalesLeadCriteria leadCriteria, Transition transition) {
-        if (leadCriteria.isMyLead()) {
-            return filterByCreators(List.of(transition.getUserId()),transition);
-        } else if (transition.getRole().equals("ADMIN")) {
-            return filterByAdminId(transition.getUserId());
-        }
-        return null;
+        return (root, query, criteriaBuilder) -> {
+            Predicate predicate = criteriaBuilder.conjunction();
+
+            if (transition.getRole().equals("USER")) {
+
+                predicate = criteriaBuilder.and(predicate,
+                        criteriaBuilder.equal(root.get("salesRep").get("id"), transition.getUserId())
+                );
+            } else if (leadCriteria.isMyLead() && transition.getRole().equals("ADMIN")) {
+
+                predicate = criteriaBuilder.and(predicate,
+                        criteriaBuilder.isNull(root.get("salesRep"))
+                );
+            }
+
+
+            return predicate;
+        };
     }
 
     // Full text search specification
@@ -132,9 +145,9 @@ public class SalesLeadSpecification<T extends SalesLead> {
         };
     }
 
-    private static <T extends SalesLead> Specification<T> filterBySalesReps(List<Long> salesReps) {
+    private static <T extends SalesLead> Specification<T> filterBySalesReps(List<Long> salesReps,Transition transition) {
         return (root, query, criteriaBuilder) -> {
-            if (salesReps == null || salesReps.isEmpty()) {
+            if (salesReps == null || salesReps.isEmpty() || !transition.getRole().equals("ADMIN")) {
                 return criteriaBuilder.conjunction();
             }
 
@@ -157,10 +170,8 @@ public class SalesLeadSpecification<T extends SalesLead> {
 
     private static <T extends SalesLead> Specification<T> filterByCreators(List<Long> creatorId,Transition transition) {
         return (root, query, criteriaBuilder) -> {
-            if ((creatorId == null || creatorId.isEmpty()) && transition.getRole().equals("ADMIN")) {
+            if(creatorId == null || creatorId.isEmpty() || !transition.getRole().equals("ADMIN")) {
                 return criteriaBuilder.conjunction();
-            }else if((creatorId == null || creatorId.isEmpty()) && transition.getRole().equals("USER")){
-                return root.join("creator", JoinType.INNER).get("id").in(transition.getUserId());
             }
              return root.join("creator", JoinType.INNER).get("id").in(creatorId);
         };
