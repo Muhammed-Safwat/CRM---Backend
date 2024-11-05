@@ -8,6 +8,8 @@ import com.gws.crm.core.employee.dto.EmployeeDto;
 import com.gws.crm.core.employee.dto.UpdateEmployeeDto;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 public interface EmployeeService {
 
     ResponseEntity<?> saveEmployee(EmployeeDto employeeDto, Transition transition);
@@ -27,4 +29,6 @@ public interface EmployeeService {
     ResponseEntity<?> getAllEmployee(EmployeeCriteria employeeCriteria, Transition transition);
 
     ResponseEntity<?> restoreEmployee(long employeeId, Transition transition);
+
+    ResponseEntity<?> getAllEmployeeType(List<String> types, Transition transition);
 }

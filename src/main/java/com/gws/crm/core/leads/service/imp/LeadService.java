@@ -6,6 +6,7 @@ import com.gws.crm.common.entities.ExcelFile;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.common.service.ExcelSheetService;
+import com.gws.crm.common.utils.PhoneNumberUtilsService;
 import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
@@ -13,6 +14,7 @@ import com.gws.crm.core.employee.service.imp.ActionServiceImp;
 import com.gws.crm.core.leads.dto.AddLeadDTO;
 import com.gws.crm.core.leads.dto.ImportLeadDTO;
 import com.gws.crm.core.leads.dto.LeadResponse;
+import com.gws.crm.core.leads.dto.PhoneNumberDTO;
 import com.gws.crm.core.leads.entity.Lead;
 import com.gws.crm.core.leads.entity.PhoneNumber;
 import com.gws.crm.core.leads.mapper.LeadMapper;
@@ -26,8 +28,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
+import static com.gws.crm.common.handler.ApiResponseHandler.error;
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
 import static com.gws.crm.common.utils.ExcelFileUtils.generateHeader;
 
@@ -49,13 +54,13 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
     private final PhoneNumberRepository phoneNumberRepository;
     private final LeadMapper leadMapper;
     private final ActionServiceImp<Lead> leadActionService;
-
+    private final PhoneNumberUtilsService phoneNumberUtilsService;
     protected LeadService(LeadRepository leadRepository,
                           LeadStatusRepository leadStatusRepository, InvestmentGoalRepository investmentGoalRepository,
                           CommunicateWayRepository communicateWayRepository, CancelReasonsRepository cancelReasonsRepository,
                           EmployeeRepository employeeRepository, ChannelRepository channelRepository, ProjectRepository projectRepository,
                           UserRepository userRepository, PhoneNumberMapper phoneNumberMapper, ExcelSheetService excelSheetService,
-                          BrokerRepository brokerRepository, PhoneNumberRepository phoneNumberRepository, LeadMapper leadMapper, ActionServiceImp<Lead> leadActionService) {
+                          BrokerRepository brokerRepository, PhoneNumberRepository phoneNumberRepository, LeadMapper leadMapper, ActionServiceImp<Lead> leadActionService, PhoneNumberUtilsService phoneNumberUtilsService) {
         super(leadRepository, leadActionService, employeeRepository);
         this.leadRepository = leadRepository;
         this.leadStatusRepository = leadStatusRepository;
@@ -72,6 +77,7 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
         this.phoneNumberRepository = phoneNumberRepository;
         this.leadMapper = leadMapper;
         this.leadActionService = leadActionService;
+        this.phoneNumberUtilsService = phoneNumberUtilsService;
     }
 
     @Override
@@ -87,6 +93,37 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
         List<Lead> leadList = createLeadsList(leads, transition);
         leadRepository.saveAll(leadList);
         return success("Lead Imported Successfully");
+    }
+
+    @Override
+    public ResponseEntity<?> isPhoneExist(List<String> phones, Transition transition) {
+        HashMap<String, Object> responseBody = new HashMap<>();
+        List<String> existingPhones = new ArrayList<>();
+
+        for (String phone : phones) {
+            boolean exists = leadRepository.isPhoneExist(phone);
+            if (exists) {
+                existingPhones.add(phone);
+            }
+        }
+
+        if (!existingPhones.isEmpty()) {
+            String message = "The following phone numbers already exist: " + String.join(", ", existingPhones);
+            responseBody.put("duplicateExists", true);
+            responseBody.put("message", message);
+        } else {
+            responseBody.put("duplicateExists", false);
+            responseBody.put("message", "No duplicate phone numbers found.");
+        }
+
+        return success(responseBody);
+    }
+    @Override
+    public ResponseEntity<?> isPhoneExist(String phone, Transition transition) {
+        boolean exists = leadRepository.isPhoneExist(phone);
+        HashMap<String,Boolean> body = new HashMap<>();
+        body.put("isExists",exists);
+        return success(body);
     }
 
     private List<Lead> createLeadsList(List<ImportLeadDTO> importLeadDTOS, Transition transition) {
@@ -120,7 +157,7 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
 
             if (isAdmin && leadDTO.getSalesRep() != null) {
                 leadBuilder.salesRep(employeeRepository.findByNameAndAdminId(leadDTO.getSalesRep(), finalAdmin.getId()));
-            }else {
+            }else if(!isAdmin) {
                 final Employee sales = (Employee) creator;
                 leadBuilder.salesRep(sales);
             }
@@ -209,8 +246,6 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
             leadBuilder.cancelReasons(cancelReasonsRepository.getReferenceById(leadDTO.getCancelReason()));
         }
 
-
-
         if (leadDTO.getChannel() != null) {
             leadBuilder.channel(channelRepository.getReferenceById(leadDTO.getChannel()));
         }
@@ -224,6 +259,7 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
         }
 
         Lead lead = leadBuilder.build();
+
         List<PhoneNumber> phoneNumbers = phoneNumberMapper.toEntityList(leadDTO.getPhoneNumbers(), lead);
         lead.setPhoneNumbers(phoneNumbers);
         return lead;

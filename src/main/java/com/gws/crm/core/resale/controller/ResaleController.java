@@ -74,5 +74,14 @@ public class ResaleController {
     public ResponseEntity<?> getLookups(Transition transition) {
         return resaleLookupsService.getLookups(transition);
     }
+    @GetMapping("/is-phone-exist/{phone}")
+    public ResponseEntity<?> isPhoneExist(@PathVariable String phone, Transition transition) {
+        return resaleService.isPhoneExist(phone, transition);
+    }
 
+
+    @PostMapping("/is-phone-exist")
+    public ResponseEntity<?> isPhoneExist(@RequestBody List<String> phones, Transition transition) {
+        return resaleService.isPhoneExist(phones, transition);
+    }
 }

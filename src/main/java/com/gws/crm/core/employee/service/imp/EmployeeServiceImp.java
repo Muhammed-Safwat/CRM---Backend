@@ -197,4 +197,16 @@ public class EmployeeServiceImp implements EmployeeService {
         return success("User Restored");
     }
 
+    @Override
+    public ResponseEntity<?> getAllEmployeeType(List<String> types, Transition transition) {
+        long adminId = transition.getUserId();
+
+        List<Employee> employees = employeeRepository.findAllByAdminIdAndJobNameIn(adminId, types);
+
+        List<EmployeeSimpleDTO> employeeInfoResponseList = employeeMapper.toListSimpleDto(employees);
+
+        return success(employeeInfoResponseList);
+    }
+
+
 }

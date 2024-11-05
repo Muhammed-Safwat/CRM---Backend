@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
@@ -88,7 +89,6 @@ public class ResaleServiceImp implements ResaleService {
                 .name(resaleDTO.getName())
                 .status(resaleStatusRepository.getReferenceById(resaleDTO.getStatus()))
                 .type(resaleTypeRepository.getReferenceById(resaleDTO.getType()))
-
                 .note(resaleDTO.getNote())
                 .email(resaleDTO.getEmail())
                 .phone(resaleDTO.getPhone())
@@ -100,7 +100,7 @@ public class ResaleServiceImp implements ResaleService {
         if(isAdmin){
             resaleBuilder.admin((Admin) creator);
             if(resaleDTO.getSalesRep() != null){
-                salesRep = employeeRepository.findById(transition.getUserId())
+                salesRep = employeeRepository.findById(resaleDTO.getSalesRep())
                         .orElseThrow(NotFoundResourceException::new);
             }
 
@@ -195,6 +195,39 @@ public class ResaleServiceImp implements ResaleService {
         List<Resale> resaleList = createResaleList(resales, transition);
         resaleRepository.saveAll(resaleList);
         return success("Resale Imported Successfully");
+    }
+
+    @Override
+    public ResponseEntity<?> isPhoneExist(List<String> phones, Transition transition) {
+        HashMap<String, Object> responseBody = new HashMap<>();
+        List<String> existingPhones = new ArrayList<>();
+
+        for (String phone : phones) {
+            boolean exists = resaleRepository.existsByPhone(phone);
+            if (exists) {
+                existingPhones.add(phone);
+            }
+        }
+
+        if (!existingPhones.isEmpty()) {
+            String message = "The following phone numbers already exist: " + String.join(", ", existingPhones);
+            responseBody.put("duplicateExists", true);
+            responseBody.put("message", message);
+        } else {
+            responseBody.put("duplicateExists", false);
+            responseBody.put("message", "No duplicate phone numbers found.");
+        }
+
+        return success(responseBody);
+    }
+
+
+    @Override
+    public ResponseEntity<?> isPhoneExist(String phone, Transition transition) {
+        boolean isExists =  resaleRepository.existsByPhone(phone);
+        HashMap<String,Boolean> body = new HashMap<>();
+        body.put("isExists",isExists);
+        return success(body);
     }
 
     private List<Resale> createResaleList(List<ImportResaleDTO> importResaleDTOS, Transition transition) {

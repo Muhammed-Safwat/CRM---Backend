@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @Slf4j
 @RequestMapping("api/employees")
@@ -25,6 +27,11 @@ public class EmployeeController {
     @GetMapping
     public ResponseEntity<?> getAllEmployee(Transition transition) {
         return employeeService.getAllEmployee(transition);
+    }
+
+    @PostMapping("/type")
+    public ResponseEntity<?> getAllEmployeeType(@RequestBody List<String> types , Transition transition ) {
+        return employeeService.getAllEmployeeType(types, transition);
     }
 
     @PostMapping("all")

@@ -34,6 +34,8 @@ public class Resale {
 
     private String name;
 
+    @Column(unique = true, nullable = false)
+    @org.hibernate.annotations.Index(name = "idx_phone")
     private String phone;
 
     private String email;

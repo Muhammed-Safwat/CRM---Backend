@@ -1,21 +1,34 @@
 package com.gws.crm.authentication.controller;
 
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
 import com.gws.crm.authentication.dto.RefreshTokenDto;
 import com.gws.crm.authentication.dto.ResetPasswordDto;
 import com.gws.crm.authentication.dto.SignInRequest;
 import com.gws.crm.authentication.service.CommonAuthService;
+import com.gws.crm.common.exception.InvalidPhoneNumberException;
+import com.gws.crm.common.utils.PhoneNumberUtilsService;
+import com.gws.crm.core.leads.dto.PhoneNumberDTO;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import static com.gws.crm.common.utils.CountryCodeMapper.getRegionCode;
 
 @RestController
 @RequestMapping("auth")
 @AllArgsConstructor
+@Slf4j
 public class CommonAuthController {
 
     private final CommonAuthService commonAuthService;
+    private final PhoneNumberUtilsService phoneNumberUtilsService;
+    private final PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 
     @PostMapping("signin")
     public ResponseEntity<?> signIn(@Valid @RequestBody SignInRequest signInRequest) {
@@ -46,6 +59,25 @@ public class CommonAuthController {
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshAccessToken(@Valid @RequestBody RefreshTokenDto refreshTokenRequest) {
         return commonAuthService.refreshAccessToken(refreshTokenRequest);
+    }
+
+    @PostMapping("/validate-phone")
+    public ResponseEntity<String> validatePhoneNumber(@RequestBody PhoneNumberDTO phoneNumberDto) {
+        try {
+            boolean isValid = phoneNumberUtilsService.isValidPhoneNumber(phoneNumberDto.getPhone(),
+                    getRegionCode(phoneNumberDto.getCode()));
+            log.info("Country code =>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> {},{}", phoneNumberDto.getCode(), phoneNumberDto.getCode());
+            Phonenumber.PhoneNumber phonenumber = phoneUtil.parse(phoneNumberDto.getPhone(),
+                    getRegionCode(phoneNumberDto.getCode()));
+            log.info("Phone Number {}", phonenumber.getNationalNumber());
+            log.info("is valid Phone Number {}", isValid);
+            log.info(phoneNumberDto.getCode());
+            return ResponseEntity.ok(phoneNumberDto.getCode());
+        } catch (InvalidPhoneNumberException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        } catch (NumberParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

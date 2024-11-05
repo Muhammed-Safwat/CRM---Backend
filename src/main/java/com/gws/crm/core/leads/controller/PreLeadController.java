@@ -65,4 +65,14 @@ public class PreLeadController {
                                            Transition transition){
         return preLeadService.assignToSales(assignToSalesDTO,transition);
     }
+
+    @GetMapping("/is-phone-exist/{phone}")
+    public ResponseEntity<?> isPhoneExist(@PathVariable String phone, Transition transition) {
+        return preLeadService.isPhoneExist(phone, transition);
+    }
+
+    @PostMapping("/is-phone-exist")
+    public ResponseEntity<?> isPhoneExist(@RequestBody List<String> phones, Transition transition) {
+        return preLeadService.isPhoneExist(phones, transition);
+    }
 }

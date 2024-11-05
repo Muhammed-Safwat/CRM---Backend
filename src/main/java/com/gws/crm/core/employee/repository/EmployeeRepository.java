@@ -37,4 +37,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
     void restoreByIdAndAdminId(long id, long adminId);
 
     Employee findByNameAndAdminId(String salesRep, long id);
+
+    List<Employee> findAllByAdminIdAndJobNameIn(Long adminId, List<String> jobNames);
+
 }

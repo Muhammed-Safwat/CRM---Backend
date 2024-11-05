@@ -1,6 +1,7 @@
 package com.gws.crm.common.handler;
 
 import com.gws.crm.common.entities.Transition;
+import com.gws.crm.common.exception.InvalidPhoneNumberException;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.common.helper.ApiResponse;
 import io.jsonwebtoken.JwtException;
@@ -41,6 +42,13 @@ public class GlobalExceptionHandler {
         String message = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
         logError("Exception occurred: " + message, ex);
         return ApiResponseHandler.error(HttpStatus.BAD_REQUEST, message);
+    }
+
+    @ExceptionHandler(InvalidPhoneNumberException.class)
+    public ResponseEntity<String> handleInvalidPhoneNumberException(InvalidPhoneNumberException ex) {
+        String message = ex.getMessage();
+        logError("Exception occurred: " + message, ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)

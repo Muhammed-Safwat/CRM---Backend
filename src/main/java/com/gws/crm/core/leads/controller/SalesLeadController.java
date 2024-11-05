@@ -77,4 +77,14 @@ public abstract class SalesLeadController<T extends SalesLead, D extends AddLead
         return service.assignSalesToLead(assignDTO, transition);
     }
 
+    @GetMapping("/is-phone-exist/{phone}")
+    public ResponseEntity<?> isPhoneExist(@PathVariable String phone, Transition transition) {
+        return service.isPhoneExist(phone, transition);
+    }
+
+    @PostMapping("/is-phone-exist")
+    public ResponseEntity<?> isPhoneExist(@RequestBody List<String> phones, Transition transition) {
+        return service.isPhoneExist(phones, transition);
+    }
+
 }

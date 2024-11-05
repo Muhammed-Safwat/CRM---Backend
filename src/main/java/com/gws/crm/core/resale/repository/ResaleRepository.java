@@ -23,4 +23,6 @@ public interface ResaleRepository extends JpaRepository<Resale, Long>, JpaSpecif
     @Query("UPDATE Resale l SET l.deleted = false WHERE l.id = :resaleId")
     void restoreResale(@Param("resaleId") long resaleId);
 
+    boolean existsByPhone(String phone);
+
 }

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.*;
 import static com.gws.crm.core.leads.specification.SalesLeadSpecification.filter;
@@ -28,8 +29,6 @@ import static com.gws.crm.core.leads.specification.SalesLeadSpecification.filter
 @Service
 @Transactional
 public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLeadDTO> implements SalesLeadService<T, D> {
-
-
     private final SalesLeadRepository<T> repository;
     private final ActionServiceImp<T> actionServiceImp;
     private final EmployeeRepository employeeRepository;

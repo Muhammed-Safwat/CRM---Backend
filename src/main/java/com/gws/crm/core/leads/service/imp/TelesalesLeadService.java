@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
@@ -229,6 +230,39 @@ public class TelesalesLeadService extends SalesLeadServiceImp<TeleSalesLead, Add
         leadRepository.saveAll(leadList);
         return success("Lead Imported Successfully");
     }
+
+    @Override
+    public ResponseEntity<?> isPhoneExist(String phone, Transition transition) {
+        boolean exists = leadRepository.isPhoneExist(phone);
+        HashMap<String,Boolean> body = new HashMap<>();
+        body.put("isExists",exists);
+        return success(body);
+    }
+
+    @Override
+    public ResponseEntity<?> isPhoneExist(List<String> phones, Transition transition) {
+        HashMap<String, Object> responseBody = new HashMap<>();
+        List<String> existingPhones = new ArrayList<>();
+
+        for (String phone : phones) {
+            boolean exists = leadRepository.isPhoneExist(phone);
+            if (exists) {
+                existingPhones.add(phone);
+            }
+        }
+
+        if (!existingPhones.isEmpty()) {
+            String message = "The following phone numbers already exist: " + String.join(", ", existingPhones);
+            responseBody.put("duplicateExists", true);
+            responseBody.put("message", message);
+        } else {
+            responseBody.put("duplicateExists", false);
+            responseBody.put("message", "No duplicate phone numbers found.");
+        }
+
+        return success(responseBody);
+    }
+
 
     private List<TeleSalesLead> createLeadsList(List<ImportLeadDTO> importLeadDTOS, Transition transition) {
         List<TeleSalesLead> leads = new ArrayList<>();

@@ -25,4 +25,6 @@ public interface PreLeadService {
     ResponseEntity<?> generateExcel(Transition transition);
 
     ResponseEntity<?> assignToSales(@Valid AssignToSalesDTO assignToSalesDTO, Transition transition);
+    ResponseEntity<?> isPhoneExist(List<String> phones, Transition transition);
+    ResponseEntity<?> isPhoneExist(String phone, Transition transition);
 }
