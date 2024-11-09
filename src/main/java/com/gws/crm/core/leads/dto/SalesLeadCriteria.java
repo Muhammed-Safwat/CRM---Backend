@@ -32,6 +32,7 @@ public class SalesLeadCriteria {
     private List<LocalDateTime> assignDate;
     private String budget;
     private String hasPayment;
+    private List<Long> subordinates;
     private String noAnswers;
     private List<LocalDateTime> createdAt;
     private Long type;

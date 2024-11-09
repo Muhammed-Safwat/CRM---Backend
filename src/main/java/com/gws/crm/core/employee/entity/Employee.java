@@ -13,6 +13,11 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Entity
 @Getter
 @Setter
@@ -22,17 +27,6 @@ import org.hibernate.annotations.DynamicUpdate;
 @SuperBuilder
 public class Employee extends User {
 
-    /*
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {
-            CascadeType.PERSIST,
-            CascadeType.DETACH,
-            CascadeType.MERGE,
-            CascadeType.REFRESH
-    })
-    @JoinColumn(name = "job_name_id")
-    private PrivilegeGroup jobName;
-
-     */
     private String jobName;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH,
@@ -40,6 +34,14 @@ public class Employee extends User {
             fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id")
     private Admin admin;
+
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.DETACH, CascadeType.MERGE,
+            CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(name = "employee_subordinates",
+            joinColumns = @JoinColumn(name = "manager_id"),
+            inverseJoinColumns = @JoinColumn(name = "subordinate_id"))
+    private List<Employee> subordinates = new ArrayList<>();
 
     @Override
     public void notify(EventType eventType, String message, NotificationService notificationService) {

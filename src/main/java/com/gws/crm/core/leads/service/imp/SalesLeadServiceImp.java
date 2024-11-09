@@ -1,5 +1,6 @@
 package com.gws.crm.core.leads.service.imp;
 
+import com.gws.crm.authentication.entity.User;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.core.employee.entity.Employee;
@@ -83,8 +84,15 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
 
     @Override
     public ResponseEntity<?> getLeads(SalesLeadCriteria salesLeadCriteria, Transition transition) {
+        if(transition.getRole().equals("USER")){
+           Employee employee =
+                   employeeRepository.findById(transition.getUserId())
+                           .orElseThrow(NotFoundResourceException::new);
+           salesLeadCriteria.setSubordinates(employee.getSubordinates().stream().map(User::getId).toList());
+           log.info("********************** %%%%%%%%%%%%%%%%% **********************");
+           log.info(salesLeadCriteria.getSubordinates().toString());
+        }
         Specification<T> leadSpecification = filter(salesLeadCriteria, transition);
-
         Pageable pageable = PageRequest.of(salesLeadCriteria.getPage(), salesLeadCriteria.getSize());
         Page<T> leadPage = repository.findAll(leadSpecification, pageable);
         Page<LeadResponse> leadResponses = mapEntityToDto(leadPage);

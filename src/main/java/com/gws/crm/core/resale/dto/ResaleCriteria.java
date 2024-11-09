@@ -31,7 +31,7 @@ public class ResaleCriteria {
     private List<Long> salesRep;
     private boolean deleted;
     private boolean myLead;
-
+    private List<Long> subordinates;
     @NotNull
     private Integer page;
     @NotNull

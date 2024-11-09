@@ -9,6 +9,7 @@ import com.gws.crm.common.handler.ApiResponseHandler;
 import com.gws.crm.common.service.ExcelSheetService;
 import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.admin.repository.AdminRepository;
+import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.employee.service.imp.ActionServiceImp;
 import com.gws.crm.core.employee.service.imp.LeadActionService;
@@ -69,6 +70,14 @@ public class PreLeadServiceImp implements PreLeadService {
 
     @Override
     public ResponseEntity<?> getAllPreLead(PreLeadCriteria preLeadCriteria, Transition transition) {
+        if(transition.getRole().equals("USER")){
+            Employee employee =
+                    employeeRepository.findById(transition.getUserId())
+                            .orElseThrow(NotFoundResourceException::new);
+            preLeadCriteria.setSubordinates(employee.getSubordinates().stream().map(User::getId).toList());
+            log.info("********************** %%%%%%%%%%%%%%%%% **********************");
+            log.info(preLeadCriteria.getSubordinates().toString());
+        }
         Specification<PreLead> leadSpecification = filter(preLeadCriteria, transition);
         Pageable pageable = PageRequest.of(preLeadCriteria.getPage(), preLeadCriteria.getSize());
         Page<PreLead> leadPage = preLeadRepository.findAll(leadSpecification, pageable);

@@ -1,11 +1,11 @@
 package com.gws.crm.core.employee.dto;
 
-import com.gws.crm.authentication.dto.PrivilegeGroupResponse;
 import com.gws.crm.authentication.entity.Privilege;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Setter
@@ -35,4 +35,7 @@ public class EmployeeInfoResponse {
     private String jobName;
 
     private Set<Privilege> privileges;
+
+    private List<EmployeeSimpleDTO> subordinates;
+
 }

@@ -6,7 +6,10 @@ import com.gws.crm.core.leads.entity.SalesLead;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
@@ -20,6 +23,11 @@ public class SalesLeadSpecification<T extends SalesLead> {
     public static <T extends SalesLead> Specification<T> filter(SalesLeadCriteria salesLeadCriteria, Transition transition) {
         List<Specification<T>> specs = new ArrayList<>();
         log.info(salesLeadCriteria.toString());
+        List<Long > ids = new ArrayList<>();
+        if(salesLeadCriteria.getSubordinates() != null){
+            ids.addAll(salesLeadCriteria.getSubordinates());
+        }
+        ids.add(transition.getUserId());
         if (salesLeadCriteria != null) {
             specs.add(orderByCreatedOrUpdated());
             specs.add(fullTextSearch(salesLeadCriteria.getKeyword()));
@@ -33,25 +41,17 @@ public class SalesLeadSpecification<T extends SalesLead> {
             specs.add(filterByCountry(salesLeadCriteria.getCountry()));
             specs.add(filterByDeleted(salesLeadCriteria.isDeleted()));
             specs.add(filterByCampaignId(salesLeadCriteria.getCampaignId()));
-            // specs.add(filterByLastActionDate(leadCriteria.getLastActionDate()));
-            // specs.add(filterByLastActionNoAction(leadCriteria.getLastActionNoAction()));
-            // specs.add(filterByStageDate(leadCriteria.getStageDate()));
-            // specs.add(filterByActionDate(leadCriteria.getActionDate()));
-            // specs.add(filterByAssignDate(leadCriteria.getAssignDate()));
             specs.add(filterByBudget(salesLeadCriteria.getBudget()));
-            // specs.add(filterByHasPayment(leadCriteria.getHasPayment()));
-            // specs.add(filterByNoAnswers(leadCriteria.getNoAnswers()));
-            // specs.add(filterByCreatedAt(salesLeadCriteria.getCreatedAt()));
             specs.add(filterByCreatedAt(salesLeadCriteria.getCreatedAt()));
             specs.add(filterByStageDate(salesLeadCriteria.getStageDate()));
             specs.add(filterByActionDate(salesLeadCriteria.getActionDate()));
             specs.add(filterByAssignDate(salesLeadCriteria.getAssignDate()));
             specs.add(filterByStage(salesLeadCriteria.getStage()));
-
-            specs.add(filterByUser(salesLeadCriteria, transition));
-            specs.add(filterBySalesReps(salesLeadCriteria.getSalesRep(),transition));
-            specs.add(filterByCreators(salesLeadCriteria.getCreator(),transition));
+            specs.add(filterByUser(ids, salesLeadCriteria.isMyLead(), transition));
+            specs.add(filterBySalesReps(salesLeadCriteria.getSalesRep(), transition));
+            specs.add(filterByCreators(salesLeadCriteria.getCreator(), transition));
         }
+
         return Specification.allOf(specs);
     }
 
@@ -68,7 +68,6 @@ public class SalesLeadSpecification<T extends SalesLead> {
     private static <T extends SalesLead> Specification<T> filterByUser(SalesLeadCriteria leadCriteria, Transition transition) {
         return (root, query, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
-
             if (transition.getRole().equals("USER")) {
 
                 predicate = criteriaBuilder.and(predicate,
@@ -80,11 +79,29 @@ public class SalesLeadSpecification<T extends SalesLead> {
                         criteriaBuilder.isNull(root.get("salesRep"))
                 );
             }
-
-
             return predicate;
         };
     }
+
+    private static <T extends SalesLead> Specification<T> filterByUser(List<Long> ids,boolean isMyLead,
+                                                                       Transition transition) {
+        return (root, query, criteriaBuilder) -> {
+            Predicate predicate = criteriaBuilder.conjunction();
+            if (!isMyLead &&transition.getRole().equals("USER")) {
+                predicate = criteriaBuilder.and(predicate, root.join("salesRep", JoinType.INNER).get("id").in(ids));
+            } else if (isMyLead && transition.getRole().equals("ADMIN")) {
+                predicate = criteriaBuilder.and(predicate,
+                        criteriaBuilder.isNull(root.get("salesRep"))
+                );
+            }else if (isMyLead && transition.getRole().equals("USER")) {
+                predicate = criteriaBuilder.and(predicate,
+                        criteriaBuilder.equal(root.get("salesRep").get("id"),transition.getUserId())
+                );
+            }
+            return predicate;
+        };
+    }
+
 
     // Full text search specification
     private static <T extends SalesLead> Specification<T> fullTextSearch(String keyword) {
@@ -145,10 +162,21 @@ public class SalesLeadSpecification<T extends SalesLead> {
         };
     }
 
-    private static <T extends SalesLead> Specification<T> filterBySalesReps(List<Long> salesReps,Transition transition) {
+    private static <T extends SalesLead> Specification<T> filterBySalesReps(List<Long> salesReps, Transition transition) {
         return (root, query, criteriaBuilder) -> {
-            if (salesReps == null || salesReps.isEmpty() || !transition.getRole().equals("ADMIN")) {
-                return criteriaBuilder.conjunction();
+            if (salesReps == null || salesReps.isEmpty()) {
+                return null;
+            }
+
+            return root.join("salesRep", JoinType.INNER).get("id").in(salesReps);
+        };
+    }
+
+    private static <T extends SalesLead> Specification<T> filterBySubSalesReps(List<Long> salesReps,
+                                                                               Transition transition) {
+        return (root, query, criteriaBuilder) -> {
+            if (salesReps == null || salesReps.isEmpty()) {
+                return null;
             }
 
             return root.join("salesRep", JoinType.INNER).get("id").in(salesReps);
@@ -156,6 +184,15 @@ public class SalesLeadSpecification<T extends SalesLead> {
     }
 
 
+    private static <T extends SalesLead> Specification<T> filterBySub(List<Long> salesReps, boolean isMyLeads) {
+        return (root, query, criteriaBuilder) -> {
+            if (salesReps == null || salesReps.isEmpty() || isMyLeads) {
+                return null;
+            }
+
+            return root.join("salesRep", JoinType.INNER).get("id").in(salesReps);
+        };
+    }
 
     private static <T extends SalesLead> Specification<T> filterByStage(List<Long> stage) {
         return (root, query, criteriaBuilder) -> {
@@ -167,16 +204,24 @@ public class SalesLeadSpecification<T extends SalesLead> {
     }
 
 
-
-    private static <T extends SalesLead> Specification<T> filterByCreators(List<Long> creatorId,Transition transition) {
+    private static <T extends SalesLead> Specification<T> filterByCreators(List<Long> creatorId, Transition transition) {
         return (root, query, criteriaBuilder) -> {
-            if(creatorId == null || creatorId.isEmpty() || !transition.getRole().equals("ADMIN")) {
-                return criteriaBuilder.conjunction();
+            if (creatorId == null || creatorId.isEmpty()) {
+                return null;
             }
-             return root.join("creator", JoinType.INNER).get("id").in(creatorId);
+            return root.join("creator", JoinType.INNER).get("id").in(creatorId);
         };
     }
 
+    private static <T extends SalesLead> Specification<T> filterBySubCreators(List<Long> creatorId,
+                                                                              Transition transition) {
+        return (root, query, criteriaBuilder) -> {
+            if (creatorId == null || creatorId.isEmpty()) {
+                return null;
+            }
+            return root.join("creator", JoinType.INNER).get("id").in(creatorId);
+        };
+    }
 
     private static <T extends SalesLead> Specification<T> filterByChannels(List<Long> channels) {
         return (root, query, criteriaBuilder) -> {

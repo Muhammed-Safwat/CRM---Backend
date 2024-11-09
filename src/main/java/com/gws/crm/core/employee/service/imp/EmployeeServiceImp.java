@@ -31,6 +31,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -66,8 +67,7 @@ public class EmployeeServiceImp implements EmployeeService {
             return error("Email is already exist");
         }
         log.info("Transition send {}", transition.getUserId());
-        Admin admin = adminRepository.findById(transition.getUserId())
-                .orElseThrow(NotFoundResourceException::new);
+        Admin admin = adminRepository.findById(transition.getUserId()).orElseThrow(NotFoundResourceException::new);
 
         if (admin.getMaxNumberOfUsers() <= admin.getEmployees().size()) {
             return error("The maximum number of users for this account has been reached. No additional users can be added.");
@@ -78,27 +78,18 @@ public class EmployeeServiceImp implements EmployeeService {
         Set<Privilege> privileges = new HashSet<>(privilegeRepository.findAllById(employeeDto.getPrivileges()));
         PrivilegeGroup jobName = privilegeGroupRepository.getReferenceById(employeeDto.getJobTitleId());
         Role role = roleRepository.findByName(RoleName.USER.toString());
-        Role jobNameRole = roleRepository.findByName(jobName.getJobName().replace(" ","_").toUpperCase());
+        Role jobNameRole = roleRepository.findByName(jobName.getJobName().replace(" ", "_").toUpperCase());
         Set<Role> roles = new HashSet<>();
         roles.add(role);
         roles.add(jobNameRole);
-        Employee employee = Employee.builder()
-                .name(employeeDto.getName())
-                .admin(admin)
-                .username(employeeDto.getEmail())
-                .phone(employeeDto.getPhone())
-                .password(passwordEncoder.encode(employeeDto.getPassword()))
-                .jobName(jobName.getJobName())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .enabled(true)
-                .locked(false)
-                .accountNonExpired(admin.getAccountNonExpired())
-                .credentialsNonExpired(admin.getCredentialsNonExpired())
-                .roles(roles)
-                .privileges(privileges)
-                .build();
+        Employee employee = Employee.builder().name(employeeDto.getName()).admin(admin).username(employeeDto.getEmail()).phone(employeeDto.getPhone()).password(passwordEncoder.encode(employeeDto.getPassword())).jobName(jobName.getJobName()).createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).enabled(true).locked(false).accountNonExpired(admin.getAccountNonExpired()).credentialsNonExpired(admin.getCredentialsNonExpired()).roles(roles).privileges(privileges).subordinates(new ArrayList<>()).build();
         admin.getEmployees().add(employee);
+        log.info("********************* 5555555 **********************");
+        log.info("********* 444 *************" + employeeDto.getTeamIds());
+        if (!employeeDto.getTeamIds().isEmpty()) {
+            List<Employee> subordinates = employeeRepository.findAllById(employeeDto.getTeamIds());
+            employee.setSubordinates(subordinates);
+        }
         adminRepository.save(admin);
         EmployeeInfoResponse employeeResponse = employeeMapper.toDto(employee);
         return success(employeeResponse);
@@ -115,12 +106,12 @@ public class EmployeeServiceImp implements EmployeeService {
     @Override
     public ResponseEntity<?> changePasswordDTO(ChangePasswordDTO changePasswordDTO, Transition transition) {
         long adminId = transition.getUserId();
-        Employee employee = employeeRepository.getByIdAndAdminId(changePasswordDTO.getEmployeeId(), adminId)
-                .orElseThrow(NotFoundResourceException::new);
+        Employee employee = employeeRepository.getByIdAndAdminId(changePasswordDTO.getEmployeeId(), adminId).orElseThrow(NotFoundResourceException::new);
         if (!changePasswordDTO.getNewPassword().equals(changePasswordDTO.getConfirmPassword())) {
             return error("Passwords not match");
         }
         employee.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
+        employeeRepository.save(employee);
         return success("Password changed successfully");
     }
 
@@ -128,8 +119,7 @@ public class EmployeeServiceImp implements EmployeeService {
     public ResponseEntity<?> updateEmployee(UpdateEmployeeDto employeeDto, Transition transition) {
         long adminId = transition.getUserId();
 
-        Employee employee = employeeRepository.getByIdAndAdminId(employeeDto.getId(), adminId)
-                .orElseThrow(NotFoundResourceException::new);
+        Employee employee = employeeRepository.getByIdAndAdminId(employeeDto.getId(), adminId).orElseThrow(NotFoundResourceException::new);
 
         employee.setName(employeeDto.getName());
         employee.setPhone(employeeDto.getPhone());
@@ -141,7 +131,12 @@ public class EmployeeServiceImp implements EmployeeService {
             throw new IllegalArgumentException("Invalid privileges provided");
         }
         employee.setPrivileges(privileges);
-
+        log.info("*******************************************");
+        log.info("**********************" + employeeDto.getTeamIds());
+        if (!employeeDto.getTeamIds().isEmpty()) {
+            List<Employee> subordinates = employeeRepository.findAllById(employeeDto.getTeamIds());
+            employee.setSubordinates(subordinates);
+        }
         employeeRepository.save(employee);
 
         return success("User updated successfully.");
@@ -173,10 +168,8 @@ public class EmployeeServiceImp implements EmployeeService {
 
     @Override
     public ResponseEntity<?> getEmployee(long employeeId, Transition transition) {
-        Employee employee = employeeRepository.getByIdAndAdminId(employeeId, transition.getUserId())
-                .orElseThrow(NotFoundResourceException::new);
+        Employee employee = employeeRepository.getByIdAndAdminId(employeeId, transition.getUserId()).orElseThrow(NotFoundResourceException::new);
         EmployeeInfoResponse employeeResponse = employeeMapper.toDto(employee);
-
         return success(employeeResponse);
     }
 
@@ -208,5 +201,29 @@ public class EmployeeServiceImp implements EmployeeService {
         return success(employeeInfoResponseList);
     }
 
+    @Override
+    public ResponseEntity<?> getSubEmployee(Transition transition) {
+        long id = transition.getUserId();
+        List<Employee> employees = new ArrayList<>();
+        EmployeeSimpleDTO employeeSimpleDTO = null;
+        EmployeeSimpleDTO adminSimpleDTO = null;
+        if (transition.getRole().equals("ADMIN")) {
+            Admin admin = adminRepository.getReferenceById(transition.getUserId());
+            employees = admin.getEmployees();
+            employeeSimpleDTO = employeeMapper.toSimpleDto(admin);
+        } else {
+            Employee employee = employeeRepository.getReferenceById(id);
+            employees = employee.getSubordinates();
+            employeeSimpleDTO = employeeMapper.toSimpleDto(employee);
+            adminSimpleDTO = employeeMapper.toSimpleDto(employee.getAdmin());
+            adminSimpleDTO.setJobName("Admin");
+        }
+        List<EmployeeSimpleDTO> employeeInfoResponseList = employeeMapper.toListSimpleDto(employees);
+        employeeInfoResponseList.add(employeeSimpleDTO);
+        if (adminSimpleDTO != null) {
+            employeeInfoResponseList.add(adminSimpleDTO);
+        }
+        return success(employeeInfoResponseList);
+    }
 
 }

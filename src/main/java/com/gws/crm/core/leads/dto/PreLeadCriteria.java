@@ -17,6 +17,7 @@ public class PreLeadCriteria {
     private List<Long> creator;
     private List<Integer> campaignId;
     private LocalDate createdAt;
+    private List<Long> subordinates;
     private int page;
     private int size;
 }

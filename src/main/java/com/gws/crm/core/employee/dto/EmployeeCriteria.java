@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class EmployeeCriteria {
-    private List<Long> jobName;
+    private List<String> jobName;
     private String status;
     private String keyword;
     private List<LocalDateTime> createdAt;

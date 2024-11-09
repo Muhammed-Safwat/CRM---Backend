@@ -29,6 +29,11 @@ public class EmployeeController {
         return employeeService.getAllEmployee(transition);
     }
 
+    @GetMapping("sub")
+    public ResponseEntity<?> getSubEmployee(Transition transition) {
+        return employeeService.getSubEmployee(transition);
+    }
+
     @PostMapping("/type")
     public ResponseEntity<?> getAllEmployeeType(@RequestBody List<String> types , Transition transition ) {
         return employeeService.getAllEmployeeType(types, transition);

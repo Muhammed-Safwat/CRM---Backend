@@ -62,6 +62,14 @@ public class ResaleServiceImp implements ResaleService {
 
     @Override
     public ResponseEntity<?> getResales(ResaleCriteria resaleCriteria, Transition transition) {
+        if(transition.getRole().equals("USER")){
+            Employee employee =
+                    employeeRepository.findById(transition.getUserId())
+                            .orElseThrow(NotFoundResourceException::new);
+            resaleCriteria.setSubordinates(employee.getSubordinates().stream().map(User::getId).toList());
+            log.info("********************** %%%%%%%%%%%%%%%%% **********************");
+            log.info(resaleCriteria.getSubordinates().toString());
+        }
         Specification<Resale> leadSpecification = filter(resaleCriteria, transition);
         Pageable pageable = PageRequest.of(resaleCriteria.getPage(), resaleCriteria.getSize());
         Page<Resale> resalesPage = resaleRepository.findAll(leadSpecification, pageable);

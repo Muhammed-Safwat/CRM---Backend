@@ -1,10 +1,14 @@
 package com.gws.crm.authentication.dto;
 
+import com.gws.crm.core.employee.dto.EmployeeInfoResponse;
+import com.gws.crm.core.employee.dto.EmployeeSimpleDTO;
+import com.gws.crm.core.employee.dto.EmployeeTeamMemberDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -18,4 +22,5 @@ public class ProfileSettingDTO {
     private Long numEmployees;
     private String status;
     private Long id;
+    private List<EmployeeTeamMemberDto> subordinates;
 }

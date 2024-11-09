@@ -17,7 +17,6 @@ public class AdminRegistrationDto {
     private String name;
 
     @NotBlank(message = "Username is required")
-    @Size(min = 3, max = 20, message = "Username should be between 3 and 20 characters")
     @Email(message = "Email should be valid")
     private String username;
 

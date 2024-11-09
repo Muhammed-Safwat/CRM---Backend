@@ -4,6 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -30,6 +31,9 @@ public class EmployeeDto {
 
     @NotEmpty(message = "You must choose at least one privilege")
     private Set<Long> privileges;
+
+    private List<Long> teamIds;
+    
 /*
     @NotNull(message = "Account Expiration Date Should not be null")
     private LocalDate accountExpirationDate;

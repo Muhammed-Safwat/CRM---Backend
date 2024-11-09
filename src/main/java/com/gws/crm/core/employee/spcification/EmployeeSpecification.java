@@ -61,12 +61,12 @@ public class EmployeeSpecification {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("deleted"), deleted);
     }
 
-    private static Specification<Employee> filterByJobName(List<Long> jobName) {
+    private static Specification<Employee> filterByJobName(List<String> jobName) {
         return (root, query, criteriaBuilder) -> {
             if (jobName == null ||  jobName.isEmpty()) {
                 return null;
             }
-            return root.join("jobName", JoinType.INNER).get("id").in(jobName);
+            return root.get("jobName").in(jobName);
         };
     }
 

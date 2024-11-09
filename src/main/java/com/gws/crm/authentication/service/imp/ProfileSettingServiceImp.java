@@ -10,12 +10,15 @@ import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.admin.repository.AdminRepository;
 import com.gws.crm.core.employee.entity.Employee;
+import com.gws.crm.core.employee.mapper.EmployeeMapper;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.stream.Collectors;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.error;
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
@@ -33,6 +36,8 @@ public class ProfileSettingServiceImp implements ProfileSettingService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final EmployeeMapper employeeMapper;
+
     @Override
     public ResponseEntity<?> getDetails(Transition transition) {
         ProfileSettingDTO profileSettingDTO = null;
@@ -48,6 +53,11 @@ public class ProfileSettingServiceImp implements ProfileSettingService {
                     .phoneNumber(admin.getPhone())
                     .numEmployees((long) admin.getEmployees().size())
                     .expirationDate(admin.getAccountNonExpired())
+                    .subordinates(employeeMapper.toTeamMemberDto(
+                            admin.getEmployees().stream()
+                                    .filter(employee -> employee.isEnabled() && !employee.isDeleted() && !employee.isLocked())
+                                    .collect(Collectors.toList())
+                    ))
                     .build();
         } else {
             Employee employee = employeeRepository.findById(transition.getUserId())
@@ -59,6 +69,7 @@ public class ProfileSettingServiceImp implements ProfileSettingService {
                     .status(employee.isEnabled() ? "Active": "InActive")
                     .phoneNumber(employee.getPhone())
                     .expirationDate(employee.getAccountNonExpired())
+                    .subordinates(employeeMapper.toTeamMemberDto(employee.getSubordinates()) )
                     .build();
         }
         return success(profileSettingDTO);

@@ -12,6 +12,7 @@ import com.gws.crm.core.resale.entities.ResaleType;
 import com.gws.crm.core.resale.repository.ResaleStatusRepository;
 import com.gws.crm.core.resale.repository.ResaleTypeRepository;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,23 +41,31 @@ public class PrivilegeGroupsInitializer {
 
     private final ResaleTypeRepository resaleTypeRepository;
 
+
     void createSuperAdmin() {
         Set<Role> roles = new HashSet<>();
-        roles.add(roleRepository.findByName("SUPER_ADMIN"));
+        Role superAdminRole = roleRepository.findByName("SUPER_ADMIN");
+        log.info(superAdminRole.toString());
+        roles.add(superAdminRole);
+
         SuperAdmin superAdmin = SuperAdmin.builder()
                 .name("Muhammed Safwat")
                 .username("muhammedsafwat@gmail.com")
                 .password(passwordEncoder.encode("superadmin12345"))
                 .enabled(true)
                 .locked(false)
+                .deleted(false)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .accountNonExpired(LocalDateTime.of(9999, 12, 31, 23, 59, 59))
                 .credentialsNonExpired(LocalDateTime.of(9999, 12, 31, 23, 59, 59))
                 .roles(roles)
+                .privileges(new HashSet<>())
                 .build();
-        superAdminRepository.save(superAdmin);
+
+       superAdminRepository.save(superAdmin);
     }
+
 
     void createAdmin() {
 
@@ -66,7 +75,7 @@ public class PrivilegeGroupsInitializer {
     public void initializeData() {
         //addResaleStatuses();
         //addResaleTypes();
-        // createSuperAdmin();
+       // createSuperAdmin();
 //        addSalesDirectorRole();
 //        addTeamLeadRole();
 //            salesRep();
