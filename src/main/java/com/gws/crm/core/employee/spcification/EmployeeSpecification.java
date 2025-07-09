@@ -3,7 +3,6 @@ package com.gws.crm.core.employee.spcification;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.employee.dto.EmployeeCriteria;
 import com.gws.crm.core.employee.entity.Employee;
-import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 

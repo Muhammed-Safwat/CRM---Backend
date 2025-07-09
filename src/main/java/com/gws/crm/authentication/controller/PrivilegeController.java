@@ -1,12 +1,11 @@
 package com.gws.crm.authentication.controller;
 
+import com.gws.crm.authentication.dto.PrivilegeGroupCriteria;
 import com.gws.crm.authentication.service.PrivilegeService;
+import com.gws.crm.common.entities.Transition;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/privileges")
@@ -25,5 +24,14 @@ public class PrivilegeController {
         return privilegeService.getPrivilegesGroups();
     }
 
+    @PostMapping("/groups")
+    public ResponseEntity<?> getPrivileges(@RequestBody PrivilegeGroupCriteria privilegeGroupCriteria , Transition transition){
+        return privilegeService.getPrivileges(privilegeGroupCriteria, transition);
+    }
+
+    @GetMapping("/groups/{id}")
+    public ResponseEntity<?> getDetails(@PathVariable Long id,Transition transition){
+        return privilegeService.getGroupDetails(id,transition);
+    }
 
 }

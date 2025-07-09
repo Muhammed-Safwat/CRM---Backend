@@ -82,7 +82,8 @@ public class EmployeeServiceImp implements EmployeeService {
         Set<Role> roles = new HashSet<>();
         roles.add(role);
         roles.add(jobNameRole);
-        Employee employee = Employee.builder().name(employeeDto.getName()).admin(admin).username(employeeDto.getEmail()).phone(employeeDto.getPhone()).password(passwordEncoder.encode(employeeDto.getPassword())).jobName(jobName.getJobName()).createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).enabled(true).locked(false).accountNonExpired(admin.getAccountNonExpired()).credentialsNonExpired(admin.getCredentialsNonExpired()).roles(roles).privileges(privileges).subordinates(new ArrayList<>()).build();
+        Employee employee =
+                Employee.builder().name(employeeDto.getName()).privilegeGroup(jobName).admin(admin).username(employeeDto.getEmail()).phone(employeeDto.getPhone()).password(passwordEncoder.encode(employeeDto.getPassword())).jobName(jobName.getJobName()).createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).enabled(true).locked(false).accountNonExpired(admin.getAccountNonExpired()).credentialsNonExpired(admin.getCredentialsNonExpired()).roles(roles).privileges(privileges).subordinates(new ArrayList<>()).build();
         admin.getEmployees().add(employee);
         log.info("********************* 5555555 **********************");
         log.info("********* 444 *************" + employeeDto.getTeamIds());

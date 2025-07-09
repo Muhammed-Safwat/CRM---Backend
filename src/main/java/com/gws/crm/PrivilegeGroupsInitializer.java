@@ -41,7 +41,6 @@ public class PrivilegeGroupsInitializer {
 
     private final ResaleTypeRepository resaleTypeRepository;
 
-
     void createSuperAdmin() {
         Set<Role> roles = new HashSet<>();
         Role superAdminRole = roleRepository.findByName("SUPER_ADMIN");
@@ -65,7 +64,6 @@ public class PrivilegeGroupsInitializer {
 
        superAdminRepository.save(superAdmin);
     }
-
 
     void createAdmin() {
 
