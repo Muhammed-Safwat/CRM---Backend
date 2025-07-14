@@ -25,13 +25,13 @@ public class PrivilegeController {
     }
 
     @PostMapping("/groups")
-    public ResponseEntity<?> getPrivileges(@RequestBody PrivilegeGroupCriteria privilegeGroupCriteria , Transition transition){
+    public ResponseEntity<?> getPrivileges(@RequestBody PrivilegeGroupCriteria privilegeGroupCriteria, Transition transition) {
         return privilegeService.getPrivileges(privilegeGroupCriteria, transition);
     }
 
     @GetMapping("/groups/{id}")
-    public ResponseEntity<?> getDetails(@PathVariable Long id,Transition transition){
-        return privilegeService.getGroupDetails(id,transition);
+    public ResponseEntity<?> getDetails(@PathVariable Long id, Transition transition) {
+        return privilegeService.getGroupDetails(id, transition);
     }
 
 }

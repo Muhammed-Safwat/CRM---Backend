@@ -26,6 +26,8 @@ public class PreLeadResponse {
 
     private LocalDateTime createdAt;
 
+    private LocalDateTime importedAt;
+
     private String note;
 
     private LookupDTO channel;
@@ -40,5 +42,8 @@ public class PreLeadResponse {
 
     private String link;
 
+    private String assignedTo;
+
+    private String importedBy;
 
 }

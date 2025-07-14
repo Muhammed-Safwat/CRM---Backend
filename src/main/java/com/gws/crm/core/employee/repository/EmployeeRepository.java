@@ -36,7 +36,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
 
     List<Employee> findAllByAdminIdAndJobNameIn(Long adminId, List<String> jobNames);
 
-    long countByPrivilegeGroupIdAndAdminId(long id,long adminId);
+    long countByPrivilegeGroupIdAndAdminId(long id, long adminId);
 
     @Query("SELECT e FROM Employee e WHERE e.privilegeGroup.id =:id")
     List<Employee> getEmployeesByPrivilegeGroupId(@Param("id") long id);

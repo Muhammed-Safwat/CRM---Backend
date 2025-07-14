@@ -41,7 +41,7 @@ public class Employee extends User {
 
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = {CascadeType.DETACH, CascadeType.MERGE,
-            CascadeType.PERSIST, CascadeType.REFRESH})
+                    CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(name = "employee_subordinates",
             joinColumns = @JoinColumn(name = "manager_id"),
             inverseJoinColumns = @JoinColumn(name = "subordinate_id"))

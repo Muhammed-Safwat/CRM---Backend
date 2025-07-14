@@ -9,6 +9,8 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import java.time.LocalDateTime;
+
 
 @Entity
 @Setter
@@ -23,4 +25,9 @@ public class PreLead extends BaseLead {
 
     private String link;
 
+    private LocalDateTime importedAt;
+
+    private String assignedTo;
+
+    private String importedBy;
 }

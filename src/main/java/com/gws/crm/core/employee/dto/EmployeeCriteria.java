@@ -11,7 +11,7 @@ public class EmployeeCriteria {
     private String status;
     private String keyword;
     private List<LocalDateTime> createdAt;
-    private boolean deleted ;
+    private boolean deleted;
     private int page;
     private int size;
 }

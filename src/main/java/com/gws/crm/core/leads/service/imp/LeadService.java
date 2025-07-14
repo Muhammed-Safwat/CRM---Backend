@@ -10,11 +10,11 @@ import com.gws.crm.common.utils.PhoneNumberUtilsService;
 import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
-import com.gws.crm.core.employee.service.imp.ActionServiceImp;
+import com.gws.crm.core.employee.service.imp.GenericLeadActionServiceImp;
+import com.gws.crm.core.employee.service.imp.SalesLeadActionServiceImp;
 import com.gws.crm.core.leads.dto.AddLeadDTO;
 import com.gws.crm.core.leads.dto.ImportLeadDTO;
 import com.gws.crm.core.leads.dto.LeadResponse;
-import com.gws.crm.core.leads.dto.PhoneNumberDTO;
 import com.gws.crm.core.leads.entity.Lead;
 import com.gws.crm.core.leads.entity.PhoneNumber;
 import com.gws.crm.core.leads.mapper.LeadMapper;
@@ -29,10 +29,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
-import static com.gws.crm.common.handler.ApiResponseHandler.error;
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
 import static com.gws.crm.common.utils.ExcelFileUtils.generateHeader;
 
@@ -53,14 +51,16 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
     private final BrokerRepository brokerRepository;
     private final PhoneNumberRepository phoneNumberRepository;
     private final LeadMapper leadMapper;
-    private final ActionServiceImp<Lead> leadActionService;
+    private final GenericLeadActionServiceImp<Lead> leadActionService;
     private final PhoneNumberUtilsService phoneNumberUtilsService;
+
     protected LeadService(LeadRepository leadRepository,
                           LeadStatusRepository leadStatusRepository, InvestmentGoalRepository investmentGoalRepository,
                           CommunicateWayRepository communicateWayRepository, CancelReasonsRepository cancelReasonsRepository,
                           EmployeeRepository employeeRepository, ChannelRepository channelRepository, ProjectRepository projectRepository,
                           UserRepository userRepository, PhoneNumberMapper phoneNumberMapper, ExcelSheetService excelSheetService,
-                          BrokerRepository brokerRepository, PhoneNumberRepository phoneNumberRepository, LeadMapper leadMapper, ActionServiceImp<Lead> leadActionService, PhoneNumberUtilsService phoneNumberUtilsService) {
+                          BrokerRepository brokerRepository, PhoneNumberRepository phoneNumberRepository, LeadMapper leadMapper,
+                          SalesLeadActionServiceImp leadActionService, PhoneNumberUtilsService phoneNumberUtilsService) {
         super(leadRepository, leadActionService, employeeRepository);
         this.leadRepository = leadRepository;
         this.leadStatusRepository = leadStatusRepository;
@@ -118,11 +118,12 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
 
         return success(responseBody);
     }
+
     @Override
     public ResponseEntity<?> isPhoneExist(String phone, Transition transition) {
         boolean exists = leadRepository.isPhoneExist(phone);
-        HashMap<String,Boolean> body = new HashMap<>();
-        body.put("isExists",exists);
+        HashMap<String, Boolean> body = new HashMap<>();
+        body.put("isExists", exists);
         return success(body);
     }
 
@@ -157,7 +158,7 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
 
             if (isAdmin && leadDTO.getSalesRep() != null) {
                 leadBuilder.salesRep(employeeRepository.findByNameAndAdminId(leadDTO.getSalesRep(), finalAdmin.getId()));
-            }else if(!isAdmin) {
+            } else if (!isAdmin) {
                 final Employee sales = (Employee) creator;
                 leadBuilder.salesRep(sales);
             }
@@ -224,7 +225,7 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
 
         if (transition.getRole().equals("USER")) {
             Employee sales = employeeRepository.getReferenceById(transition.getUserId());
-            admin =  sales.getAdmin();
+            admin = sales.getAdmin();
             leadBuilder.admin(admin);
             leadBuilder.salesRep(sales);
         } else {

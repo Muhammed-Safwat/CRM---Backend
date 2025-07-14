@@ -59,13 +59,13 @@ public class CommonAuthServiceImp implements CommonAuthService {
             if (authentication.isAuthenticated()) {
                 Optional<User> userOptional = userRepository.findByUsername(signInRequest.getUsername());
                 User user = userOptional.get();
-                if(user.isDeleted()){
+                if (user.isDeleted()) {
                     throw new DisabledException("UnKnown user");
                 }
                 log.info("*****************************************");
-                log.info(user.getRoles().isEmpty()+"");
+                log.info(user.getRoles().isEmpty() + "");
                 log.info("*****************************************");
-                user.getRoles().forEach(el->log.info("********************************** "+el.toString()));
+                user.getRoles().forEach(el -> log.info("********************************** " + el.toString()));
                 SignInResponse signInResponse = SignInResponse.builder()
                         .accessToken(jwtTokenService.generateAccessToken(userOptional.get()))
                         .refreshToken(jwtTokenService.generateRefreshToken(userOptional.get()))

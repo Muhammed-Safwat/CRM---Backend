@@ -12,9 +12,9 @@ import java.util.List;
 @Getter
 @Builder
 public class PrivilegeGroupDetailsRes {
-    private long id ;
-    private String name ;
-    private long employeeCount ;
+    private long id;
+    private String name;
+    private long employeeCount;
     private boolean status;
     private String description;
     private List<EmployeeSimpleDTO> employees;

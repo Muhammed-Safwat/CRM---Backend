@@ -8,13 +8,13 @@ import lombok.Setter;
 @Setter
 @Getter
 @Builder
-public class PrivilegeGroupCriteria  {
+public class PrivilegeGroupCriteria {
 
-    private int page ;
+    private int page;
 
-    private int size ;
+    private int size;
 
-    private String keyword ;
+    private String keyword;
 
     private Boolean status;
 

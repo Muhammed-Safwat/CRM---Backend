@@ -33,7 +33,7 @@ public class PrivilegesGroupSpecification {
     private static Specification<PrivilegeGroup> fullTextSearch(String keyword) {
         return (root, query, criteriaBuilder) -> {
             if (!StringUtils.hasText(keyword)) {
-                return null ;
+                return null;
             }
 
             String lowerKeyword = "%" + keyword.toLowerCase() + "%";

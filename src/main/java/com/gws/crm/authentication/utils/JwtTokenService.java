@@ -20,16 +20,13 @@ import java.util.function.Function;
 @Service
 public class JwtTokenService {
 
+    private static final Set<String> ALLOWED_ROLES = Set.of("USER", "ADMIN", "SUPER_ADMIN");
     @Value("${security.jwt.secret.key}")
     private String jwtSecretKey;
-
     @Value("${security.jwt.refresh.expiration}")
     private int refreshExpirationTime;
-
     @Value("${security.jwt.access.expiration}")
     private int accessExpirationTime;
-
-    private static final Set<String> ALLOWED_ROLES = Set.of("USER", "ADMIN", "SUPER_ADMIN");
 
     public String generateRefreshToken(User user) {
         return generateToken(user, generateExtraClaims(user), refreshExpirationTime);
@@ -48,8 +45,6 @@ public class JwtTokenService {
                     List.of(new OAuth2Error("invalid_token", "Token is invalid or malformed.", null)));
         }
     }
-
-
 
 
     private Map<String, Object> generateExtraClaims(User user) {

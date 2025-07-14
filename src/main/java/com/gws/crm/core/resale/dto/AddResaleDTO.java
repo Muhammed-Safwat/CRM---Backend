@@ -11,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 public class AddResaleDTO {
 
-    private Long id ;
+    private Long id;
 
     @NotNull
     @NotBlank

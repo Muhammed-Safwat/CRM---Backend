@@ -11,9 +11,9 @@ public class PreLeadCriteria {
     private String keyword;
     private String country;
     private Long id;
-    private boolean deleted;
-    private boolean imported;
-    private boolean myLead;
+    private Boolean deleted;
+    private Boolean imported;
+    private Boolean myLead;
     private List<Long> creator;
     private List<Integer> campaignId;
     private LocalDate createdAt;

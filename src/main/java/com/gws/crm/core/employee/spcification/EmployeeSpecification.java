@@ -26,7 +26,7 @@ public class EmployeeSpecification {
         return Specification.allOf(specs);
     }
 
-    private static Specification<Employee> filterByCreatedAt(List<LocalDateTime> createdAt){
+    private static Specification<Employee> filterByCreatedAt(List<LocalDateTime> createdAt) {
         return (root, query, criteriaBuilder) -> {
             if (createdAt == null || createdAt.isEmpty()) {
                 return criteriaBuilder.conjunction();
@@ -62,7 +62,7 @@ public class EmployeeSpecification {
 
     private static Specification<Employee> filterByJobName(List<String> jobName) {
         return (root, query, criteriaBuilder) -> {
-            if (jobName == null ||  jobName.isEmpty()) {
+            if (jobName == null || jobName.isEmpty()) {
                 return null;
             }
             return root.get("jobName").in(jobName);
@@ -70,14 +70,14 @@ public class EmployeeSpecification {
     }
 
     private static Specification<Employee> filterByEnabled(String status) {
-        if(!StringUtils.hasText(status)) {
+        if (!StringUtils.hasText(status)) {
             return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
         }
-       if(StringUtils.hasText(status) && status.equalsIgnoreCase("Active")) {
-           return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("enabled"), true);
-       } else {
-           return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("enabled"), false);
-       }
+        if (StringUtils.hasText(status) && status.equalsIgnoreCase("Active")) {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("enabled"), true);
+        } else {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("enabled"), false);
+        }
     }
 
     private static Specification<Employee> fullTextSearch(String keyword) {

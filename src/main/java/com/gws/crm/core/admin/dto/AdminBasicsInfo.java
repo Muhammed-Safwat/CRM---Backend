@@ -19,9 +19,9 @@ public class AdminBasicsInfo {
 
     private String phone;
 
-    private boolean locked  ;
+    private boolean locked;
 
-    private boolean enabled ;
+    private boolean enabled;
 
     private boolean deleted;
 

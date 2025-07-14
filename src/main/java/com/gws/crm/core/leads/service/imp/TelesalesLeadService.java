@@ -9,7 +9,8 @@ import com.gws.crm.common.service.ExcelSheetService;
 import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
-import com.gws.crm.core.employee.service.imp.ActionServiceImp;
+import com.gws.crm.core.employee.service.imp.GenericLeadActionServiceImp;
+import com.gws.crm.core.employee.service.imp.TeleSalesLeadActionServiceImp;
 import com.gws.crm.core.leads.dto.AddLeadDTO;
 import com.gws.crm.core.leads.dto.ImportLeadDTO;
 import com.gws.crm.core.leads.dto.LeadResponse;
@@ -51,10 +52,15 @@ public class TelesalesLeadService extends SalesLeadServiceImp<TeleSalesLead, Add
     private final ExcelSheetService excelSheetService;
     private final PhoneNumberRepository phoneNumberRepository;
     private final BrokerRepository brokerRepository;
-    private final ActionServiceImp<TeleSalesLead> leadActionService;
+    private final GenericLeadActionServiceImp<TeleSalesLead> leadActionService;
 
     protected TelesalesLeadService(TeleSalesLeadRepository leadRepository, LeadStatusRepository leadStatusRepository
-            , InvestmentGoalRepository investmentGoalRepository, CommunicateWayRepository communicateWayRepository, CancelReasonsRepository cancelReasonsRepository, EmployeeRepository employeeRepository, ChannelRepository channelRepository, ProjectRepository projectRepository, UserRepository userRepository, TeleSalesLeadMapper leadMapper, PhoneNumberMapper phoneNumberMapper, ExcelSheetService excelSheetService, PhoneNumberRepository phoneNumberRepository, BrokerRepository brokerRepository, ActionServiceImp<TeleSalesLead> leadActionService) {
+            , InvestmentGoalRepository investmentGoalRepository, CommunicateWayRepository communicateWayRepository,
+                                   CancelReasonsRepository cancelReasonsRepository, EmployeeRepository employeeRepository,
+                                   ChannelRepository channelRepository, ProjectRepository projectRepository,
+                                   UserRepository userRepository, TeleSalesLeadMapper leadMapper, PhoneNumberMapper phoneNumberMapper,
+                                   ExcelSheetService excelSheetService, PhoneNumberRepository phoneNumberRepository,
+                                   BrokerRepository brokerRepository, TeleSalesLeadActionServiceImp leadActionService) {
         super(leadRepository, leadActionService, employeeRepository);
         this.leadRepository = leadRepository;
         this.leadStatusRepository = leadStatusRepository;
@@ -97,7 +103,7 @@ public class TelesalesLeadService extends SalesLeadServiceImp<TeleSalesLead, Add
 
         if (transition.getRole().equals("USER")) {
             Employee sales = employeeRepository.getReferenceById(transition.getUserId());
-            admin =  sales.getAdmin();
+            admin = sales.getAdmin();
             leadBuilder.admin(admin);
             leadBuilder.salesRep(sales);
         } else {
@@ -154,7 +160,7 @@ public class TelesalesLeadService extends SalesLeadServiceImp<TeleSalesLead, Add
 
         User creator = userRepository.findById(transition.getUserId()).orElseThrow(NotFoundResourceException::new);
         Admin admin = null;
-        boolean isAdmin = transition.getRole().equals("ADMIN") ;
+        boolean isAdmin = transition.getRole().equals("ADMIN");
         if (!isAdmin) {
             admin = employeeRepository.getReferenceById(transition.getUserId()).getAdmin();
             existingLead.setAdmin(admin);
@@ -234,8 +240,8 @@ public class TelesalesLeadService extends SalesLeadServiceImp<TeleSalesLead, Add
     @Override
     public ResponseEntity<?> isPhoneExist(String phone, Transition transition) {
         boolean exists = leadRepository.isPhoneExist(phone);
-        HashMap<String,Boolean> body = new HashMap<>();
-        body.put("isExists",exists);
+        HashMap<String, Boolean> body = new HashMap<>();
+        body.put("isExists", exists);
         return success(body);
     }
 
@@ -308,7 +314,7 @@ public class TelesalesLeadService extends SalesLeadServiceImp<TeleSalesLead, Add
 
             if (isAdmin && leadDTO.getSalesRep() != null) {
                 leadBuilder.salesRep(employeeRepository.findByNameAndAdminId(leadDTO.getSalesRep(), finalAdmin.getId()));
-            }else {
+            } else {
                 final Employee sales = (Employee) creator;
                 leadBuilder.salesRep(sales);
             }

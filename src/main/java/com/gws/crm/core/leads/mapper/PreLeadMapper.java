@@ -51,12 +51,14 @@ public class PreLeadMapper {
                 .email(lead.getEmail())
                 .updatedAt(lead.getUpdatedAt())
                 .createdAt(lead.getCreatedAt())
+                .importedAt(lead.getImportedAt())
                 .channel(channelDTO)
                 .project(projectDTO)
                 .imported(lead.isImported())
                 .note(lead.getNote())
                 .creator(creatorDTO)
                 .link(lead.getLink())
+                .assignedTo(lead.getAssignedTo())
                 .deleted(lead.isDeleted())
                 .build();
     }

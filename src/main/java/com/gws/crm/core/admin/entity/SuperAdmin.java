@@ -3,7 +3,6 @@ package com.gws.crm.core.admin.entity;
 import com.gws.crm.authentication.entity.User;
 import com.gws.crm.core.notification.services.NotificationService;
 import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

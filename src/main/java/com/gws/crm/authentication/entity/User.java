@@ -67,7 +67,7 @@ public abstract class User implements UserDetails, Subscriber {
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles  = new HashSet<>();
+    private Set<Role> roles = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(name = "users_privileges",
@@ -89,7 +89,7 @@ public abstract class User implements UserDetails, Subscriber {
         return authorities;
     }
 
-    public  Collection<? extends GrantedAuthority>  getMainRoles() {
+    public Collection<? extends GrantedAuthority> getMainRoles() {
         Set<GrantedAuthority> authorities = new HashSet<>();
         for (Role role : roles) {
             authorities.add(new SimpleGrantedAuthority(role.getName()));

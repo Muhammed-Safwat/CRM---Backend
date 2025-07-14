@@ -8,11 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-
-import static com.gws.crm.common.handler.ApiResponseHandler.success;
 
 @Service
 public interface ResaleService {

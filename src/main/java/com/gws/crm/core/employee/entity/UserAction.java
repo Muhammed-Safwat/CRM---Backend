@@ -2,11 +2,7 @@ package com.gws.crm.core.employee.entity;
 
 import com.gws.crm.authentication.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
+import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -18,10 +14,10 @@ import java.time.LocalDateTime;
 @DynamicInsert
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class UserAction {
+public class UserAction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,9 +34,9 @@ public abstract class UserAction {
 
     private String description;
 
-    @Column(columnDefinition = "TEXT")
-    private String comment;
-
     private LocalDateTime createdAt;
+
+    @OneToOne(mappedBy = "userAction", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private LeadActionDetails leadDetails;
 
 }

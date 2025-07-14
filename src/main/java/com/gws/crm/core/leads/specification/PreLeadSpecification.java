@@ -17,46 +17,44 @@ public class PreLeadSpecification {
 
     public static Specification<PreLead> filter(PreLeadCriteria leadCriteria, Transition transition) {
         List<Specification<PreLead>> specs = new ArrayList<>();
-        List<Long > ids = new ArrayList<>();
-        if(leadCriteria.getSubordinates() != null){
+        List<Long> ids = new ArrayList<>();
+        if (leadCriteria.getSubordinates() != null) {
             ids.addAll(leadCriteria.getSubordinates());
         }
         ids.add(transition.getUserId());
-        if (leadCriteria != null) {
-            specs.add(fullTextSearch(leadCriteria.getKeyword()));
-            specs.add(filterByCampaignId(leadCriteria.getCampaignId()));
-            specs.add(filterByDeleted(leadCriteria.isDeleted()));
-            specs.add(filterByImported(leadCriteria.isImported()));
-            specs.add(filterByCreatedAt(leadCriteria.getCreatedAt()));
-            specs.add(filterByUser(ids,leadCriteria.isMyLead(), transition));
-            specs.add(filterByCreators(leadCriteria.getCreator(), transition));
-            specs.add(filterByCountry(leadCriteria.getCountry()));
-
-        }
+        specs.add(fullTextSearch(leadCriteria.getKeyword()));
+        specs.add(filterByCampaignId(leadCriteria.getCampaignId()));
+        specs.add(filterByDeleted(leadCriteria.getDeleted()));
+        specs.add(filterByImported(leadCriteria.getImported()));
+        specs.add(filterByCreatedAt(leadCriteria.getCreatedAt()));
+        specs.add(filterByUser(ids, leadCriteria.getMyLead(), transition));
+        specs.add(filterByCreators(leadCriteria.getCreator(), transition));
+        specs.add(filterByCountry(leadCriteria.getCountry()));
 
         return Specification.allOf(specs);
     }
 
-    private static Specification<PreLead> filterByUser(List<Long> ids,boolean isMyLead, Transition transition) {
+    private static Specification<PreLead> filterByUser(List<Long> ids, Boolean isMyLead, Transition transition) {
         return (root, query, criteriaBuilder) -> {
+            if (isMyLead == null) return null;
             Predicate predicate = criteriaBuilder.conjunction();
 
-            if (!isMyLead  && transition.getRole().equals("USER")) {
+            if (!isMyLead && transition.getRole().equals("USER")) {
 
                 predicate = criteriaBuilder.and(predicate,
-                        root.join("creator",JoinType.INNER).get("id").in(ids)
+                        root.join("creator", JoinType.INNER).get("id").in(ids)
                 );
-            } else if (isMyLead  && transition.getRole().equals("USER")) {
+            } else if (isMyLead && transition.getRole().equals("USER")) {
 
                 predicate = criteriaBuilder.and(predicate,
-                        root.join("creator",JoinType.INNER).get("id").in(transition.getUserId())
+                        root.join("creator", JoinType.INNER).get("id").in(transition.getUserId())
                 );
             } else if (isMyLead && transition.getRole().equals("ADMIN")) {
 
                 predicate = criteriaBuilder.and(predicate,
                         criteriaBuilder.equal(root.get("creator").get("id"), transition.getUserId())
                 );
-            }else if (!isMyLead  && transition.getRole().equals("ADMIN")) {
+            } else if (!isMyLead && transition.getRole().equals("ADMIN")) {
 
                 predicate = criteriaBuilder.and(predicate,
                         criteriaBuilder.equal(root.get("admin").get("id"), transition.getUserId())
@@ -68,7 +66,7 @@ public class PreLeadSpecification {
 
     private static Specification<PreLead> filterByCreators(List<Long> creatorId, Transition transition) {
         return (root, query, criteriaBuilder) -> {
-            if (creatorId == null || creatorId.isEmpty() ) {
+            if (creatorId == null || creatorId.isEmpty()) {
                 return null;
             }
             return root.join("creator", JoinType.INNER).get("id").in(creatorId);
@@ -102,13 +100,22 @@ public class PreLeadSpecification {
         });
     }
 
-
     private static Specification<PreLead> filterByDeleted(Boolean deleted) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("deleted"), deleted);
+        return (root, query, criteriaBuilder) -> {
+            if (deleted == null) {
+                return null;
+            }
+            return criteriaBuilder.equal(root.get("deleted"), deleted);
+        };
     }
 
     private static Specification<PreLead> filterByImported(Boolean imported) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("imported"), imported);
+        return (root, query, criteriaBuilder) -> {
+            if (imported == null) {
+                return null;
+            }
+            return criteriaBuilder.equal(root.get("imported"), imported);
+        };
     }
 
     private static Specification<PreLead> filterByCampaignId(List<Integer> campaignId) {
@@ -119,7 +126,6 @@ public class PreLeadSpecification {
             return root.join("campaign", JoinType.INNER).get("id").in(campaignId);
         };
     }
-
 
     private static Specification<PreLead> filterByCreatedAt(LocalDate createdAt) {
         return (root, query, criteriaBuilder) -> {

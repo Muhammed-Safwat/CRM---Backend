@@ -1,7 +1,6 @@
 package com.gws.crm.core.resale.dto;
 
 import com.gws.crm.core.employee.dto.EmployeeSimpleDTO;
-import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.lookups.entity.Category;
 import com.gws.crm.core.lookups.entity.Project;
 import com.gws.crm.core.resale.entities.ResaleStatus;

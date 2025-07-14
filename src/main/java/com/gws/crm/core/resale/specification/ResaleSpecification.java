@@ -2,8 +2,6 @@ package com.gws.crm.core.resale.specification;
 
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.leads.dto.SalesLeadCriteria;
-import com.gws.crm.core.leads.entity.SalesLead;
 import com.gws.crm.core.resale.dto.ResaleCriteria;
 import com.gws.crm.core.resale.entities.Resale;
 import jakarta.persistence.criteria.JoinType;
@@ -19,8 +17,8 @@ public class ResaleSpecification {
 
     public static Specification<Resale> filter(ResaleCriteria resaleCriteria, Transition transition) {
         List<Specification<Resale>> specs = new ArrayList<>();
-        List<Long > ids = new ArrayList<>();
-        if(resaleCriteria.getSubordinates() != null){
+        List<Long> ids = new ArrayList<>();
+        if (resaleCriteria.getSubordinates() != null) {
             ids.addAll(resaleCriteria.getSubordinates());
         }
         ids.add(transition.getUserId());
@@ -28,9 +26,9 @@ public class ResaleSpecification {
             specs.add(fullTextSearch(resaleCriteria.getKeyword()));
             specs.add(filterByDeleted(resaleCriteria.isDeleted()));
             specs.add(filterByCreatedAt(resaleCriteria.getCreatedAt()));
-            specs.add(filterByUser(ids,resaleCriteria.isMyLead(), transition));
-            specs.add(filterBySalesReps(resaleCriteria.getSalesRep(),transition));
-            specs.add(filterByCreators(resaleCriteria.getCreator(),transition));
+            specs.add(filterByUser(ids, resaleCriteria.isMyLead(), transition));
+            specs.add(filterBySalesReps(resaleCriteria.getSalesRep(), transition));
+            specs.add(filterByCreators(resaleCriteria.getCreator(), transition));
             specs.add(filterByCategory(resaleCriteria.getCategory()));
             specs.add(filterByProject(resaleCriteria.getProject()));
             specs.add(filterByProperty(resaleCriteria.getProject()));
@@ -40,26 +38,26 @@ public class ResaleSpecification {
         return Specification.allOf(specs);
     }
 
-    private static Specification<Resale> filterByUser(List<Long> ids, boolean isMyLead ,Transition transition) {
+    private static Specification<Resale> filterByUser(List<Long> ids, boolean isMyLead, Transition transition) {
 
         return (root, query, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
-            if (!isMyLead &&transition.getRole().equals("USER")) {
+            if (!isMyLead && transition.getRole().equals("USER")) {
                 predicate = criteriaBuilder.and(predicate, root.join("salesRep", JoinType.INNER).get("id").in(ids));
             } else if (isMyLead && transition.getRole().equals("ADMIN")) {
                 predicate = criteriaBuilder.and(predicate,
                         criteriaBuilder.isNull(root.get("salesRep"))
                 );
-            }else if (isMyLead && transition.getRole().equals("USER")) {
+            } else if (isMyLead && transition.getRole().equals("USER")) {
                 predicate = criteriaBuilder.and(predicate,
-                        criteriaBuilder.equal(root.get("salesRep").get("id"),transition.getUserId())
+                        criteriaBuilder.equal(root.get("salesRep").get("id"), transition.getUserId())
                 );
             }
             return predicate;
         };
     }
 
-    private static Specification<Resale> filterBySalesReps(List<Long> salesReps,Transition transition) {
+    private static Specification<Resale> filterBySalesReps(List<Long> salesReps, Transition transition) {
         return (root, query, criteriaBuilder) -> {
             if (salesReps == null || salesReps.isEmpty()) {
                 return null;
@@ -89,9 +87,9 @@ public class ResaleSpecification {
         };
     }
 
-    private static Specification<Resale> filterByCreators(List<Long> creatorId,Transition transition) {
+    private static Specification<Resale> filterByCreators(List<Long> creatorId, Transition transition) {
         return (root, query, criteriaBuilder) -> {
-            if(creatorId == null || creatorId.isEmpty() ) {
+            if (creatorId == null || creatorId.isEmpty()) {
                 return null;
             }
             return root.join("creator", JoinType.INNER).get("id").in(creatorId);

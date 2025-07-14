@@ -12,7 +12,6 @@ import com.gws.crm.core.resale.entities.ResaleType;
 import com.gws.crm.core.resale.repository.ResaleStatusRepository;
 import com.gws.crm.core.resale.repository.ResaleTypeRepository;
 import jakarta.annotation.PostConstruct;
-import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -62,7 +61,7 @@ public class PrivilegeGroupsInitializer {
                 .privileges(new HashSet<>())
                 .build();
 
-       superAdminRepository.save(superAdmin);
+        superAdminRepository.save(superAdmin);
     }
 
     void createAdmin() {
@@ -73,7 +72,7 @@ public class PrivilegeGroupsInitializer {
     public void initializeData() {
         //addResaleStatuses();
         //addResaleTypes();
-       // createSuperAdmin();
+        // createSuperAdmin();
 //        addSalesDirectorRole();
 //        addTeamLeadRole();
 //            salesRep();

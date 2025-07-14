@@ -1,7 +1,7 @@
 package com.gws.crm.core.leads.entity;
 
-import com.gws.crm.core.employee.entity.ActionOnLead;
 import com.gws.crm.core.employee.entity.Employee;
+import com.gws.crm.core.employee.entity.UserAction;
 import com.gws.crm.core.lookups.entity.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -62,16 +62,13 @@ public abstract class SalesLead extends BaseLead {
 
     private String lastStage;
 
-    private LocalDateTime lastActionDate;
+
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(nullable = true)
     private Broker broker;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<ActionOnLead> actions = new ArrayList<>();
-/*
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<Comment> comments = new ArrayList<>();
-*/
+    private List<UserAction> actions = new ArrayList<>();
+
 }

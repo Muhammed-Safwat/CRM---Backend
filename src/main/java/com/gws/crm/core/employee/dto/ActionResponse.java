@@ -30,4 +30,6 @@ public class ActionResponse {
     private String stage;
 
     private LocalDateTime callBackTime;
+
+    private long leadId;
 }

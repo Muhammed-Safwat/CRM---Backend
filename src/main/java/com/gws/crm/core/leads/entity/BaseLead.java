@@ -37,6 +37,7 @@ public class BaseLead {
     private String name;
 
     @OneToMany(mappedBy = "lead", cascade = CascadeType.ALL)
+    //@JsonManagedReference
     private List<PhoneNumber> phoneNumbers;
 
     private String email;
@@ -68,4 +69,6 @@ public class BaseLead {
     private Project project;
 
     private boolean deleted;
+
+    private LocalDateTime lastActionDate;
 }

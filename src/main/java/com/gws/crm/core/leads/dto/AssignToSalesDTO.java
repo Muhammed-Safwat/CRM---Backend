@@ -10,5 +10,5 @@ import java.util.ArrayList;
 @Data
 public class AssignToSalesDTO {
     private ArrayList<Long> leadsIds;
-    private long salesId ;
+    private long salesId;
 }

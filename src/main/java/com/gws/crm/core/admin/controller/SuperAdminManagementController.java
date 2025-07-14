@@ -22,7 +22,7 @@ public class SuperAdminManagementController {
 
     @GetMapping("{adminId}")
     public ResponseEntity<?> getAdmin(@PathVariable Long adminId, Transition transition) {
-        return superAdminManagementService.getAdmin(adminId,transition);
+        return superAdminManagementService.getAdmin(adminId, transition);
     }
 
     @PostMapping
@@ -48,8 +48,8 @@ public class SuperAdminManagementController {
     }
 
     @PutMapping("{adminId}/lock")
-    public ResponseEntity<?> toggleAdminLockStatus(@PathVariable long adminId,Transition transition) {
-        return superAdminManagementService.toggleAdminLockStatus(adminId,transition);
+    public ResponseEntity<?> toggleAdminLockStatus(@PathVariable long adminId, Transition transition) {
+        return superAdminManagementService.toggleAdminLockStatus(adminId, transition);
     }
 
 

@@ -6,8 +6,6 @@ import com.gws.crm.core.leads.dto.AssignDTO;
 import com.gws.crm.core.leads.dto.ImportLeadDTO;
 import com.gws.crm.core.leads.dto.SalesLeadCriteria;
 import com.gws.crm.core.leads.entity.SalesLead;
-import com.gws.crm.core.resale.dto.ImportResaleDTO;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -31,6 +29,8 @@ public interface SalesLeadService<T extends SalesLead, D extends AddLeadDTO> {
     ResponseEntity<?> importLead(List<ImportLeadDTO> leads, Transition transition);
 
     ResponseEntity<?> assignSalesToLead(AssignDTO assignDTO, Transition transition);
+
     ResponseEntity<?> isPhoneExist(List<String> phones, Transition transition);
+
     ResponseEntity<?> isPhoneExist(String phone, Transition transition);
 }

@@ -13,10 +13,9 @@ import com.gws.crm.core.employee.entity.Reply;
 import com.gws.crm.core.employee.mapper.CommentMapper;
 import com.gws.crm.core.employee.mapper.ReplyMapper;
 import com.gws.crm.core.employee.repository.CommentRepository;
-import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.employee.service.CommentService;
-import com.gws.crm.core.leads.entity.SalesLead;
-import com.gws.crm.core.leads.repository.NonGenericLeadRepository;
+import com.gws.crm.core.leads.entity.BaseLead;
+import com.gws.crm.core.leads.repository.BaseLeadRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,8 +35,7 @@ import static com.gws.crm.common.handler.ApiResponseHandler.success;
 public class CommentServiceImp implements CommentService {
 
     private final CommentRepository commentRepository;
-    private final NonGenericLeadRepository leadRepository;
-    private final EmployeeRepository employeeRepository;
+    private final BaseLeadRepository leadRepository;
     private final CommentMapper commentMapper;
     private final ReplyMapper replyMapper;
     private final UserRepository userRepository;
@@ -52,8 +50,9 @@ public class CommentServiceImp implements CommentService {
 
     @Override
     public ResponseEntity<?> addComment(CommentDto commentDto, Transition transition) {
-        SalesLead salesLead = leadRepository.findById(commentDto.getLeadId())
-                .orElseThrow(NotFoundResourceException::new);
+        BaseLead salesLead =
+                leadRepository.getReferenceById(commentDto.getLeadId()) ;
+
         User user = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
         Comment comment = Comment.builder()

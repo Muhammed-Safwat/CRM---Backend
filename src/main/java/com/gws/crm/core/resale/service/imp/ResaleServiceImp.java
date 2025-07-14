@@ -9,7 +9,6 @@ import com.gws.crm.common.service.ExcelSheetService;
 import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
-import com.gws.crm.core.leads.repository.SalesLeadRepository;
 import com.gws.crm.core.lookups.repository.CategoryRepository;
 import com.gws.crm.core.lookups.repository.ProjectRepository;
 import com.gws.crm.core.lookups.repository.PropertyTypeRepository;
@@ -57,12 +56,11 @@ public class ResaleServiceImp implements ResaleService {
     private final ExcelSheetService excelSheetService;
     private final ResaleStatusRepository resaleStatusRepository;
     private final ResaleTypeRepository resaleTypeRepository;
-    private final SalesLeadRepository salesLeadRepository;
 
 
     @Override
     public ResponseEntity<?> getResales(ResaleCriteria resaleCriteria, Transition transition) {
-        if(transition.getRole().equals("USER")){
+        if (transition.getRole().equals("USER")) {
             Employee employee =
                     employeeRepository.findById(transition.getUserId())
                             .orElseThrow(NotFoundResourceException::new);
@@ -79,7 +77,7 @@ public class ResaleServiceImp implements ResaleService {
 
     @Override
     public ResponseEntity<?> getResaleDetails(long resaleId, Transition transition) {
-        Resale resale  = resaleRepository.findById(resaleId)
+        Resale resale = resaleRepository.findById(resaleId)
                 .orElseThrow(NotFoundResourceException::new);
         ResaleResponse resaleResponse = resaleMapper.toDTO(resale);
         return success(resaleResponse);
@@ -105,14 +103,14 @@ public class ResaleServiceImp implements ResaleService {
                 .creator(creator)
                 .budget(resaleDTO.getBudget())
                 .BUA(resaleDTO.getBUA());
-        if(isAdmin){
+        if (isAdmin) {
             resaleBuilder.admin((Admin) creator);
-            if(resaleDTO.getSalesRep() != null){
+            if (resaleDTO.getSalesRep() != null) {
                 salesRep = employeeRepository.findById(resaleDTO.getSalesRep())
                         .orElseThrow(NotFoundResourceException::new);
             }
 
-        }else {
+        } else {
             salesRep = (Employee) creator;
             admin = employeeRepository.getReferenceById(transition.getUserId()).getAdmin();
             resaleBuilder.admin(admin);
@@ -147,8 +145,8 @@ public class ResaleServiceImp implements ResaleService {
         resale.setName(resaleDTO.getName());
         resale.setPhase(resaleDTO.getPhase());
 
-        if(resaleDTO.getSalesRep() != null){
-            resale.setSalesRep( employeeRepository.getReferenceById(resaleDTO.getSalesRep()));
+        if (resaleDTO.getSalesRep() != null) {
+            resale.setSalesRep(employeeRepository.getReferenceById(resaleDTO.getSalesRep()));
         }
         if (resaleDTO.getCategory() != null) {
             resale.setCategory(categoryRepository.getReferenceById(resaleDTO.getCategory()));
@@ -232,9 +230,9 @@ public class ResaleServiceImp implements ResaleService {
 
     @Override
     public ResponseEntity<?> isPhoneExist(String phone, Transition transition) {
-        boolean isExists =  resaleRepository.existsByPhone(phone);
-        HashMap<String,Boolean> body = new HashMap<>();
-        body.put("isExists",isExists);
+        boolean isExists = resaleRepository.existsByPhone(phone);
+        HashMap<String, Boolean> body = new HashMap<>();
+        body.put("isExists", isExists);
         return success(body);
     }
 
@@ -274,7 +272,7 @@ public class ResaleServiceImp implements ResaleService {
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now());
             if (!isAdmin) {
-               resaleBuilder.salesRep(salesRep);
+                resaleBuilder.salesRep(salesRep);
             } else if (resaleDTO.getSalesRep() != null) {
                 resaleBuilder.salesRep(employeeRepository.getReferenceById(resaleDTO.getSalesRep()));
             }

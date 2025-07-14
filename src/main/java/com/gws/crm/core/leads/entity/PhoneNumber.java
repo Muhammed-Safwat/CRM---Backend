@@ -22,10 +22,11 @@ public class PhoneNumber {
     private String code;
 
     @Column(nullable = false)
-    @org.hibernate.annotations.Index(name="idx_phone")
+    @org.hibernate.annotations.Index(name = "idx_phone")
     private String phone;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     @JoinColumn(nullable = false)
+    // @JsonBackReference
     private BaseLead lead;
 }

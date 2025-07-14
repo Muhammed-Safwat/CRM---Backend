@@ -13,14 +13,10 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class EmployeeTeamMemberDto {
+    List<EmployeeTeamMemberDto> subordinates;
     private long id;
     private String name;
-
     private String username;
-
     private String jobName;
-
     private String image;
-
-    List<EmployeeTeamMemberDto> subordinates;
 }

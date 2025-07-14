@@ -20,6 +20,7 @@ public interface EmployeeMapper {
     EmployeeInfoResponse toDto(Employee employee);
 
     EmployeeTeamMemberDto toTeamMemberDto(Employee employee);
+
     List<EmployeeTeamMemberDto> toTeamMemberDto(List<Employee> employees);
 
     List<EmployeeInfoResponse> toListDto(List<Employee> employees);

@@ -48,7 +48,7 @@ public class ProfileSettingServiceImp implements ProfileSettingService {
                     .id(admin.getId())
                     .email(admin.getUsername())
                     .name(admin.getName())
-                    .status(admin.isEnabled() ? "Active": "InActive")
+                    .status(admin.isEnabled() ? "Active" : "InActive")
                     .maxUsers((long) admin.getMaxNumberOfUsers())
                     .phoneNumber(admin.getPhone())
                     .numEmployees((long) admin.getEmployees().size())
@@ -66,10 +66,10 @@ public class ProfileSettingServiceImp implements ProfileSettingService {
                     .id(employee.getId())
                     .email(employee.getUsername())
                     .name(employee.getName())
-                    .status(employee.isEnabled() ? "Active": "InActive")
+                    .status(employee.isEnabled() ? "Active" : "InActive")
                     .phoneNumber(employee.getPhone())
                     .expirationDate(employee.getAccountNonExpired())
-                    .subordinates(employeeMapper.toTeamMemberDto(employee.getSubordinates()) )
+                    .subordinates(employeeMapper.toTeamMemberDto(employee.getSubordinates()))
                     .build();
         }
         return success(profileSettingDTO);
@@ -78,15 +78,15 @@ public class ProfileSettingServiceImp implements ProfileSettingService {
     @Override
     public ResponseEntity<?> updateDetails(ProfileSettingDTO profileSettingDTO, Transition transition) {
 
-        if(transition.getRole().equals("ADMIN")){
+        if (transition.getRole().equals("ADMIN")) {
             Admin admin = adminRepository.findById(transition.getUserId())
                     .orElseThrow(NotFoundResourceException::new);
             admin.setName(profileSettingDTO.getName());
             admin.setPhone(profileSettingDTO.getPhoneNumber());
             log.info(profileSettingDTO.getName());
             log.info(profileSettingDTO.getPhoneNumber());
-          adminRepository.save(admin);
-        }else {
+            adminRepository.save(admin);
+        } else {
             Employee employee = employeeRepository.findById(transition.getUserId())
                     .orElseThrow(NotFoundResourceException::new);
             employee.setName(profileSettingDTO.getName());
@@ -97,17 +97,17 @@ public class ProfileSettingServiceImp implements ProfileSettingService {
     }
 
 
-    public ResponseEntity<?> changePassword(ChangePasswordRequest changePasswordRequest, Transition transition)  {
+    public ResponseEntity<?> changePassword(ChangePasswordRequest changePasswordRequest, Transition transition) {
 
         User user = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
 
         if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), user.getPassword())) {
-            return  error("Current password is incorrect");
+            return error("Current password is incorrect");
         }
 
         if (!changePasswordRequest.getNewPassword().equals(changePasswordRequest.getConfirmPassword())) {
-            return  error("New passwords do not match");
+            return error("New passwords do not match");
         }
 
         user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));

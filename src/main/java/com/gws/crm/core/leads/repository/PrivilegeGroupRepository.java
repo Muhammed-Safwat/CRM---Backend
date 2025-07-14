@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface PrivilegeGroupRepository extends JpaRepository<PrivilegeGroup, Long> , JpaSpecificationExecutor<PrivilegeGroup> {
+public interface PrivilegeGroupRepository extends JpaRepository<PrivilegeGroup, Long>, JpaSpecificationExecutor<PrivilegeGroup> {
 
     @Query("SELECT pg.id AS id , pg.jobName AS jobName FROM PrivilegeGroup pg")
     List<PrivilegeGroupDTO> getAllPrivilegeGroups();

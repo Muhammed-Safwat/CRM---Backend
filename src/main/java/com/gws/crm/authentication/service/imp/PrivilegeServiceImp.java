@@ -20,7 +20,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
@@ -77,12 +79,12 @@ public class PrivilegeServiceImp implements PrivilegeService {
 
     @Override
     public ResponseEntity<?> getGroupDetails(long id, Transition transition) {
-       PrivilegeGroup privilegeGroup = privilegeGroupRepository.findById(id)
+        PrivilegeGroup privilegeGroup = privilegeGroupRepository.findById(id)
                 .orElseThrow(NotFoundResourceException::new);
-       List<Employee> employees = employeeRepository.getEmployeesByPrivilegeGroupId(id);
-       List<EmployeeSimpleDTO> employeeSimpleDTOS = employeeMapper.toListSimpleDto(employees);
-        PrivilegeGroupDetailsRes privRes = privilegeGroupMapper.toDto(privilegeGroup,employeeSimpleDTOS);
-       return success(privRes);
+        List<Employee> employees = employeeRepository.getEmployeesByPrivilegeGroupId(id);
+        List<EmployeeSimpleDTO> employeeSimpleDTOS = employeeMapper.toListSimpleDto(employees);
+        PrivilegeGroupDetailsRes privRes = privilegeGroupMapper.toDto(privilegeGroup, employeeSimpleDTOS);
+        return success(privRes);
     }
 
 }

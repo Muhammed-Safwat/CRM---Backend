@@ -23,9 +23,9 @@ public class PrivilegeGroup {
     @OneToMany(mappedBy = "privilegeGroup", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Privilege> privileges;
 
-    private boolean status = true ;
+    private boolean status = true;
 
 
     @Column(length = 1000)
-    private String description ;
+    private String description;
 }

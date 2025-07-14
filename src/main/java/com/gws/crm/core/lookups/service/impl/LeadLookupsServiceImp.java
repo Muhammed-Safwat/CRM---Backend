@@ -37,7 +37,7 @@ public class LeadLookupsServiceImp implements LeadLookupsService {
     @Override
     public ResponseEntity<?> getLeadLookups(Transition transition) {
         long id = transition.getUserId();
-        if("USER".equals(transition.getRole())){
+        if ("USER".equals(transition.getRole())) {
             Employee employee = employeeRepository.findById(id)
                     .orElseThrow(NotFoundResourceException::new);
             id = employee.getAdmin().getId();
@@ -80,7 +80,7 @@ public class LeadLookupsServiceImp implements LeadLookupsService {
     @Override
     public ResponseEntity<?> getActionLookups(Transition transition) {
         long id = transition.getUserId();
-        if("USER".equals(transition.getRole())){
+        if ("USER".equals(transition.getRole())) {
             Employee employee = employeeRepository.findById(id)
                     .orElseThrow(NotFoundResourceException::new);
             id = employee.getAdmin().getId();

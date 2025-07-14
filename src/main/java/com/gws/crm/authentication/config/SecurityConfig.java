@@ -23,7 +23,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,13 +44,11 @@ public class SecurityConfig {
     }
 
 
-
-    
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(Arrays.asList("http://localhost:4200",
-                "http://localhost:8080", "https://www.rnbinvesment.com", "www.rnbinvesment.com","https://rnbinvesment.com"));
+                "http://localhost:8080", "https://www.rnbinvesment.com", "www.rnbinvesment.com", "https://rnbinvesment.com"));
         config.setAllowCredentials(true);
         config.setExposedHeaders(List.of("*"));
         config.setAllowedMethods(List.of("*"));
@@ -86,7 +83,7 @@ public class SecurityConfig {
                                         "/swagger-ui/**")
                                 .permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/lookups/**").permitAll()
-                                .requestMatchers(HttpMethod.GET,"/api/employees/**").hasAnyRole("ADMIN","USER")
+                                .requestMatchers(HttpMethod.GET, "/api/employees/**").hasAnyRole("ADMIN", "USER")
                                 .requestMatchers("/api/super-admin/admins/**").hasRole("SUPER_ADMIN")
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/api/employees/**").hasRole("ADMIN")

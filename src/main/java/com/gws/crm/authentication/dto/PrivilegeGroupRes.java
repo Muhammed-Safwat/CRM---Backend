@@ -8,8 +8,8 @@ import lombok.Setter;
 @Getter
 @Builder
 public class PrivilegeGroupRes {
-    private long id ;
-    private String name ;
-    private String employeeCount ;
+    private long id;
+    private String name;
+    private String employeeCount;
     private boolean status;
 }

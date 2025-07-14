@@ -9,7 +9,6 @@ import com.gws.crm.core.leads.entity.SalesLead;
 import com.gws.crm.core.leads.service.SalesLeadService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

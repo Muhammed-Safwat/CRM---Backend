@@ -11,7 +11,7 @@ import java.util.List;
 
 public class LookupSpecification<T extends BaseLookup> {
 
-    public static <T extends BaseLookup> Specification<T> filter(String keyword,long userId, Transition transition) {
+    public static <T extends BaseLookup> Specification<T> filter(String keyword, long userId, Transition transition) {
         List<Specification<T>> specs = new ArrayList<>();
         specs.add(fullTextSearch(keyword));
         specs.add(filterByAdminId(userId));

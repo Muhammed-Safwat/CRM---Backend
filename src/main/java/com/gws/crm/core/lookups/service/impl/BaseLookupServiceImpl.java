@@ -40,13 +40,13 @@ public abstract class BaseLookupServiceImpl<T extends BaseLookup, D extends Look
     public ResponseEntity<?> getAll(int page, int size, String keyword, Transition transition) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
         long id = transition.getUserId();
-        if("USER".equals(transition.getRole())){
-          Employee employee = employeeRepository.findById(transition.getUserId())
-                  .orElseThrow(NotFoundResourceException::new);
-          id = employee.getAdmin().getId();
+        if ("USER".equals(transition.getRole())) {
+            Employee employee = employeeRepository.findById(transition.getUserId())
+                    .orElseThrow(NotFoundResourceException::new);
+            id = employee.getAdmin().getId();
         }
 
-        Specification<T> specification = LookupSpecification.filter(keyword,id, transition);
+        Specification<T> specification = LookupSpecification.filter(keyword, id, transition);
 
         Page<T> lookupPage = repository.findAll(specification, pageable);
 
@@ -58,7 +58,7 @@ public abstract class BaseLookupServiceImpl<T extends BaseLookup, D extends Look
     @Override
     public ResponseEntity<?> getAll(Transition transition) {
         long id = transition.getUserId();
-        if("USER".equals(transition.getRole())){
+        if ("USER".equals(transition.getRole())) {
             Employee employee = employeeRepository.findById(transition.getUserId())
                     .orElseThrow(NotFoundResourceException::new);
             id = employee.getAdmin().getId();

@@ -1,6 +1,5 @@
 package com.gws.crm.authentication.filters;
 
-import com.gws.crm.authentication.config.AuthenticationProviderService;
 import com.gws.crm.authentication.repository.UserRepository;
 import com.gws.crm.authentication.utils.JwtTokenService;
 import com.gws.crm.common.exception.NotFoundResourceException;
@@ -10,7 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.JwtValidationException;

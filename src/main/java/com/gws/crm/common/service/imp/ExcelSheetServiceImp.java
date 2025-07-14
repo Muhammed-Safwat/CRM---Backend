@@ -37,12 +37,12 @@ public class ExcelSheetServiceImp implements ExcelSheetService {
     @Override
     public Map<String, List<String>> generateLeadExcelSheetMap(Transition transition) {
         long id = transition.getUserId();
-        if(transition.getRole().equals("USER")) {
+        if (transition.getRole().equals("USER")) {
             Employee employee = employeeRepository.findById(id)
                     .orElseThrow(NotFoundResourceException::new);
             id = employee.getAdmin().getId();
         }
-        log.info("Id ============================> {}",id);
+        log.info("Id ============================> {}", id);
         List<String> brokers = brokerRepository.findAllNamesByAdminId(transition.getUserId());
         List<String> leadStatuses = leadStatusRepository.findAllNames();
         List<String> investmentGoals = investmentGoalRepository.findAllNamesByAdminId(id);
@@ -52,7 +52,7 @@ public class ExcelSheetServiceImp implements ExcelSheetService {
         List<String> communicateWays = communicateWayRepository.findAllNamesByAdminId(id);
 
         Map<String, List<String>> lookupsMap = new HashMap<>();
-        if (transition.getRole().equals("ADMIN")){
+        if (transition.getRole().equals("ADMIN")) {
             List<String> salesReps = employeeRepository.findAllNamesByAdminId(id);
             lookupsMap.put("salesRep", salesReps);
         }
@@ -69,7 +69,7 @@ public class ExcelSheetServiceImp implements ExcelSheetService {
     @Override
     public Map<String, List<String>> generatePreLeadExcelSheetMap(Transition transition) {
         long id = transition.getUserId();
-        if(transition.getRole().equals("USER")) {
+        if (transition.getRole().equals("USER")) {
             Employee employee = employeeRepository.findById(id)
                     .orElseThrow(NotFoundResourceException::new);
             id = employee.getAdmin().getId();
@@ -86,7 +86,7 @@ public class ExcelSheetServiceImp implements ExcelSheetService {
     @Override
     public Map<String, List<String>> generateResaleSheetMap(Transition transition) {
         long id = transition.getUserId();
-        if(transition.getRole().equals("USER")) {
+        if (transition.getRole().equals("USER")) {
             Employee employee = employeeRepository.findById(id)
                     .orElseThrow(NotFoundResourceException::new);
             id = employee.getAdmin().getId();
@@ -97,7 +97,7 @@ public class ExcelSheetServiceImp implements ExcelSheetService {
         List<String> statuses = resaleStatusRepository.findAllNames();
 
         Map<String, List<String>> lookupsMap = new HashMap<>();
-        if (transition.getRole().equals("ADMIN")){
+        if (transition.getRole().equals("ADMIN")) {
             List<String> salesReps = employeeRepository.findAllNamesByAdminId(id);
             lookupsMap.put("salesRep", salesReps);
         }

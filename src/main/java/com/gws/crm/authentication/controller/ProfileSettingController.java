@@ -16,18 +16,18 @@ public class ProfileSettingController {
     private final ProfileSettingService profileSettingService;
 
     @GetMapping()
-    public ResponseEntity<?> getDetails(Transition transition){
+    public ResponseEntity<?> getDetails(Transition transition) {
         return profileSettingService.getDetails(transition);
     }
 
     @PutMapping()
-    public  ResponseEntity<?> updateDetails(@RequestBody ProfileSettingDTO profileSettingDTO, Transition transition){
+    public ResponseEntity<?> updateDetails(@RequestBody ProfileSettingDTO profileSettingDTO, Transition transition) {
         return profileSettingService.updateDetails(profileSettingDTO, transition);
     }
 
     @PutMapping("/change-password")
     private ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest,
-                                             Transition transition){
+                                             Transition transition) {
         return profileSettingService.changePassword(changePasswordRequest, transition);
     }
 }

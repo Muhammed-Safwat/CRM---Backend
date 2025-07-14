@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TeleSalesLeadRepository extends SalesLeadRepository<TeleSalesLead> {
+public interface TeleSalesLeadRepository extends GenericSalesLeadRepository<TeleSalesLead> {
 
     @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM TeleSalesLead l JOIN l.phoneNumbers p WHERE p.phone = :phone")
     boolean isPhoneExist(String phone);

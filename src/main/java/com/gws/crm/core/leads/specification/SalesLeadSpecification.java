@@ -6,13 +6,9 @@ import com.gws.crm.core.leads.entity.SalesLead;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +19,8 @@ public class SalesLeadSpecification<T extends SalesLead> {
     public static <T extends SalesLead> Specification<T> filter(SalesLeadCriteria salesLeadCriteria, Transition transition) {
         List<Specification<T>> specs = new ArrayList<>();
         log.info(salesLeadCriteria.toString());
-        List<Long > ids = new ArrayList<>();
-        if(salesLeadCriteria.getSubordinates() != null){
+        List<Long> ids = new ArrayList<>();
+        if (salesLeadCriteria.getSubordinates() != null) {
             ids.addAll(salesLeadCriteria.getSubordinates());
         }
         ids.add(transition.getUserId());
@@ -83,19 +79,19 @@ public class SalesLeadSpecification<T extends SalesLead> {
         };
     }
 
-    private static <T extends SalesLead> Specification<T> filterByUser(List<Long> ids,boolean isMyLead,
+    private static <T extends SalesLead> Specification<T> filterByUser(List<Long> ids, boolean isMyLead,
                                                                        Transition transition) {
         return (root, query, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
-            if (!isMyLead &&transition.getRole().equals("USER")) {
+            if (!isMyLead && transition.getRole().equals("USER")) {
                 predicate = criteriaBuilder.and(predicate, root.join("salesRep", JoinType.INNER).get("id").in(ids));
             } else if (isMyLead && transition.getRole().equals("ADMIN")) {
                 predicate = criteriaBuilder.and(predicate,
                         criteriaBuilder.isNull(root.get("salesRep"))
                 );
-            }else if (isMyLead && transition.getRole().equals("USER")) {
+            } else if (isMyLead && transition.getRole().equals("USER")) {
                 predicate = criteriaBuilder.and(predicate,
-                        criteriaBuilder.equal(root.get("salesRep").get("id"),transition.getUserId())
+                        criteriaBuilder.equal(root.get("salesRep").get("id"), transition.getUserId())
                 );
             }
             return predicate;

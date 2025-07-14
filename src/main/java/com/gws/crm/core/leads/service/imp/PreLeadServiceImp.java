@@ -11,29 +11,24 @@ import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.admin.repository.AdminRepository;
 import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
-import com.gws.crm.core.employee.service.imp.ActionServiceImp;
-import com.gws.crm.core.employee.service.imp.LeadActionService;
 import com.gws.crm.core.leads.dto.*;
 import com.gws.crm.core.leads.entity.Lead;
 import com.gws.crm.core.leads.entity.PhoneNumber;
 import com.gws.crm.core.leads.entity.PreLead;
-import com.gws.crm.core.leads.entity.SalesLead;
 import com.gws.crm.core.leads.mapper.PhoneNumberMapper;
 import com.gws.crm.core.leads.mapper.PreLeadMapper;
-import com.gws.crm.core.leads.repository.BaseLeadRepository;
 import com.gws.crm.core.leads.repository.LeadRepository;
 import com.gws.crm.core.leads.repository.PreLeadRepository;
 import com.gws.crm.core.leads.service.PreLeadService;
-import com.gws.crm.core.lookups.repository.CategoryRepository;
 import com.gws.crm.core.lookups.repository.ChannelRepository;
 import com.gws.crm.core.lookups.repository.LeadStatusRepository;
 import com.gws.crm.core.lookups.repository.ProjectRepository;
-import com.gws.crm.core.lookups.service.LeadLookupsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -59,27 +54,23 @@ public class PreLeadServiceImp implements PreLeadService {
     private final PreLeadMapper preLeadMapper;
     private final ProjectRepository projectRepository;
     private final ChannelRepository channelRepository;
-    private final BaseLeadRepository baseLeadRepository;
-    private final LeadLookupsService leadLookupsService;
     private final ExcelSheetService excelSheetService;
     private final AdminRepository adminRepository;
-    private final LeadRepository leadRepository ;
-    private final LeadActionService actionServiceImp;
+    private final LeadRepository leadRepository;
     private final LeadStatusRepository leadStatusRepository;
-    private final CategoryRepository categoryRepository;
 
     @Override
     public ResponseEntity<?> getAllPreLead(PreLeadCriteria preLeadCriteria, Transition transition) {
-        if(transition.getRole().equals("USER")){
+        if (transition.getRole().equals("USER")) {
             Employee employee =
                     employeeRepository.findById(transition.getUserId())
                             .orElseThrow(NotFoundResourceException::new);
-            preLeadCriteria.setSubordinates(employee.getSubordinates().stream().map(User::getId).toList());
-            log.info("********************** %%%%%%%%%%%%%%%%% **********************");
-            log.info(preLeadCriteria.getSubordinates().toString());
+            preLeadCriteria.setSubordinates(employee.getSubordinates()
+                    .stream().map(User::getId).toList());
         }
         Specification<PreLead> leadSpecification = filter(preLeadCriteria, transition);
-        Pageable pageable = PageRequest.of(preLeadCriteria.getPage(), preLeadCriteria.getSize());
+        Pageable pageable = PageRequest.of(preLeadCriteria.getPage(), preLeadCriteria.getSize(),
+                Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<PreLead> leadPage = preLeadRepository.findAll(leadSpecification, pageable);
         Page<PreLeadResponse> leadResponses = preLeadMapper.toDTOPage(leadPage);
         return success(leadResponses);
@@ -121,13 +112,13 @@ public class PreLeadServiceImp implements PreLeadService {
 
     @Override
     public ResponseEntity<?> deletePreLead(Long leadId, Transition transition) {
-        baseLeadRepository.deleteLead(leadId);
+        preLeadRepository.deleteLead(leadId);
         return success("Lead Deleted Successfully");
     }
 
     @Override
     public ResponseEntity<?> restorePreLead(Long leadId, Transition transition) {
-        baseLeadRepository.restoreLead(leadId);
+        preLeadRepository.restoreLead(leadId);
         return success("Lead Deleted Successfully");
     }
 
@@ -202,9 +193,9 @@ public class PreLeadServiceImp implements PreLeadService {
         Admin admin = adminRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
         List<Lead> leads = new ArrayList<>();
-        preLeads.forEach(lead ->{
+        preLeads.forEach(lead -> {
             lead.setImported(true);
-            leads.add(toSalesLead(lead,admin,transition));
+            leads.add(toSalesLead(lead, admin, transition));
         });
         leadRepository.saveAll(leads);
         preLeadRepository.saveAll(preLeads);
@@ -239,13 +230,20 @@ public class PreLeadServiceImp implements PreLeadService {
     @Override
     public ResponseEntity<?> isPhoneExist(String phone, Transition transition) {
         boolean exists = leadRepository.isPhoneExist(phone);
-        HashMap<String,Boolean> body = new HashMap<>();
-        body.put("isExists",exists);
+        HashMap<String, Boolean> body = new HashMap<>();
+        body.put("isExists", exists);
         return success(body);
     }
 
+    @Override
+    public ResponseEntity<?> getDetails(long leadId, Transition transition) {
+        PreLead preLead = preLeadRepository.findById(leadId).orElseThrow();
+        PreLeadResponse preLeadDto = preLeadMapper.toDTO(preLead);
+        return success(preLeadDto);
+    }
 
-    public Lead toSalesLead(PreLead preLeads,Admin admin,Transition transition) {
+
+    public Lead toSalesLead(PreLead preLeads, Admin admin, Transition transition) {
 
         Lead lead = Lead.builder()
                 .name(preLeads.getName())
@@ -261,11 +259,11 @@ public class PreLeadServiceImp implements PreLeadService {
                 .actions(new ArrayList<>())
                 .status(leadStatusRepository.findByName("Fresh"))
                 .build();
-        List<PhoneNumber> phoneNumbers = preLeads.getPhoneNumbers().stream().map(num ->{
+        List<PhoneNumber> phoneNumbers = preLeads.getPhoneNumbers().stream().map(num -> {
             return PhoneNumber.builder().phone(num.getPhone()).code(num.getCode()).lead(lead).build();
         }).toList();
         lead.setPhoneNumbers(phoneNumbers);
-        actionServiceImp.setActionForImportedPreLead(lead,transition);
+        // actionServiceImp.setActionForImportedPreLead(lead,transition);
         return lead;
     }
 }

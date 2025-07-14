@@ -2,7 +2,6 @@ package com.gws.crm.core.resale.service.imp;
 
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.employee.dto.EmployeeSimpleDTO;
-import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.lookups.entity.Project;
 import com.gws.crm.core.lookups.repository.CategoryRepository;
@@ -32,8 +31,8 @@ public class ResaleLookupsServiceImp implements ResaleLookupsService {
     @Override
     public ResponseEntity<?> getLookups(Transition transition) {
         long id = transition.getUserId();
-        if(!transition.getRole().equals("ADMIN")){
-           id = employeeRepository.getReferenceById(transition.getUserId()).getAdmin().getId();
+        if (!transition.getRole().equals("ADMIN")) {
+            id = employeeRepository.getReferenceById(transition.getUserId()).getAdmin().getId();
         }
         List<Project> projects = projectRepository.findAllByAdminId(id);
         List<EmployeeSimpleDTO> salesReps = employeeRepository.findAllByAdminId(id)
