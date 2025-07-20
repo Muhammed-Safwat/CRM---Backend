@@ -82,6 +82,7 @@ public class ResaleMapper {
                 .salesRep(sealRep)
                 .deleted(resale.isDeleted())
                 .creator(creatorDTO)
+                .assignAt(resale.getAssignAt())
                 .build();
     }
 

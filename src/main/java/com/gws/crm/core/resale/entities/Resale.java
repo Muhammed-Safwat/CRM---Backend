@@ -97,6 +97,8 @@ public class Resale {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    private LocalDateTime assignAt;
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 

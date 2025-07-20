@@ -1,6 +1,7 @@
 package com.gws.crm.core.resale.service;
 
 import com.gws.crm.common.entities.Transition;
+import com.gws.crm.core.leads.dto.AssignDTO;
 import com.gws.crm.core.resale.dto.AddResaleDTO;
 import com.gws.crm.core.resale.dto.ImportResaleDTO;
 import com.gws.crm.core.resale.dto.ResaleCriteria;
@@ -32,4 +33,6 @@ public interface ResaleService {
     ResponseEntity<?> isPhoneExist(List<String> phones, Transition transition);
 
     ResponseEntity<?> isPhoneExist(String phone, Transition transition);
+
+    ResponseEntity<?> assignSalesToLead(AssignDTO assignDTO, Transition transition);
 }

@@ -8,9 +8,11 @@ import com.gws.crm.core.leads.dto.ImportPreLeadDTO;
 import com.gws.crm.core.leads.dto.PreLeadCriteria;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public interface PreLeadService {
     ResponseEntity<?> getAllPreLead(PreLeadCriteria preLeadCriteria, Transition transition);
 
@@ -24,7 +26,7 @@ public interface PreLeadService {
 
     ResponseEntity<?> generateExcel(Transition transition);
 
-    ResponseEntity<?> assignToSales(@Valid AssignToSalesDTO assignToSalesDTO, Transition transition);
+    ResponseEntity<?> assignToSales(@Valid AssignToSalesDTO assignToSalesDTO, Transition transition) throws Throwable;
 
     ResponseEntity<?> isPhoneExist(List<String> phones, Transition transition);
 

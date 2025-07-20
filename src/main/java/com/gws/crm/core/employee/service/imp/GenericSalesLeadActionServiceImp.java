@@ -10,6 +10,8 @@ import com.gws.crm.core.employee.entity.LeadActionDetails;
 import com.gws.crm.core.employee.entity.UserAction;
 import com.gws.crm.core.employee.mapper.ActionMapper;
 import com.gws.crm.core.employee.repository.UserActionRepository;
+import com.gws.crm.core.leads.entity.Lead;
+import com.gws.crm.core.leads.entity.PreLead;
 import com.gws.crm.core.leads.entity.SalesLead;
 import com.gws.crm.core.leads.repository.GenericSalesLeadRepository;
 import com.gws.crm.core.lookups.entity.CallOutcome;
@@ -18,12 +20,14 @@ import com.gws.crm.core.lookups.entity.Stage;
 import com.gws.crm.core.lookups.repository.CallOutcomeRepository;
 import com.gws.crm.core.lookups.repository.CancelReasonsRepository;
 import com.gws.crm.core.lookups.repository.StageRepository;
+import jakarta.validation.Valid;
 import lombok.extern.java.Log;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
 
@@ -40,7 +44,10 @@ public abstract class GenericSalesLeadActionServiceImp<T extends SalesLead>
     protected final CancelReasonsRepository cancelReasonsRepository;
     protected final StageRepository stageRepository;
 
-    protected GenericSalesLeadActionServiceImp(UserRepository userRepository, GenericSalesLeadRepository<T> leadRepository, UserActionRepository userActionRepository, ActionMapper actionMapper, CallOutcomeRepository callOutcomeRepository, CancelReasonsRepository cancelReasonsRepository, StageRepository stageRepository) {
+    protected GenericSalesLeadActionServiceImp(UserRepository userRepository, GenericSalesLeadRepository<T> leadRepository,
+                                               UserActionRepository userActionRepository, ActionMapper actionMapper,
+                                               CallOutcomeRepository callOutcomeRepository, CancelReasonsRepository cancelReasonsRepository,
+                                               StageRepository stageRepository) {
         super(userRepository, leadRepository, userActionRepository, actionMapper);
         this.userRepository = userRepository;
         this.leadRepository = leadRepository;
@@ -53,7 +60,135 @@ public abstract class GenericSalesLeadActionServiceImp<T extends SalesLead>
 
     @Override
     @Transactional
-    public ResponseEntity<?> setActionOnLead(ActionOnLeadDTO actionDTO, Transition transition) {
+    public void setAssignAction(T salesLead, Transition transition) {
+        User creator = userRepository.findById(transition.getUserId())
+                .orElseThrow(NotFoundResourceException::new);
+
+        // === Create UserAction (ASSIGN) ===
+        UserAction assignAction = UserAction.builder()
+                .creator(creator)
+                .type(ActionType.ASSIGN)
+                .description("Assigned lead to " + salesLead.getSalesRep().getName())
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        // === Create LeadActionDetails for UserAction ===
+        LeadActionDetails assignDetails = LeadActionDetails.builder()
+                .userAction(assignAction)
+                .lead(salesLead)
+                .build();
+
+        assignAction.setLeadDetails(assignDetails);
+
+        // === Save UserAction with cascaded LeadActionDetails ===
+        userActionRepository.save(assignAction);
+
+        // === Optional: update lead metadata ===
+        salesLead.setLastActionDate(LocalDateTime.now());
+        salesLead.setUpdatedAt(LocalDateTime.now());
+        salesLead.getActions().add(assignAction);
+
+        leadRepository.save(salesLead);
+    }
+
+    @Override
+    @Transactional
+    public void setViewLeadAction(T salesLead, Transition transition) {
+        User creator = userRepository.findById(transition.getUserId())
+                .orElseThrow(NotFoundResourceException::new);
+
+        // === Create the VIEW action ===
+        UserAction viewAction = UserAction.builder()
+                .creator(creator)
+                .type(ActionType.VIEW)
+                .description("Viewed the lead")
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        // === Create the related LeadActionDetails ===
+        LeadActionDetails viewDetails = LeadActionDetails.builder()
+                .userAction(viewAction)
+                .lead(salesLead)
+                .comment("Lead was viewed by " + creator.getName())
+                .build();
+
+        viewAction.setLeadDetails(viewDetails);
+
+        // === Save the action and details ===
+        userActionRepository.save(viewAction);
+
+        // === Optionally update the lead's last activity date ===
+        salesLead.setLastActionDate(LocalDateTime.now());
+        salesLead.setUpdatedAt(LocalDateTime.now());
+        salesLead.getActions().add(viewAction);
+
+        leadRepository.save(salesLead);
+    }
+
+    @Transactional
+    public void setLeadCreationAction(List<T> leads,Transition transition){
+        for (T lead : leads) {
+            setLeadCreationAction(lead,transition);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void setLeadCreationAction(T salesLead, Transition transition) {
+        // === Create Creation Action ===
+        UserAction createAction = UserAction.builder()
+                .creator(salesLead.getCreator())
+                .type(ActionType.CREATE)
+                .description("Created this lead")
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        LeadActionDetails createDetails = LeadActionDetails.builder()
+                .userAction(createAction)
+                .lead(salesLead)
+                .comment("Initial creation")
+                .build();
+
+        createAction.setLeadDetails(createDetails);
+
+        // === Create Assign Action (optional) ===
+        UserAction assignAction = null;
+        if (salesLead.getSalesRep() != null) {
+            assignAction = UserAction.builder()
+                    .creator(salesLead.getCreator())
+                    .type(ActionType.ASSIGN)
+                    .description("Assigned lead to " + salesLead.getSalesRep().getName())
+                    .createdAt(LocalDateTime.now().plusSeconds(1))
+                    .build();
+
+            LeadActionDetails assignDetails = LeadActionDetails.builder()
+                    .userAction(assignAction)
+                    .lead(salesLead)
+                    .comment("Auto-assigned during creation")
+                    .build();
+
+            assignAction.setLeadDetails(assignDetails);
+        }
+
+        // === Save both actions ===
+        userActionRepository.save(createAction); // Cascade saves leadDetails
+        if (assignAction != null) {
+            userActionRepository.save(assignAction);
+        }
+
+        // === Optional: Update lead timeline if needed ===
+        salesLead.setLastActionDate(LocalDateTime.now());
+        salesLead.setUpdatedAt(LocalDateTime.now());
+        salesLead.getActions().add(createAction);
+        salesLead.getActions().add(assignAction);
+
+        leadRepository.save(salesLead);
+    }
+
+
+
+    @Transactional
+    public ResponseEntity<?> setActionOnSalesLead(ActionOnLeadDTO actionDTO, Transition transition) {
         log.info(actionDTO.toString());
 
         User creator = userRepository.findById(transition.getUserId())
@@ -97,6 +232,7 @@ public abstract class GenericSalesLeadActionServiceImp<T extends SalesLead>
                 .callOutcome(outcome)
                 .nextActionDate(actionDTO.getNextActionDate())
                 .callBackTime(actionDTO.getCallBackTime())
+                .comment(commentStr)
                 .build();
 
         if (actionDTO.getCancellationReason() != null) {
@@ -116,122 +252,11 @@ public abstract class GenericSalesLeadActionServiceImp<T extends SalesLead>
         userActionRepository.save(action); // saves both action and leadDetails due to cascade
 
         lead.setLastActionDate(LocalDateTime.now());
+        lead.setUpdatedAt(LocalDateTime.now());
         lead.getActions().add(action); // if you still keep actions list in SalesLead
         leadRepository.save(lead);
 
         return success("Action added successfully.");
     }
 
-    @Override
-    @Transactional
-    public void setSalesAssignAction(T salesLead, Transition transition) {
-        User creator = userRepository.findById(transition.getUserId())
-                .orElseThrow(NotFoundResourceException::new);
-
-        // === Create UserAction (ASSIGN) ===
-        UserAction assignAction = UserAction.builder()
-                .creator(creator)
-                .type(ActionType.ASSIGN)
-                .description("Assigned lead to " + salesLead.getSalesRep().getName())
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        // === Create LeadActionDetails for UserAction ===
-        LeadActionDetails assignDetails = LeadActionDetails.builder()
-                .userAction(assignAction)
-                .lead(salesLead)
-                .build();
-
-        assignAction.setLeadDetails(assignDetails);
-
-        // === Save UserAction with cascaded LeadActionDetails ===
-        userActionRepository.save(assignAction);
-
-        // === Optional: update lead metadata ===
-        salesLead.setLastActionDate(LocalDateTime.now());
-        leadRepository.save(salesLead);
-    }
-
-    @Override
-    @Transactional
-    public void setSalesViewLeadAction(T salesLead, Transition transition) {
-        User creator = userRepository.findById(transition.getUserId())
-                .orElseThrow(NotFoundResourceException::new);
-
-        // === Create the VIEW action ===
-        UserAction viewAction = UserAction.builder()
-                .creator(creator)
-                .type(ActionType.VIEW)
-                .description("Viewed the lead")
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        // === Create the related LeadActionDetails ===
-        LeadActionDetails viewDetails = LeadActionDetails.builder()
-                .userAction(viewAction)
-                .lead(salesLead)
-                .comment("Lead was viewed by " + creator.getName())
-                .build();
-
-        viewAction.setLeadDetails(viewDetails);
-
-        // === Save the action and details ===
-        userActionRepository.save(viewAction);
-
-        // === Optionally update the lead's last activity date ===
-        salesLead.setLastActionDate(LocalDateTime.now());
-        leadRepository.save(salesLead);
-    }
-
-    @Override
-    @Transactional
-    public void setSalesLeadCreationAction(T salesLead, Transition transition) {
-        User creator = userRepository.findById(transition.getUserId())
-                .orElseThrow(NotFoundResourceException::new);
-
-        // === Create Creation Action ===
-        UserAction createAction = UserAction.builder()
-                .creator(creator)
-                .type(ActionType.CREATE)
-                .description("Created this lead")
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        LeadActionDetails createDetails = LeadActionDetails.builder()
-                .userAction(createAction)
-                .lead(salesLead)
-                .comment("Initial creation")
-                .build();
-
-        createAction.setLeadDetails(createDetails);
-
-        // === Create Assign Action (optional) ===
-        UserAction assignAction = null;
-        if (salesLead.getSalesRep() != null) {
-            assignAction = UserAction.builder()
-                    .creator(creator)
-                    .type(ActionType.ASSIGN)
-                    .description("Assigned lead to " + salesLead.getSalesRep().getName())
-                    .createdAt(LocalDateTime.now().plusSeconds(1))
-                    .build();
-
-            LeadActionDetails assignDetails = LeadActionDetails.builder()
-                    .userAction(assignAction)
-                    .lead(salesLead)
-                    .comment("Auto-assigned during creation")
-                    .build();
-
-            assignAction.setLeadDetails(assignDetails);
-        }
-
-        // === Save both actions ===
-        userActionRepository.save(createAction); // Cascade saves leadDetails
-        if (assignAction != null) {
-            userActionRepository.save(assignAction);
-        }
-
-        // === Optional: Update lead timeline if needed ===
-        salesLead.setLastActionDate(LocalDateTime.now());
-        leadRepository.save(salesLead);
-    }
 }

@@ -11,18 +11,22 @@ import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.admin.repository.AdminRepository;
 import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
+import com.gws.crm.core.employee.service.LeadActionService;
+import com.gws.crm.core.employee.service.imp.PreLeadActionServiceImp;
+import com.gws.crm.core.employee.service.imp.SalesLeadActionServiceImp;
 import com.gws.crm.core.leads.dto.*;
-import com.gws.crm.core.leads.entity.Lead;
-import com.gws.crm.core.leads.entity.PhoneNumber;
-import com.gws.crm.core.leads.entity.PreLead;
+import com.gws.crm.core.leads.entity.*;
 import com.gws.crm.core.leads.mapper.PhoneNumberMapper;
 import com.gws.crm.core.leads.mapper.PreLeadMapper;
+import com.gws.crm.core.leads.repository.GenericSalesLeadRepository;
 import com.gws.crm.core.leads.repository.LeadRepository;
 import com.gws.crm.core.leads.repository.PreLeadRepository;
+import com.gws.crm.core.leads.repository.SalesLeadRepository;
 import com.gws.crm.core.leads.service.PreLeadService;
 import com.gws.crm.core.lookups.repository.ChannelRepository;
 import com.gws.crm.core.lookups.repository.LeadStatusRepository;
 import com.gws.crm.core.lookups.repository.ProjectRepository;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,6 +36,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -44,7 +49,8 @@ import static com.gws.crm.core.leads.specification.PreLeadSpecification.filter;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
+@Transactional
+@AllArgsConstructor
 public class PreLeadServiceImp implements PreLeadService {
 
     private final PreLeadRepository preLeadRepository;
@@ -58,6 +64,9 @@ public class PreLeadServiceImp implements PreLeadService {
     private final AdminRepository adminRepository;
     private final LeadRepository leadRepository;
     private final LeadStatusRepository leadStatusRepository;
+    private final PreLeadActionServiceImp preLeadActionService;
+    private final SalesLeadActionServiceImp salesLeadActionServiceImp;
+
 
     @Override
     public ResponseEntity<?> getAllPreLead(PreLeadCriteria preLeadCriteria, Transition transition) {
@@ -101,23 +110,35 @@ public class PreLeadServiceImp implements PreLeadService {
                 .link(preLeadDTO.getLink())
                 .project(projectRepository.getReferenceById(preLeadDTO.getProject()))
                 .channel(channelRepository.getReferenceById(preLeadDTO.getChannel()))
+                .actions(new ArrayList<>())
                 .build();
 
-        List<PhoneNumber> phoneNumbers = phoneNumberMapper.toEntityList(preLeadDTO.getPhoneNumbers(), preLead);
+        preLeadDTO.getPhoneNumbers().forEach(phone -> {
+            log.info("{} {}",phone.getPhone(), phone.getPhone() );
+        });
+
+        List<PhoneNumber> phoneNumbers = phoneNumberMapper
+                .toEntityList(preLeadDTO.getPhoneNumbers(), preLead);
 
         preLead.setPhoneNumbers(phoneNumbers);
-        preLeadRepository.save(preLead);
+        PreLead savedPreLead = preLeadRepository.save(preLead);
+        preLeadActionService.setLeadCreationAction(savedPreLead,transition);
         return ApiResponseHandler.success("Pre Lead added successfully");
     }
 
     @Override
     public ResponseEntity<?> deletePreLead(Long leadId, Transition transition) {
-        preLeadRepository.deleteLead(leadId);
+        PreLead preLead = preLeadRepository.findById(leadId).orElseThrow(NotFoundResourceException::new);
+        preLeadRepository.delete(preLead);
+        preLeadActionService.setLeadCreationAction(preLead,transition);
         return success("Lead Deleted Successfully");
     }
 
     @Override
     public ResponseEntity<?> restorePreLead(Long leadId, Transition transition) {
+        PreLead preLead = preLeadRepository.findById(leadId)
+                .orElseThrow(NotFoundResourceException::new);
+        preLeadActionService.setLeadRestoreAction(preLead,transition);
         preLeadRepository.restoreLead(leadId);
         return success("Lead Deleted Successfully");
     }
@@ -125,7 +146,8 @@ public class PreLeadServiceImp implements PreLeadService {
     @Override
     public ResponseEntity<?> importLead(List<ImportPreLeadDTO> leads, Transition transition) {
         List<PreLead> leadList = createLeadsList(leads, transition);
-        preLeadRepository.saveAll(leadList);
+        List<PreLead> savedLead = preLeadRepository.saveAll(leadList);
+        preLeadActionService.setImportLeads(savedLead,transition);
         return success("Pre Lead Imported Successfully");
     }
 
@@ -188,17 +210,30 @@ public class PreLeadServiceImp implements PreLeadService {
     }
 
     @Override
-    public ResponseEntity<?> assignToSales(AssignToSalesDTO assignToSalesDTO, Transition transition) {
+    @Transactional
+    public ResponseEntity<?> assignToSales(AssignToSalesDTO assignToSalesDTO, Transition transition) throws Throwable {
         List<PreLead> preLeads = preLeadRepository.findAllById(assignToSalesDTO.getLeadsIds());
         Admin admin = adminRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
+        Employee sales =
+                employeeRepository.findById(assignToSalesDTO.getSalesId())
+                        .orElseThrow(NotFoundResourceException::new);
         List<Lead> leads = new ArrayList<>();
-        preLeads.forEach(lead -> {
-            lead.setImported(true);
-            leads.add(toSalesLead(lead, admin, transition));
+        preLeads.forEach(preLead -> {
+            preLead.setImported(true);
+            preLead.setImportedBy(admin.getName());
+            preLead.setImportedAt(LocalDateTime.now());
+            preLead.setAssignedTo(sales.getName());
+            leads.add(toSalesLead(preLead, admin,sales, transition));
+            preLeadActionService.setAssignAction(preLead,transition);
         });
-        leadRepository.saveAll(leads);
-        preLeadRepository.saveAll(preLeads);
+
+        List<Lead> leadsList = leadRepository.saveAll(leads);
+        //preLeadActionService.setAssignAction(preLeads,transition);
+        //preLeadRepository.saveAll(preLeads);
+        log.info("{} ================",leadsList.size());
+         // here contain problem
+        // salesLeadActionServiceImp.setLeadCreationAction(leadsList,transition);
         return success("Pre Lead Assigned Successfully");
     }
 
@@ -226,7 +261,6 @@ public class PreLeadServiceImp implements PreLeadService {
         return success(responseBody);
     }
 
-
     @Override
     public ResponseEntity<?> isPhoneExist(String phone, Transition transition) {
         boolean exists = leadRepository.isPhoneExist(phone);
@@ -242,9 +276,7 @@ public class PreLeadServiceImp implements PreLeadService {
         return success(preLeadDto);
     }
 
-
-    public Lead toSalesLead(PreLead preLeads, Admin admin, Transition transition) {
-
+    public Lead toSalesLead(PreLead preLeads, Admin admin, Employee employee, Transition transition) {
         Lead lead = Lead.builder()
                 .name(preLeads.getName())
                 .admin(admin)
@@ -258,12 +290,13 @@ public class PreLeadServiceImp implements PreLeadService {
                 .deleted(false)
                 .actions(new ArrayList<>())
                 .status(leadStatusRepository.findByName("Fresh"))
+                .salesRep(employee)
                 .build();
         List<PhoneNumber> phoneNumbers = preLeads.getPhoneNumbers().stream().map(num -> {
             return PhoneNumber.builder().phone(num.getPhone()).code(num.getCode()).lead(lead).build();
         }).toList();
         lead.setPhoneNumbers(phoneNumbers);
-        // actionServiceImp.setActionForImportedPreLead(lead,transition);
+
         return lead;
     }
 }

@@ -36,7 +36,7 @@ public class UserAction {
 
     private LocalDateTime createdAt;
 
-    @OneToOne(mappedBy = "userAction", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "userAction", cascade = CascadeType.ALL, orphanRemoval = true)
     private LeadActionDetails leadDetails;
 
 }

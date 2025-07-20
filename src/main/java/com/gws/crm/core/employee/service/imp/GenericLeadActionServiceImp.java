@@ -4,7 +4,6 @@ import com.gws.crm.authentication.entity.User;
 import com.gws.crm.authentication.repository.UserRepository;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
-import com.gws.crm.core.employee.dto.ActionOnLeadDTO;
 import com.gws.crm.core.employee.dto.ActionResponse;
 import com.gws.crm.core.employee.entity.ActionType;
 import com.gws.crm.core.employee.entity.LeadActionDetails;
@@ -13,14 +12,7 @@ import com.gws.crm.core.employee.mapper.ActionMapper;
 import com.gws.crm.core.employee.repository.UserActionRepository;
 import com.gws.crm.core.employee.service.LeadActionService;
 import com.gws.crm.core.leads.entity.BaseLead;
-import com.gws.crm.core.leads.entity.SalesLead;
 import com.gws.crm.core.leads.repository.GenericBaseLeadRepository;
-import com.gws.crm.core.lookups.entity.CallOutcome;
-import com.gws.crm.core.lookups.entity.CancelReasons;
-import com.gws.crm.core.lookups.entity.Stage;
-import com.gws.crm.core.lookups.repository.CallOutcomeRepository;
-import com.gws.crm.core.lookups.repository.CancelReasonsRepository;
-import com.gws.crm.core.lookups.repository.StageRepository;
 import lombok.extern.java.Log;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -53,7 +45,6 @@ public abstract class GenericLeadActionServiceImp<T extends BaseLead> implements
         this.actionMapper = actionMapper;
     }
 
-
     @Override
     public ResponseEntity<?> getActions(long leadId, Transition transition) {
         List<UserAction> actions = userActionRepository.findActionsByLeadId(leadId);
@@ -61,10 +52,9 @@ public abstract class GenericLeadActionServiceImp<T extends BaseLead> implements
         return success(responseList);
     }
 
-
     @Override
     @Transactional
-    public void setLeadEditAction(T salesLead, Transition transition) {
+    public void setLeadEditionAction(T lead, Transition transition) {
         User editor = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
 
@@ -79,7 +69,7 @@ public abstract class GenericLeadActionServiceImp<T extends BaseLead> implements
         // === Compose LeadActionDetails ===
         LeadActionDetails editDetails = LeadActionDetails.builder()
                 .userAction(editAction)
-                .lead(salesLead)
+                .lead(lead)
                 .build();
 
         editAction.setLeadDetails(editDetails);
@@ -87,13 +77,76 @@ public abstract class GenericLeadActionServiceImp<T extends BaseLead> implements
         // === Persist via cascade ===
         userActionRepository.save(editAction);
 
-        // === Optional: update lastActionDate ===
-        salesLead.setLastActionDate(LocalDateTime.now());
-        leadRepository.save(salesLead);
+        // === Optional: update updated at ===
+        lead.setUpdatedAt(LocalDateTime.now());
+        lead.getActions().add(editAction);
+        leadRepository.save(lead);
     }
 
+    @Override
+    @Transactional
+    public void setDeletionAction(T lead, Transition transition) {
+        User deleter = userRepository.findById(transition.getUserId())
+                .orElseThrow(NotFoundResourceException::new);
 
+        // === Create the DELETE action ===
+        UserAction deleteAction = UserAction.builder()
+                .creator(deleter)
+                .type(ActionType.DELETE)
+                .description("Deleted the lead record")
+                .createdAt(LocalDateTime.now())
+                .build();
 
+        // === Create the related LeadActionDetails ===
+        LeadActionDetails deleteDetails = LeadActionDetails.builder()
+                .userAction(deleteAction)
+                .lead(lead)
+                .comment("Lead was deleted by " + deleter.getName())
+                .build();
+
+        deleteAction.setLeadDetails(deleteDetails);
+
+        // === Save action with cascade to details ===
+        userActionRepository.save(deleteAction);
+
+        // === Optional: update lastActionDate if lead is not being physically deleted ===
+        lead.setUpdatedAt(LocalDateTime.now());
+        lead.getActions().add(deleteAction);
+        leadRepository.save(lead);
+    }
+
+    @Override
+    @Transactional
+    public void setLeadRestoreAction(T lead, Transition transition) {
+        User restorer = userRepository.findById(transition.getUserId())
+                .orElseThrow(NotFoundResourceException::new);
+
+        // === Create the RESTORE action ===
+        UserAction restoreAction = UserAction.builder()
+                .creator(restorer)
+                .type(ActionType.RESTORE)
+                .description("Restored the lead record")
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        // === Create the related LeadActionDetails ===
+        LeadActionDetails restoreDetails = LeadActionDetails.builder()
+                .userAction(restoreAction)
+                .lead(lead)
+                .build();
+
+        restoreAction.setLeadDetails(restoreDetails);
+
+        // === Save the action and details ===
+        userActionRepository.save(restoreAction);
+
+        // === Optionally update the lead metadata ===
+        lead.setUpdatedAt(LocalDateTime.now());
+        lead.getActions().add(restoreAction);
+        leadRepository.save(lead);
+    }
+
+    // Will saved into database
     protected String generateDescriptionBasedOnOutcome(String outcome) {
         StringBuilder description = new StringBuilder();
         description.append("Recorded an outcome: ").append(outcome);
@@ -119,69 +172,6 @@ public abstract class GenericLeadActionServiceImp<T extends BaseLead> implements
                 break;
         }
         return description.toString();
-    }
-
-
-    @Override
-    @Transactional
-    public void setLeadDeletionAction(T salesLead, Transition transition) {
-        User deleter = userRepository.findById(transition.getUserId())
-                .orElseThrow(NotFoundResourceException::new);
-
-        // === Create the DELETE action ===
-        UserAction deleteAction = UserAction.builder()
-                .creator(deleter)
-                .type(ActionType.DELETE)
-                .description("Deleted the lead record")
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        // === Create the related LeadActionDetails ===
-        LeadActionDetails deleteDetails = LeadActionDetails.builder()
-                .userAction(deleteAction)
-                .lead(salesLead)
-                .comment("Lead was deleted by " + deleter.getName())
-                .build();
-
-        deleteAction.setLeadDetails(deleteDetails);
-
-        // === Save action with cascade to details ===
-        userActionRepository.save(deleteAction);
-
-        // === Optional: update lastActionDate if lead is not being physically deleted ===
-        salesLead.setLastActionDate(LocalDateTime.now());
-        leadRepository.save(salesLead);
-    }
-
-    @Override
-    @Transactional
-    public void setLeadRestoreAction(T salesLead, Transition transition) {
-        User restorer = userRepository.findById(transition.getUserId())
-                .orElseThrow(NotFoundResourceException::new);
-
-        // === Create the RESTORE action ===
-        UserAction restoreAction = UserAction.builder()
-                .creator(restorer)
-                .type(ActionType.RESTORE)
-                .description("Restored the lead record")
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        // === Create the related LeadActionDetails ===
-        LeadActionDetails restoreDetails = LeadActionDetails.builder()
-                .userAction(restoreAction)
-                .lead(salesLead)
-                .comment("Lead was restored by " + restorer.getName())
-                .build();
-
-        restoreAction.setLeadDetails(restoreDetails);
-
-        // === Save the action and details ===
-        userActionRepository.save(restoreAction);
-
-        // === Optionally update the lead metadata ===
-        salesLead.setLastActionDate(LocalDateTime.now());
-        leadRepository.save(salesLead);
     }
 
 }

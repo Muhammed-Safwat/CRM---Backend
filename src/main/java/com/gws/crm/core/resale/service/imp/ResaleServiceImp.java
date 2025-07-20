@@ -9,6 +9,8 @@ import com.gws.crm.common.service.ExcelSheetService;
 import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
+import com.gws.crm.core.leads.dto.AssignDTO;
+import com.gws.crm.core.leads.dto.AssignResponse;
 import com.gws.crm.core.lookups.repository.CategoryRepository;
 import com.gws.crm.core.lookups.repository.ProjectRepository;
 import com.gws.crm.core.lookups.repository.PropertyTypeRepository;
@@ -36,7 +38,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
+import static com.gws.crm.common.handler.ApiResponseHandler.badRequest;
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
 import static com.gws.crm.common.utils.ExcelFileUtils.generateHeader;
 import static com.gws.crm.core.resale.specification.ResaleSpecification.filter;
@@ -234,6 +238,30 @@ public class ResaleServiceImp implements ResaleService {
         HashMap<String, Boolean> body = new HashMap<>();
         body.put("isExists", isExists);
         return success(body);
+    }
+
+    @Override
+    public ResponseEntity<?> assignSalesToLead(AssignDTO assignDTO, Transition transition) {
+        Resale resale = resaleRepository.findById(assignDTO.getLeadId())
+                .orElseThrow(NotFoundResourceException::new);
+        log.info("resale Id ***************");
+        log.info("{} =======", resale);
+        if (resale.getSalesRep() != null &&
+                Objects.equals(resale.getSalesRep().getId(), assignDTO.getSalesId())) {
+            return badRequest();
+        }
+
+        Employee employee = employeeRepository.findById(assignDTO.getSalesId())
+                .orElseThrow(NotFoundResourceException::new);
+        resale.setSalesRep(employee);
+        resale.setAssignAt(LocalDateTime.now());
+        // actionServiceImp.setAssignAction(lead, transition);
+        AssignResponse response = AssignResponse.builder()
+                .salesName(employee.getName())
+                .jobTitle(employee.getJobName())
+                .assignAt(LocalDateTime.now())
+                .build();
+        return success(response);
     }
 
     private List<Resale> createResaleList(List<ImportResaleDTO> importResaleDTOS, Transition transition) {

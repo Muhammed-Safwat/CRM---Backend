@@ -59,7 +59,7 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
         T entity = mapDtoToEntity(leadDTO, transition);
         T savedLead = repository.save(entity);
         LeadResponse leadResponse = mapEntityToDto(savedLead);
-        actionServiceImp.setSalesLeadCreationAction(savedLead, transition);
+        actionServiceImp.setLeadCreationAction(savedLead, transition);
         return created(leadResponse);
     }
 
@@ -71,7 +71,7 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
                 .orElseThrow(NotFoundResourceException::new);
         updateEntityFromDto(existingEntity, leadDTO, transition);
         T updatedEntity = repository.save(existingEntity);
-        actionServiceImp.setLeadEditAction(updatedEntity, transition);
+        actionServiceImp.setLeadEditionAction(updatedEntity, transition);
         LeadResponse leadResponse = mapEntityToDto(updatedEntity);
         return ResponseEntity.ok(leadResponse);
     }
@@ -80,7 +80,7 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
     public ResponseEntity<?> deleteLead(long leadId, Transition transition) {
         T lead = repository.findById(leadId).orElseThrow(NotFoundResourceException::new);
         repository.deleteLead(leadId);
-        actionServiceImp.setLeadDeletionAction(lead, transition);
+        actionServiceImp.setDeletionAction(lead, transition);
         return success("Lead Deleted Successfully");
     }
 
@@ -124,7 +124,7 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
                 .orElseThrow(NotFoundResourceException::new);
         lead.setSalesRep(employee);
         lead.setAssignAt(LocalDateTime.now());
-        actionServiceImp.setSalesAssignAction(lead, transition);
+        actionServiceImp.setAssignAction(lead, transition);
         AssignResponse response = AssignResponse.builder()
                 .salesName(employee.getName())
                 .jobTitle(employee.getJobName())

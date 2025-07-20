@@ -29,12 +29,12 @@ public class PhoneNumberMapper {
         }
         Phonenumber.PhoneNumber phoneNumber = phoneNumberUtil.parse(phoneNumberDTO.getPhone(),
                 getRegionCode(phoneNumberDTO.getCode()));
-
+/*
         if (!phoneNumberUtil.isValidNumber(phoneNumber)) {
             throw new InvalidPhoneNumberException();
         }
 
-
+*/
         return PhoneNumber.builder()
                 .phone(String.valueOf(phoneNumber.getNationalNumber()))
                 .code(phoneNumberDTO.getCode())

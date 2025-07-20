@@ -91,7 +91,8 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
     @Override
     public ResponseEntity<?> importLead(List<ImportLeadDTO> leads, Transition transition) {
         List<Lead> leadList = createLeadsList(leads, transition);
-        leadRepository.saveAll(leadList);
+        List<Lead> savedLeads = leadRepository.saveAll(leadList);
+        // leadActionService.setImportLeads(savedLeads,transition);
         return success("Lead Imported Successfully");
     }
 
@@ -318,7 +319,7 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
 
         if (isAdmin && !(existingLead.getId() == leadDTO.getSalesRep())) {
             existingLead.setSalesRep(employeeRepository.getReferenceById(leadDTO.getSalesRep()));
-            leadActionService.setSalesAssignAction(existingLead, transition);
+            leadActionService.setAssignAction(existingLead, transition);
         }
 
         if (leadDTO.getChannel() != null) {

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public interface GenericSalesLeadRepository <T extends SalesLead> extends GenericBaseLeadRepository<T>{
+public interface GenericSalesLeadRepository<T extends SalesLead> extends GenericBaseLeadRepository<T> {
     @Modifying
     @Transactional
     @Query("UPDATE SalesLead l SET l.deleted = true WHERE l.id = :leadId")

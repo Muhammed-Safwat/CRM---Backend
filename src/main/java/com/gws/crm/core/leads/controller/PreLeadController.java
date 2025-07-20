@@ -62,7 +62,7 @@ public class PreLeadController {
 
     @PostMapping("/assignToSales")
     public ResponseEntity<?> assignToSales(@Valid @RequestBody AssignToSalesDTO assignToSalesDTO,
-                                           Transition transition) {
+                                           Transition transition) throws Throwable {
         return preLeadService.assignToSales(assignToSalesDTO, transition);
     }
 

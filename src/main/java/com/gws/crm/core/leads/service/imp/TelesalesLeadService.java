@@ -158,16 +158,17 @@ public class TelesalesLeadService extends SalesLeadServiceImp<TeleSalesLead, Add
         TeleSalesLead existingLead = leadRepository.findById(leadDTO.getId())
                 .orElseThrow(NotFoundResourceException::new);
 
-        User creator = userRepository.findById(transition.getUserId()).orElseThrow(NotFoundResourceException::new);
-        Admin admin = null;
+        User creator = userRepository.findById(transition.getUserId())
+                                     .orElseThrow(NotFoundResourceException::new);
+       Admin admin = null;
         boolean isAdmin = transition.getRole().equals("ADMIN");
-        if (!isAdmin) {
+    /*    if (!isAdmin) {
             admin = employeeRepository.getReferenceById(transition.getUserId()).getAdmin();
             existingLead.setAdmin(admin);
         } else {
             existingLead.setAdmin((Admin) creator);
         }
-
+*/
         existingLead.setName(leadDTO.getName());
         existingLead.setStatus(leadStatusRepository.getReferenceById(leadDTO.getStatus()));
         existingLead.setCountry(leadDTO.getCountry());
@@ -197,7 +198,7 @@ public class TelesalesLeadService extends SalesLeadServiceImp<TeleSalesLead, Add
 
         if (isAdmin && !(existingLead.getId() == leadDTO.getSalesRep())) {
             existingLead.setSalesRep(employeeRepository.getReferenceById(leadDTO.getSalesRep()));
-            leadActionService.setSalesAssignAction(existingLead, transition);
+            leadActionService.setAssignAction(existingLead, transition);
         }
 
         if (leadDTO.getChannel() != null) {

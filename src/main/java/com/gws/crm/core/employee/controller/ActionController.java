@@ -3,14 +3,14 @@ package com.gws.crm.core.employee.controller;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.employee.dto.ActionOnLeadDTO;
 import com.gws.crm.core.employee.service.LeadActionService;
-import com.gws.crm.core.leads.entity.SalesLead;
+import com.gws.crm.core.leads.entity.BaseLead;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/actions")
-public abstract class ActionController<T extends SalesLead> {
+public abstract class ActionController<T extends BaseLead> {
 
     private final LeadActionService<T> leadActionService;
 
@@ -21,11 +21,6 @@ public abstract class ActionController<T extends SalesLead> {
     @GetMapping("/{leadId}")
     public ResponseEntity<?> getActions(@PathVariable long leadId, Transition transition) {
         return leadActionService.getActions(leadId, transition);
-    }
-
-    @PostMapping("/lead")
-    public ResponseEntity<?> setActionOnLead(@Valid @RequestBody ActionOnLeadDTO action, Transition transition) {
-        return leadActionService.setActionOnLead(action, transition);
     }
 
 }

@@ -51,7 +51,7 @@ public class CommentServiceImp implements CommentService {
     @Override
     public ResponseEntity<?> addComment(CommentDto commentDto, Transition transition) {
         BaseLead salesLead =
-                leadRepository.getReferenceById(commentDto.getLeadId()) ;
+                leadRepository.getReferenceById(commentDto.getLeadId());
 
         User user = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);

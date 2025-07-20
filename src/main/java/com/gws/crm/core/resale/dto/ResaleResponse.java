@@ -30,5 +30,6 @@ public class ResaleResponse {
     private EmployeeSimpleDTO creator;
     private EmployeeSimpleDTO salesRep;
     private LocalDateTime updatedAt;
+    private LocalDateTime assignAt;
     private boolean deleted;
 }
