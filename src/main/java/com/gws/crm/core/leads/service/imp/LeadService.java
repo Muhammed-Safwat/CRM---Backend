@@ -7,9 +7,9 @@ import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.common.service.ExcelSheetService;
 import com.gws.crm.common.utils.PhoneNumberUtilsService;
+import com.gws.crm.core.actions.repository.repository.EmployeeRepository;
 import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.employee.entity.Employee;
-import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.employee.service.imp.GenericLeadActionServiceImp;
 import com.gws.crm.core.employee.service.imp.SalesLeadActionServiceImp;
 import com.gws.crm.core.leads.dto.AddLeadDTO;
@@ -222,6 +222,7 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
                 .campaignId(leadDTO.getCampaignId())
                 .lastStage(leadDTO.getLastStage())
                 .actions(new ArrayList<>())
+                .deleted(false)
                 .creator(creator);
 
         if (transition.getRole().equals("USER")) {

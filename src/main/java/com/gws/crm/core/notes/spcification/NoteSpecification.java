@@ -13,13 +13,14 @@ import java.util.Objects;
 public class NoteSpecification {
 
     public static Specification<Note> filter(NoteCriteria criteria,
-                                             Long createdId, Long targetId) {
+                                             Long createdId) {
         List<Specification<Note>> specs = new ArrayList<>();
 
         if (criteria != null) {
-            specs.add(byTargetId(targetId));
-            specs.add(byNoteTypeId(criteria.getNoteTypeId()));
+            specs.add(byTargetId(criteria.getTargetId()));
             specs.add(byCreatedAt(criteria.getCreatedAt()));
+            specs.add(byNoteType(criteria.getNoteType()));
+            specs.add(byNoteTypeId(criteria.getNoteTypeId()));
             specs.add(byKeyword(criteria.getKeyword()));
             specs.add(byLabel(criteria.getLabel()));
             specs.add(byCreatorId(createdId));
@@ -38,6 +39,14 @@ public class NoteSpecification {
             return cb.equal(root.get("targetId"), targetId);
         };
     }
+
+    private static Specification<Note> byNoteType(String noteType) {
+        return (root, query, cb) -> {
+            if (noteType == null || noteType.isEmpty()) return null;
+            return cb.equal(root.get("type").get("name"), noteType);
+        };
+    }
+
 
     private static Specification<Note> byNoteTypeId(Long noteTypeId) {
         return (root, query, cb) -> {

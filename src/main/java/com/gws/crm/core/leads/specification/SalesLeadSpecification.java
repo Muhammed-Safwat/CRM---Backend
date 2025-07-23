@@ -32,10 +32,12 @@ public class SalesLeadSpecification<T extends SalesLead> {
             specs.add(filterByCommunicateWays(salesLeadCriteria.getCommunicateWay()));
             specs.add(filterByCancelReasons(salesLeadCriteria.getCancelReasons()));
             specs.add(filterByChannels(salesLeadCriteria.getChannel()));
+            specs.add(filterByDeleted(salesLeadCriteria.getDeleted()));
+            specs.add(filterByDelayed(salesLeadCriteria.getDelayed()));
             specs.add(filterByBrokers(salesLeadCriteria.getBroker()));
             specs.add(filterByProjects(salesLeadCriteria.getProject()));
             specs.add(filterByCountry(salesLeadCriteria.getCountry()));
-            specs.add(filterByDeleted(salesLeadCriteria.isDeleted()));
+            specs.add(filterByUser(salesLeadCriteria, transition));
             specs.add(filterByCampaignId(salesLeadCriteria.getCampaignId()));
             specs.add(filterByBudget(salesLeadCriteria.getBudget()));
             specs.add(filterByCreatedAt(salesLeadCriteria.getCreatedAt()));
@@ -43,7 +45,7 @@ public class SalesLeadSpecification<T extends SalesLead> {
             specs.add(filterByActionDate(salesLeadCriteria.getActionDate()));
             specs.add(filterByAssignDate(salesLeadCriteria.getAssignDate()));
             specs.add(filterByStage(salesLeadCriteria.getStage()));
-            specs.add(filterByUser(ids, salesLeadCriteria.isMyLead(), transition));
+            specs.add(filterByUser(ids, salesLeadCriteria.getMyLead(), transition));
             specs.add(filterBySalesReps(salesLeadCriteria.getSalesRep(), transition));
             specs.add(filterByCreators(salesLeadCriteria.getCreator(), transition));
         }
@@ -69,7 +71,8 @@ public class SalesLeadSpecification<T extends SalesLead> {
                 predicate = criteriaBuilder.and(predicate,
                         criteriaBuilder.equal(root.get("salesRep").get("id"), transition.getUserId())
                 );
-            } else if (leadCriteria.isMyLead() && transition.getRole().equals("ADMIN")) {
+            } else if (leadCriteria.getMyLead() != null && leadCriteria.getMyLead() && transition.getRole().equals(
+                    "ADMIN")) {
 
                 predicate = criteriaBuilder.and(predicate,
                         criteriaBuilder.isNull(root.get("salesRep"))
@@ -79,17 +82,17 @@ public class SalesLeadSpecification<T extends SalesLead> {
         };
     }
 
-    private static <T extends SalesLead> Specification<T> filterByUser(List<Long> ids, boolean isMyLead,
+    private static <T extends SalesLead> Specification<T> filterByUser(List<Long> ids, Boolean isMyLead,
                                                                        Transition transition) {
         return (root, query, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
-            if (!isMyLead && transition.getRole().equals("USER")) {
+            if (isMyLead == null && transition.getRole().equals("USER")) {
                 predicate = criteriaBuilder.and(predicate, root.join("salesRep", JoinType.INNER).get("id").in(ids));
-            } else if (isMyLead && transition.getRole().equals("ADMIN")) {
+            } else if (isMyLead != null && isMyLead && transition.getRole().equals("ADMIN")) {
                 predicate = criteriaBuilder.and(predicate,
                         criteriaBuilder.isNull(root.get("salesRep"))
                 );
-            } else if (isMyLead && transition.getRole().equals("USER")) {
+            } else if (isMyLead != null && isMyLead && transition.getRole().equals("USER")) {
                 predicate = criteriaBuilder.and(predicate,
                         criteriaBuilder.equal(root.get("salesRep").get("id"), transition.getUserId())
                 );
@@ -258,8 +261,24 @@ public class SalesLeadSpecification<T extends SalesLead> {
         };
     }
 
-    private static <T extends SalesLead> Specification<T> filterByDeleted(boolean deleted) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("deleted"), deleted);
+    private static <T extends SalesLead> Specification<T> filterByDelayed(Boolean delayed) {
+        return (root, query, criteriaBuilder) -> {
+            if (delayed == null) {
+                return null;
+            }
+
+            return criteriaBuilder.equal(root.get("delay"), delayed);
+        };
+    }
+
+    private static <T extends SalesLead> Specification<T> filterByDeleted(Boolean deleted) {
+        return (root, query, criteriaBuilder) -> {
+            if (deleted == null) {
+                return null;
+            }
+
+            return criteriaBuilder.equal(root.get("deleted"), deleted);
+        };
     }
 
     private static <T extends SalesLead> Specification<T> filterByCampaignId(String campaignId) {

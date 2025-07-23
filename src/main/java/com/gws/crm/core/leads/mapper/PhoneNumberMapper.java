@@ -3,7 +3,6 @@ package com.gws.crm.core.leads.mapper;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
-import com.gws.crm.common.exception.InvalidPhoneNumberException;
 import com.gws.crm.common.utils.PhoneNumberUtilsService;
 import com.gws.crm.core.leads.dto.PhoneNumberDTO;
 import com.gws.crm.core.leads.entity.BaseLead;

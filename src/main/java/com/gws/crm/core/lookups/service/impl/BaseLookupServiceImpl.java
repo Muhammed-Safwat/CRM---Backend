@@ -2,9 +2,9 @@ package com.gws.crm.core.lookups.service.impl;
 
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
+import com.gws.crm.core.actions.repository.repository.EmployeeRepository;
 import com.gws.crm.core.admin.repository.AdminRepository;
 import com.gws.crm.core.employee.entity.Employee;
-import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.lookups.dto.LookupDTO;
 import com.gws.crm.core.lookups.entity.BaseLookup;
 import com.gws.crm.core.lookups.repository.BaseLookupRepository;

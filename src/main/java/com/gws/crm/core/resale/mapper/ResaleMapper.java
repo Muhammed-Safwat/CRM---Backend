@@ -83,6 +83,7 @@ public class ResaleMapper {
                 .deleted(resale.isDeleted())
                 .creator(creatorDTO)
                 .assignAt(resale.getAssignAt())
+                .delayed(resale.isDelay())
                 .build();
     }
 

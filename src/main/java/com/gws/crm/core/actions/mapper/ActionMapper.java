@@ -1,8 +1,9 @@
-package com.gws.crm.core.employee.mapper;
+package com.gws.crm.core.actions.mapper;
 
-import com.gws.crm.core.employee.dto.ActionResponse;
-import com.gws.crm.core.employee.entity.LeadActionDetails;
-import com.gws.crm.core.employee.entity.UserAction;
+import com.gws.crm.core.actions.dtos.ActionResponse;
+import com.gws.crm.core.actions.entity.LeadActionDetails;
+import com.gws.crm.core.actions.entity.UserAction;
+import com.gws.crm.core.employee.mapper.EmployeeMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;

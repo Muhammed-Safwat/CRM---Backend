@@ -62,4 +62,6 @@ public class LeadResponse {
     private boolean deleted;
     private LocalDateTime assignAt;
     private EmployeeSimpleDTO creator;
+
+    private boolean delayed;
 }

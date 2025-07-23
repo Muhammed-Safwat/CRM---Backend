@@ -17,8 +17,9 @@ public class SalesLeadCriteria {
     private List<Long> salesRep;
     private List<Long> channel;
     private List<Long> broker;
-    private boolean deleted;
-    private boolean myLead;
+    private Boolean deleted;
+    private Boolean myLead;
+    private Boolean delayed;
     private List<Long> project;
     private String country;
     private List<Long> creator;

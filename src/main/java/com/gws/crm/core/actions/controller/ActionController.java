@@ -1,12 +1,12 @@
-package com.gws.crm.core.employee.controller;
+package com.gws.crm.core.actions.controller;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.employee.dto.ActionOnLeadDTO;
-import com.gws.crm.core.employee.service.LeadActionService;
 import com.gws.crm.core.leads.entity.BaseLead;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/actions")

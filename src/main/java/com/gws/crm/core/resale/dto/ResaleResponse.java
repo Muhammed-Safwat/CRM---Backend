@@ -32,4 +32,5 @@ public class ResaleResponse {
     private LocalDateTime updatedAt;
     private LocalDateTime assignAt;
     private boolean deleted;
+    private boolean delayed;
 }

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(indexes = {
-        @Index(name = "target_id_idx",columnList = "targetId")
+        @Index(name = "target_id_idx", columnList = "targetId")
 })
 public class Note {
 
@@ -23,7 +23,7 @@ public class Note {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title ;
+    private String title;
 
     @Column(length = 1000)
     private String description;
@@ -32,10 +32,10 @@ public class Note {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @UpdateTimestamp
-    private LocalDateTime updatedAt ;
+    private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn( nullable = false)
+    @JoinColumn(nullable = false)
     private NoteType type;
 
     private boolean favorite = false;
@@ -48,5 +48,5 @@ public class Note {
 
     private Long targetId;
 
-    private String label ;
+    private String label;
 }

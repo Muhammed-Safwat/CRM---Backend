@@ -1,5 +1,6 @@
-package com.gws.crm.core.employee.dto;
+package com.gws.crm.core.actions.dtos;
 
+import com.gws.crm.core.employee.dto.EmployeeSimpleDTO;
 import lombok.Builder;
 import lombok.Data;
 

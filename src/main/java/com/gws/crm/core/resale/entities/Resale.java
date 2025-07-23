@@ -106,4 +106,6 @@ public class Resale {
 
     private boolean deleted;
 
+    private boolean delay;
+
 }

@@ -1,7 +1,6 @@
 package com.gws.crm.core.leads.entity;
 
 import com.gws.crm.core.employee.entity.Employee;
-import com.gws.crm.core.employee.entity.UserAction;
 import com.gws.crm.core.lookups.entity.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,8 +13,6 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Setter
@@ -61,7 +58,6 @@ public abstract class SalesLead extends BaseLead {
     private String campaignId;
 
     private String lastStage;
-
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(nullable = true)

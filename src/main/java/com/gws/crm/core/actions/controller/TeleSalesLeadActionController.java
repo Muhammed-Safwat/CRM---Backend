@@ -1,9 +1,10 @@
-package com.gws.crm.core.employee.controller;
+package com.gws.crm.core.actions.controller.controller;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.employee.dto.ActionOnLeadDTO;
-import com.gws.crm.core.employee.service.imp.SalesLeadActionServiceImp;
-import com.gws.crm.core.leads.entity.Lead;
+import com.gws.crm.core.actions.controller.ActionController;
+import com.gws.crm.core.actions.dtos.ActionOnLeadDTO;
+import com.gws.crm.core.employee.service.imp.TeleSalesLeadActionServiceImp;
+import com.gws.crm.core.leads.entity.TeleSalesLead;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,12 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/actions/sales-lead")
-public class SalesLeadActionController extends ActionController<Lead> {
+@RequestMapping("/api/actions/telesales-leads")
+public class TeleSalesLeadActionController extends ActionController<TeleSalesLead> {
 
-    private final SalesLeadActionServiceImp leadActionService ;
+    private final TeleSalesLeadActionServiceImp leadActionService;
 
-    public SalesLeadActionController(SalesLeadActionServiceImp leadActionService) {
+    public TeleSalesLeadActionController(TeleSalesLeadActionServiceImp leadActionService) {
         super(leadActionService);
         this.leadActionService = leadActionService;
     }

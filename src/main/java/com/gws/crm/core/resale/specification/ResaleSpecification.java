@@ -34,8 +34,19 @@ public class ResaleSpecification {
             specs.add(filterByProperty(resaleCriteria.getProject()));
             specs.add(filterByStatus(resaleCriteria.getStatus()));
             specs.add(filterByType(resaleCriteria.getType()));
+            specs.add(filterByDelayed(resaleCriteria.getDelayed()));
         }
         return Specification.allOf(specs);
+    }
+
+    private static Specification<Resale> filterByDelayed(Boolean delayed) {
+        return (root, query, criteriaBuilder) -> {
+            if (delayed == null) {
+                return null;
+            }
+
+            return criteriaBuilder.equal(root.get("delay"), delayed);
+        };
     }
 
     private static Specification<Resale> filterByUser(List<Long> ids, boolean isMyLead, Transition transition) {

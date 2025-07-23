@@ -6,9 +6,9 @@ import com.gws.crm.common.entities.ExcelFile;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.common.service.ExcelSheetService;
+import com.gws.crm.core.actions.repository.repository.EmployeeRepository;
 import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.employee.entity.Employee;
-import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.employee.service.imp.GenericLeadActionServiceImp;
 import com.gws.crm.core.employee.service.imp.TeleSalesLeadActionServiceImp;
 import com.gws.crm.core.leads.dto.AddLeadDTO;
@@ -159,8 +159,8 @@ public class TelesalesLeadService extends SalesLeadServiceImp<TeleSalesLead, Add
                 .orElseThrow(NotFoundResourceException::new);
 
         User creator = userRepository.findById(transition.getUserId())
-                                     .orElseThrow(NotFoundResourceException::new);
-       Admin admin = null;
+                .orElseThrow(NotFoundResourceException::new);
+        Admin admin = null;
         boolean isAdmin = transition.getRole().equals("ADMIN");
     /*    if (!isAdmin) {
             admin = employeeRepository.getReferenceById(transition.getUserId()).getAdmin();

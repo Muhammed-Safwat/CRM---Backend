@@ -9,11 +9,13 @@ import java.time.LocalDate;
 @Setter
 public class NoteCriteria {
     private Long noteTypeId;
+    private String noteType;
+    private Long targetId;
     private LocalDate createdAt;
     private String keyword; // search into title and discription
     private String label;
-    private Boolean favorite ;
+    private Boolean favorite;
     private Boolean archived;
-    private int page ;
-    private int size ;
+    private int page;
+    private int size;
 }

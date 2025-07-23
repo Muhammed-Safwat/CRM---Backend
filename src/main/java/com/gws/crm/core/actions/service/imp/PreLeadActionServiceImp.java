@@ -1,4 +1,4 @@
-package com.gws.crm.core.employee.service.imp;
+package com.gws.crm.core.actions.service.imp;
 
 import com.gws.crm.authentication.entity.User;
 import com.gws.crm.authentication.repository.UserRepository;

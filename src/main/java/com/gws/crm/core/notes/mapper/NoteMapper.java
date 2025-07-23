@@ -1,6 +1,5 @@
 package com.gws.crm.core.notes.mapper;
 
-import com.gws.crm.core.notes.dtos.CreateNoteDTO;
 import com.gws.crm.core.notes.dtos.NoteResponseDTO;
 import com.gws.crm.core.notes.entity.Note;
 import org.mapstruct.Mapper;

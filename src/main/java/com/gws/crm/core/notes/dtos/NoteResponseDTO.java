@@ -14,5 +14,5 @@ public class NoteResponseDTO {
     private boolean favorite;
     private boolean archived;
     private Long creatorId;
-    private String label ;
+    private String label;
 }

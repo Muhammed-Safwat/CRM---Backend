@@ -20,4 +20,5 @@ public class PreLeadCriteria {
     private List<Long> subordinates;
     private int page;
     private int size;
+    private Boolean delayed;
 }

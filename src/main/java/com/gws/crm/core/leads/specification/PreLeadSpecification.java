@@ -25,6 +25,7 @@ public class PreLeadSpecification {
         specs.add(fullTextSearch(leadCriteria.getKeyword()));
         specs.add(filterByCampaignId(leadCriteria.getCampaignId()));
         specs.add(filterByDeleted(leadCriteria.getDeleted()));
+        specs.add(filterByDelayed(leadCriteria.getDelayed()));
         specs.add(filterByImported(leadCriteria.getImported()));
         specs.add(filterByCreatedAt(leadCriteria.getCreatedAt()));
         specs.add(filterByUser(ids, leadCriteria.getMyLead(), transition));
@@ -70,6 +71,16 @@ public class PreLeadSpecification {
                 return null;
             }
             return root.join("creator", JoinType.INNER).get("id").in(creatorId);
+        };
+    }
+
+    private static Specification<PreLead> filterByDelayed(Boolean delayed) {
+        return (root, query, criteriaBuilder) -> {
+            if (delayed == null) {
+                return null;
+            }
+
+            return criteriaBuilder.equal(root.get("delay"), delayed);
         };
     }
 

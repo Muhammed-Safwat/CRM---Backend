@@ -113,6 +113,7 @@ public class TeleSalesLeadMapper {
                 .campaignId(lead.getCampaignId())
                 .lastStage(lead.getLastStage())
                 .assignAt(lead.getAssignAt())
+                .delayed(lead.isDelay())
                 .build();
     }
 

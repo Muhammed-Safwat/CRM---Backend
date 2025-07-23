@@ -3,8 +3,8 @@ package com.gws.crm.core.leads.service.imp;
 import com.gws.crm.authentication.entity.User;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
+import com.gws.crm.core.actions.repository.repository.EmployeeRepository;
 import com.gws.crm.core.employee.entity.Employee;
-import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.employee.service.imp.GenericLeadActionServiceImp;
 import com.gws.crm.core.employee.service.imp.GenericSalesLeadActionServiceImp;
 import com.gws.crm.core.leads.dto.*;
@@ -90,7 +90,8 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
             Employee employee =
                     employeeRepository.findById(transition.getUserId())
                             .orElseThrow(NotFoundResourceException::new);
-            salesLeadCriteria.setSubordinates(employee.getSubordinates().stream().map(User::getId).toList());
+            salesLeadCriteria.setSubordinates(employee.getSubordinates()
+                    .stream().map(User::getId).toList());
             log.info("********************** %%%%%%%%%%%%%%%%% **********************");
             log.info(salesLeadCriteria.getSubordinates().toString());
         }

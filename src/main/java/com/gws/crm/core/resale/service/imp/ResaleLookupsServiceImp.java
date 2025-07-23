@@ -1,8 +1,8 @@
 package com.gws.crm.core.resale.service.imp;
 
 import com.gws.crm.common.entities.Transition;
+import com.gws.crm.core.actions.repository.repository.EmployeeRepository;
 import com.gws.crm.core.employee.dto.EmployeeSimpleDTO;
-import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.lookups.entity.Project;
 import com.gws.crm.core.lookups.repository.CategoryRepository;
 import com.gws.crm.core.lookups.repository.ProjectRepository;

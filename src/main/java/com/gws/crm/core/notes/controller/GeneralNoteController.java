@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/notes")
 @RequiredArgsConstructor
-public class NoteController {
+public class GeneralNoteController {
 
     private final NoteService noteService;
 
@@ -21,18 +21,18 @@ public class NoteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> get(@PathVariable Long id,Transition transition) {
-        return noteService.getNote(id,transition);
+    public ResponseEntity<?> get(@PathVariable Long id, Transition transition) {
+        return noteService.getNote(id, transition);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id,Transition transition) {
-      return  noteService.deleteNote(id,transition);
+    public ResponseEntity<?> delete(@PathVariable Long id, Transition transition) {
+        return noteService.deleteNote(id, transition);
     }
 
     @PostMapping("all")
     public ResponseEntity<?> getNotes(
-            @RequestBody NoteCriteria criteria , Transition transition) {
+            @RequestBody NoteCriteria criteria, Transition transition) {
         return noteService.getAllNotes(criteria, transition);
     }
 

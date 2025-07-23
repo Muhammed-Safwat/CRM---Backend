@@ -1,4 +1,4 @@
-package com.gws.crm.core.employee.dto;
+package com.gws.crm.core.actions.dtos;
 
 
 import lombok.Getter;

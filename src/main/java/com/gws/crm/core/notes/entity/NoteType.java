@@ -10,9 +10,9 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Table(name = "note_types",
-indexes = {
-        @Index(name = "idx_note_name", columnList = "name")
-})
+        indexes = {
+                @Index(name = "idx_note_name", columnList = "name")
+        })
 public class NoteType {
 
     @Id

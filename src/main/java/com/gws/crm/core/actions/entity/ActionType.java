@@ -1,4 +1,4 @@
-package com.gws.crm.core.employee.entity;
+package com.gws.crm.core.actions.entity;
 
 import lombok.Getter;
 

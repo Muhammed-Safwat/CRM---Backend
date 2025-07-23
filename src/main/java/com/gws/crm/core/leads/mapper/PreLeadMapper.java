@@ -60,6 +60,7 @@ public class PreLeadMapper {
                 .link(lead.getLink())
                 .assignedTo(lead.getAssignedTo())
                 .deleted(lead.isDeleted())
+                .delayed(lead.isDelay())
                 .build();
     }
 

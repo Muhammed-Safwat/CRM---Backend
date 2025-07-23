@@ -44,6 +44,8 @@ public class PreLeadResponse {
 
     private String assignedTo;
 
+    private boolean delayed;
+
     private String importedBy;
 
 }

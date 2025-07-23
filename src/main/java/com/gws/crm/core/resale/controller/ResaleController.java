@@ -92,5 +92,5 @@ public class ResaleController {
         return resaleService.assignSalesToLead(assignDTO, transition);
     }
 
-    
+
 }

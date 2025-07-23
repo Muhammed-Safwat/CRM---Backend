@@ -1,7 +1,7 @@
-package com.gws.crm.core.employee.repository;
+package com.gws.crm.core.actions.repository.repository;
 
 
-import com.gws.crm.core.employee.entity.UserAction;
+import com.gws.crm.core.actions.entity.UserAction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

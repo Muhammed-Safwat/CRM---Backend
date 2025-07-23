@@ -119,6 +119,7 @@ public class LeadMapper {
                 .campaignId(lead.getCampaignId())
                 .lastStage(lead.getLastStage())
                 .assignAt(lead.getAssignAt())
+                .delayed(lead.isDelay())
                 .build();
     }
 

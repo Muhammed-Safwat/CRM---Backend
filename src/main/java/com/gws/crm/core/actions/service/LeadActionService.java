@@ -1,10 +1,7 @@
-package com.gws.crm.core.employee.service;
+package com.gws.crm.core.actions.service;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.employee.dto.ActionOnLeadDTO;
 import com.gws.crm.core.leads.entity.BaseLead;
-import com.gws.crm.core.leads.entity.PreLead;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +25,6 @@ public interface LeadActionService<T extends BaseLead> {
     ResponseEntity<?> getActions(long leadId, Transition transition);
 
     void setViewLeadAction(T salesLead, Transition transition);
-
-
 
 
 }

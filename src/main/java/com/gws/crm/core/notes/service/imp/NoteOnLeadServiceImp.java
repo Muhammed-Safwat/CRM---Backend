@@ -1,11 +1,10 @@
 package com.gws.crm.core.notes.service.imp;
 
-
 import com.gws.crm.authentication.entity.User;
 import com.gws.crm.authentication.repository.UserRepository;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
-import com.gws.crm.core.notes.dtos.CreateNoteDTO;
+import com.gws.crm.core.notes.dtos.CreateNoteIntoLeadDto;
 import com.gws.crm.core.notes.dtos.NoteCriteria;
 import com.gws.crm.core.notes.dtos.NoteResponseDTO;
 import com.gws.crm.core.notes.entity.Note;
@@ -13,7 +12,7 @@ import com.gws.crm.core.notes.entity.NoteType;
 import com.gws.crm.core.notes.mapper.NoteMapper;
 import com.gws.crm.core.notes.repository.NoteRepository;
 import com.gws.crm.core.notes.repository.NoteTypeRepository;
-import com.gws.crm.core.notes.service.NoteService;
+import com.gws.crm.core.notes.service.NoteOnLeadService;
 import com.gws.crm.core.notes.spcification.NoteSpecification;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +29,7 @@ import static com.gws.crm.common.handler.ApiResponseHandler.success;
 
 @Service
 @RequiredArgsConstructor
-public class NoteServiceImpl implements NoteService {
+public class NoteOnLeadServiceImp implements NoteOnLeadService {
 
     private final NoteRepository noteRepository;
     private final NoteMapper noteMapper;
@@ -38,7 +37,7 @@ public class NoteServiceImpl implements NoteService {
     private final NoteTypeRepository noteTypeRepository;
 
     @Override
-    public ResponseEntity<?> createNote(CreateNoteDTO dto, Transition transition) {
+    public ResponseEntity<?> createNote(CreateNoteIntoLeadDto dto, Transition transition) {
         Note note = toEntity(dto, transition);
         Note saved = noteRepository.save(note);
         NoteResponseDTO responseDTO = noteMapper.toResponseDTO(saved);
@@ -69,10 +68,10 @@ public class NoteServiceImpl implements NoteService {
         return success(notesResponsePage);
     }
 
-    private Note toEntity(CreateNoteDTO createNoteDTO, Transition transition) {
+    private Note toEntity(CreateNoteIntoLeadDto createNoteDTO, Transition transition) {
         User user = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
-        NoteType noteType = noteTypeRepository.findByName(createNoteDTO.getType());
+        NoteType noteType = noteTypeRepository.findByName("Note_On_Lead");
         return Note.builder()
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -80,12 +79,10 @@ public class NoteServiceImpl implements NoteService {
                 .title(createNoteDTO.getTitle())
                 .targetId(createNoteDTO.getTargetId())
                 .creator(user)
-                .label(createNoteDTO.getLabel())
                 .type(noteType)
                 .favorite(false)
                 .archived(false)
                 .build();
     }
-
 
 }

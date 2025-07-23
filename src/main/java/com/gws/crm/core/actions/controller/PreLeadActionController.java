@@ -1,6 +1,7 @@
-package com.gws.crm.core.employee.controller;
+package com.gws.crm.core.actions.controller.controller;
 
 
+import com.gws.crm.core.actions.controller.ActionController;
 import com.gws.crm.core.employee.service.imp.PreLeadActionServiceImp;
 import com.gws.crm.core.leads.entity.PreLead;
 import org.springframework.stereotype.Controller;
@@ -13,5 +14,5 @@ public class PreLeadActionController extends ActionController<PreLead> {
     public PreLeadActionController(PreLeadActionServiceImp leadActionService) {
         super(leadActionService);
     }
-    
+
 }
