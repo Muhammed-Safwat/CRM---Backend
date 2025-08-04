@@ -1,21 +1,18 @@
 package com.gws.crm.common.config;
 
+import jakarta.annotation.PostConstruct;
+import lombok.extern.java.Log;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @Configuration
 @EnableAsync(proxyTargetClass = true)
+@Log
 public class AsyncConfig {
-/*
-    @Bean(name = "taskExecutor")
-    public ThreadPoolTaskExecutor taskExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(2);
-        executor.setMaxPoolSize(5);
-        executor.setQueueCapacity(100);
-        executor.setThreadNamePrefix("Async-Actions");
-        executor.initialize();
-        return executor;
+
+    @PostConstruct
+    public void testListenerInit() {
+        log.info(">>> LeadActionEventListener initialized");
     }
- */
+
 }

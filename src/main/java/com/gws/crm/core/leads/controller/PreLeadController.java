@@ -80,4 +80,9 @@ public class PreLeadController {
     public ResponseEntity<?> getDetails(@PathVariable long leadId, Transition transition) {
         return preLeadService.getDetails(leadId, transition);
     }
+
+    @PutMapping("archive/{leadId}")
+    public ResponseEntity<?> addToArchive(@PathVariable long leadId, Transition transition) {
+        return preLeadService.addToArchive(leadId, transition);
+    }
 }

@@ -9,7 +9,7 @@ import com.gws.crm.core.actions.entity.ActionType;
 import com.gws.crm.core.actions.entity.LeadActionDetails;
 import com.gws.crm.core.actions.entity.UserAction;
 import com.gws.crm.core.actions.mapper.ActionMapper;
-import com.gws.crm.core.actions.repository.repository.UserActionRepository;
+import com.gws.crm.core.actions.repository.UserActionRepository;
 import com.gws.crm.core.leads.entity.SalesLead;
 import com.gws.crm.core.leads.repository.GenericSalesLeadRepository;
 import com.gws.crm.core.lookups.entity.CallOutcome;
@@ -43,7 +43,8 @@ public abstract class GenericSalesLeadActionServiceImp<T extends SalesLead>
 
     protected GenericSalesLeadActionServiceImp(UserRepository userRepository, GenericSalesLeadRepository<T> leadRepository,
                                                UserActionRepository userActionRepository, ActionMapper actionMapper,
-                                               CallOutcomeRepository callOutcomeRepository, CancelReasonsRepository cancelReasonsRepository,
+                                               CallOutcomeRepository callOutcomeRepository,
+                                               CancelReasonsRepository cancelReasonsRepository,
                                                StageRepository stageRepository) {
         super(userRepository, leadRepository, userActionRepository, actionMapper);
         this.userRepository = userRepository;
@@ -132,6 +133,7 @@ public abstract class GenericSalesLeadActionServiceImp<T extends SalesLead>
     @Override
     @Transactional
     public void setLeadCreationAction(T salesLead, Transition transition) {
+        log.info("$$$$$$$$$$$$$$$$$$$$$$$$$");
         // === Create Creation Action ===
         UserAction createAction = UserAction.builder()
                 .creator(salesLead.getCreator())
@@ -182,38 +184,45 @@ public abstract class GenericSalesLeadActionServiceImp<T extends SalesLead>
         leadRepository.save(salesLead);
     }
 
-
     @Transactional
     public ResponseEntity<?> setActionOnSalesLead(ActionOnLeadDTO actionDTO, Transition transition) {
         log.info(actionDTO.toString());
 
+        // Step 1: Get User and Lead
         User creator = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
 
         T lead = leadRepository.findById(actionDTO.getLeadId())
                 .orElseThrow(NotFoundResourceException::new);
 
+        String leadName = lead.getName(); // استخدم اسم الليد
 
+        // Step 2: Determine Action Type
         ActionType actionType = switch (actionDTO.getActionType().toLowerCase()) {
             case "answered" -> ActionType.ANSWERED;
             case "noanswer" -> ActionType.NO_ANSWER;
             default -> throw new IllegalArgumentException("Invalid action type");
         };
 
-        String description = "Action recorded";
-
+        // Step 3: Generate Description and Outcome
+        String description;
         CallOutcome outcome = null;
+
         if (actionType == ActionType.ANSWERED && actionDTO.getCallOutcome() != null) {
             outcome = callOutcomeRepository.getReferenceById(actionDTO.getCallOutcome());
-            description = super.generateDescriptionBasedOnOutcome(outcome.getName());
+            description = "Answered call for lead: " + leadName + " - Outcome: " + outcome.getName();
         } else if (actionType == ActionType.NO_ANSWER) {
-            description = "No Answer recorded. Callback scheduled.";
+            description = "No answer from lead: " + leadName + ". Callback scheduled.";
+        } else {
+            description = "Performed " + actionType.name() + " on lead: " + leadName;
         }
-        String commentStr = actionDTO.getComment() != null
-                ? actionDTO.getComment()
-                : "No comment provided";
 
-        // Step 3: Create UserAction
+        // Step 4: Comment (Auto if empty)
+        String commentStr = (actionDTO.getComment() != null && !actionDTO.getComment().isBlank())
+                ? actionDTO.getComment()
+                : "User " + creator.getName() + " performed " + actionType.name() + " on lead " + leadName;
+
+        // Step 5: Create UserAction
         UserAction action = UserAction.builder()
                 .creator(creator)
                 .type(actionType)
@@ -221,7 +230,7 @@ public abstract class GenericSalesLeadActionServiceImp<T extends SalesLead>
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        // Step 4: Build LeadActionDetails
+        // Step 6: Build LeadActionDetails
         LeadActionDetails leadDetails = LeadActionDetails.builder()
                 .userAction(action)
                 .lead(lead)
@@ -231,25 +240,27 @@ public abstract class GenericSalesLeadActionServiceImp<T extends SalesLead>
                 .comment(commentStr)
                 .build();
 
+        // Optional: Cancellation Reason
         if (actionDTO.getCancellationReason() != null) {
             CancelReasons cancelReasons = cancelReasonsRepository.getReferenceById(actionDTO.getCancellationReason());
             leadDetails.setCancellationReason(cancelReasons.getName());
             lead.setCancelReasons(cancelReasons);
         }
 
+        // Optional: Stage update
         if (actionDTO.getStage() != null) {
             Stage stage = stageRepository.getReferenceById(actionDTO.getStage());
             leadDetails.setStage(stage.getName());
             lead.setLastStage(stage.getName());
         }
 
-        // Step 5: Set details and persist
+        // Step 7: Save action and update lead
         action.setLeadDetails(leadDetails);
-        userActionRepository.save(action); // saves both action and leadDetails due to cascade
+        userActionRepository.save(action); // Saves both due to cascade
 
         lead.setLastActionDate(LocalDateTime.now());
         lead.setUpdatedAt(LocalDateTime.now());
-        lead.getActions().add(action); // if you still keep actions list in SalesLead
+        lead.getActions().add(action); // optional if you maintain the list
         lead.setDelay(false);
         leadRepository.save(lead);
 

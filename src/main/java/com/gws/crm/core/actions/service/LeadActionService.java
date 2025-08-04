@@ -22,9 +22,9 @@ public interface LeadActionService<T extends BaseLead> {
 
     void setDeletionAction(T salesLead, Transition transition);
 
-    ResponseEntity<?> getActions(long leadId, Transition transition);
+    ResponseEntity<?> getActions(long leadId, int page, int size, Transition transition);
 
     void setViewLeadAction(T salesLead, Transition transition);
 
-
+    void setDelayedAction(T lead, Transition transition);
 }

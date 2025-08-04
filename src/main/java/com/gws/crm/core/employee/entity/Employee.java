@@ -3,8 +3,6 @@ package com.gws.crm.core.employee.entity;
 import com.gws.crm.authentication.entity.PrivilegeGroup;
 import com.gws.crm.authentication.entity.User;
 import com.gws.crm.core.admin.entity.Admin;
-import com.gws.crm.core.admin.entity.EventType;
-import com.gws.crm.core.notification.services.NotificationService;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,8 +45,6 @@ public class Employee extends User {
             inverseJoinColumns = @JoinColumn(name = "subordinate_id"))
     private List<Employee> subordinates = new ArrayList<>();
 
-    @Override
-    public void notify(EventType eventType, String message, NotificationService notificationService) {
-        notificationService.notifyUser(eventType, message, getName(), getId());
-    }
+
+
 }

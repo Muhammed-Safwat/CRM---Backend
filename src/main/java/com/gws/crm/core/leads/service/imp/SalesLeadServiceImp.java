@@ -3,15 +3,17 @@ package com.gws.crm.core.leads.service.imp;
 import com.gws.crm.authentication.entity.User;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
-import com.gws.crm.core.actions.repository.repository.EmployeeRepository;
 import com.gws.crm.core.employee.entity.Employee;
-import com.gws.crm.core.employee.service.imp.GenericLeadActionServiceImp;
-import com.gws.crm.core.employee.service.imp.GenericSalesLeadActionServiceImp;
+import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.leads.dto.*;
 import com.gws.crm.core.leads.entity.SalesLead;
 import com.gws.crm.core.leads.repository.GenericSalesLeadRepository;
 import com.gws.crm.core.leads.service.SalesLeadService;
+import com.gws.crm.core.notification.entities.NotificationType;
+import com.gws.crm.core.notification.enums.NotificationCode;
+import com.gws.crm.core.notification.event.NotificationEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,23 +28,22 @@ import java.util.Objects;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.*;
 import static com.gws.crm.core.leads.specification.SalesLeadSpecification.filter;
+import static com.gws.crm.core.notification.dtos.NotificationUser.to;
 
 @Slf4j
 @Service
 @Transactional
-public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLeadDTO> implements SalesLeadService<T, D> {
+public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLeadDTO> implements SalesLeadService<T,
+        D>  {
 
     private final GenericSalesLeadRepository<T> repository;
-    private final GenericLeadActionServiceImp<T> actionServiceImp;
-    private final EmployeeRepository employeeRepository;
+   private final EmployeeRepository employeeRepository; ;
 
     protected SalesLeadServiceImp(GenericSalesLeadRepository<T> repository,
-                                  GenericSalesLeadActionServiceImp<T> actionServiceImp, EmployeeRepository employeeRepository) {
+                                  EmployeeRepository employeeRepository ) {
         this.repository = repository;
-        this.actionServiceImp = actionServiceImp;
         this.employeeRepository = employeeRepository;
     }
-
 
     @Override
     public ResponseEntity<?> getLeadDetails(long leadId, Transition transition) {
@@ -53,13 +54,12 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
         return success(leadResponse);
     }
 
-
     @Override
     public ResponseEntity<?> addLead(D leadDTO, Transition transition) {
         T entity = mapDtoToEntity(leadDTO, transition);
         T savedLead = repository.save(entity);
         LeadResponse leadResponse = mapEntityToDto(savedLead);
-        actionServiceImp.setLeadCreationAction(savedLead, transition);
+        publishCreateLeadEvent(savedLead,transition);
         return created(leadResponse);
     }
 
@@ -71,8 +71,9 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
                 .orElseThrow(NotFoundResourceException::new);
         updateEntityFromDto(existingEntity, leadDTO, transition);
         T updatedEntity = repository.save(existingEntity);
-        actionServiceImp.setLeadEditionAction(updatedEntity, transition);
+        // actionServiceImp.setLeadEditionAction(updatedEntity, transition);
         LeadResponse leadResponse = mapEntityToDto(updatedEntity);
+        publishCreateLeadEvent(updatedEntity,transition);
         return ResponseEntity.ok(leadResponse);
     }
 
@@ -80,7 +81,15 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
     public ResponseEntity<?> deleteLead(long leadId, Transition transition) {
         T lead = repository.findById(leadId).orElseThrow(NotFoundResourceException::new);
         repository.deleteLead(leadId);
-        actionServiceImp.setDeletionAction(lead, transition);
+        publishDeleteLeadEvent(lead,transition);
+        return success("Lead Deleted Successfully");
+    }
+
+    @Override
+    public ResponseEntity<?> addToArchive(long leadId, Transition transition) {
+        T lead = repository.findById(leadId).orElseThrow(NotFoundResourceException::new);
+        repository.archiveLead(leadId);
+        // publishDeleteLeadEvent(lead,transition);
         return success("Lead Deleted Successfully");
     }
 
@@ -106,7 +115,8 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
     public ResponseEntity<?> restoreLead(Long leadId, Transition transition) {
         T lead = repository.findById(leadId).orElseThrow(NotFoundResourceException::new);
         repository.restoreLead(leadId);
-        actionServiceImp.setLeadRestoreAction(lead, transition);
+        // actionServiceImp.setLeadRestoreAction(lead, transition);
+        publishRestoreLeadEvent(lead,transition);
         return success("Lead restored Successfully");
     }
 
@@ -116,23 +126,28 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
                 .orElseThrow(NotFoundResourceException::new);
         log.info("Lead Id ***************");
         log.info("{} =======", lead);
+        Employee lastSalesRep = null;
         if (lead.getSalesRep() != null &&
                 Objects.equals(lead.getSalesRep().getId(), assignDTO.getSalesId())) {
             return badRequest();
+        }else if(lead.getSalesRep() != null && !Objects.equals(lead.getSalesRep().getId(), assignDTO.getSalesId())){
+            lastSalesRep = lead.getSalesRep();
         }
 
         Employee employee = employeeRepository.findById(assignDTO.getSalesId())
                 .orElseThrow(NotFoundResourceException::new);
         lead.setSalesRep(employee);
         lead.setAssignAt(LocalDateTime.now());
-        actionServiceImp.setAssignAction(lead, transition);
+        // actionServiceImp.setAssignAction(lead, transition);
         AssignResponse response = AssignResponse.builder()
                 .salesName(employee.getName())
                 .jobTitle(employee.getJobName())
                 .assignAt(LocalDateTime.now())
                 .build();
+        publishAssignLeadEvent(lead,lastSalesRep , transition);
         return success(response);
     }
+
 
     protected abstract T mapDtoToEntity(D dto, Transition transition);
 
@@ -142,4 +157,17 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
 
     protected abstract void updateEntityFromDto(T entity, D dto, Transition transition);
 
+    public void publishCreateLeadEvent(T lead, Transition transition) {}
+
+    public void publishDeleteLeadEvent(T lead, Transition transition) {}
+
+    public void publishEditLeadEvent(T lead, Transition transition) {}
+
+    public void publishRestoreLeadEvent(T lead, Transition transition) {}
+
+    public void publishAssignLeadEvent(T lead,Employee lastSales, Transition transition) {}
+
+    public void publishViewLeadEvent(T lead, Transition transition) {}
+
+    public void publishDelayLeadEvent(T lead, Transition transition) {}
 }

@@ -14,7 +14,7 @@ public enum ActionType {
     ASSIGN("Assign"),
     ANSWERED("Answered"),
     NO_ANSWER("No Answer"),
-
+    DELAYED("Delayed"),
     VIEW("View"),
     ASSIGN_TASK("Assign Task"),
     EXPORT_DATA("Export Data"),

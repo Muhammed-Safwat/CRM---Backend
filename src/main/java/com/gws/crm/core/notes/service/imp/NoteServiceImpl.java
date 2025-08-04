@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+import static com.gws.crm.common.handler.ApiResponseHandler.badRequest;
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
 
 @Service
@@ -55,8 +56,9 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     public ResponseEntity<?> deleteNote(Long id, Transition transition) {
-        if (!noteRepository.existsById(id)) throw new EntityNotFoundException("Note not found");
-        noteRepository.deleteById(id);
+        int count = noteRepository.deleteByIdAndCreatorId(id,
+                transition.getUserId());
+        if (count == 0) return badRequest();
         return success();
     }
 
@@ -67,6 +69,36 @@ public class NoteServiceImpl implements NoteService {
         Page<NoteResponseDTO> notesResponsePage = noteRepository.findAll(spec, pageable)
                 .map(noteMapper::toResponseDTO);
         return success(notesResponsePage);
+    }
+
+    @Override
+    public ResponseEntity<?> updateNote(Long id, CreateNoteDTO noteDto, Transition transition) {
+        Note note = noteRepository.getNoteByIdAndCreatorId(id, transition.getUserId());
+        note.setUpdatedAt(LocalDateTime.now());
+        note.setDescription(noteDto.getDescription());
+        note.setLabel(noteDto.getLabel());
+        note.setTitle(noteDto.getTitle());
+        noteRepository.save(note);
+        NoteResponseDTO responseDTO = noteMapper.toResponseDTO(note);
+        return success(responseDTO);
+    }
+
+    @Override
+    public ResponseEntity<?> archiveNote(Long id, Transition transition) {
+        Note note = noteRepository.getNoteByIdAndCreatorId(id, transition.getUserId());
+        note.setArchived(!note.isArchived());
+        note.setUpdatedAt(LocalDateTime.now());
+        noteRepository.save(note);
+        return success();
+    }
+
+    @Override
+    public ResponseEntity<?> markAsFavorite(Long id, Transition transition) {
+        Note note = noteRepository.getNoteByIdAndCreatorId(id, transition.getUserId());
+        note.setFavorite(!note.isFavorite());
+        note.setUpdatedAt(LocalDateTime.now());
+        noteRepository.save(note);
+        return success();
     }
 
     private Note toEntity(CreateNoteDTO createNoteDTO, Transition transition) {

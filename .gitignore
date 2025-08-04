@@ -32,3 +32,4 @@ build/
 ### VS Code ###
 .vscode/
 src/main/resources/crm-sys-bea42-firebase-adminsdk-h8bxp-76dd18490e.json
+/src/main/resources/scripts/node_modules/

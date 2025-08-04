@@ -8,18 +8,24 @@ import com.gws.crm.core.actions.dtos.ActionResponse;
 import com.gws.crm.core.actions.entity.ActionType;
 import com.gws.crm.core.actions.entity.LeadActionDetails;
 import com.gws.crm.core.actions.entity.UserAction;
+import com.gws.crm.core.actions.event.*;
 import com.gws.crm.core.actions.mapper.ActionMapper;
-import com.gws.crm.core.actions.repository.repository.UserActionRepository;
+import com.gws.crm.core.actions.repository.UserActionRepository;
 import com.gws.crm.core.actions.service.LeadActionService;
 import com.gws.crm.core.leads.entity.BaseLead;
 import com.gws.crm.core.leads.repository.GenericBaseLeadRepository;
 import lombok.extern.java.Log;
+import org.springframework.context.event.EventListener;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
 
@@ -46,10 +52,11 @@ public abstract class GenericLeadActionServiceImp<T extends BaseLead> implements
     }
 
     @Override
-    public ResponseEntity<?> getActions(long leadId, Transition transition) {
-        List<UserAction> actions = userActionRepository.findActionsByLeadId(leadId);
-        List<ActionResponse> responseList = actionMapper.toDto(actions);
-        return success(responseList);
+    public ResponseEntity<?> getActions(long leadId, int page, int size, Transition transition) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<UserAction> actions = userActionRepository.findActionsByLeadId(leadId, pageable);
+        Page<ActionResponse> responsePage = actionMapper.toDto(actions);
+        return success(responsePage);
     }
 
     @Override
@@ -173,5 +180,38 @@ public abstract class GenericLeadActionServiceImp<T extends BaseLead> implements
         }
         return description.toString();
     }
+
+    @Override
+    @Transactional
+    public void setDelayedAction(T lead, Transition transition) {
+        User systemUser = userRepository.findById(transition.getUserId())
+                .orElseThrow(NotFoundResourceException::new);
+
+        // Create DELAYED action
+        UserAction delayedAction = UserAction.builder()
+                .creator(systemUser)
+                .type(ActionType.DELAYED)
+                .description("Lead was delayed due to no timely action by sales")
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        // LeadActionDetails
+        LeadActionDetails delayedDetails = LeadActionDetails.builder()
+                .userAction(delayedAction)
+                .lead(lead)
+                .comment("No action was taken on time; lead marked as Delayed")
+                .build();
+
+        delayedAction.setLeadDetails(delayedDetails);
+
+        userActionRepository.save(delayedAction);
+
+        // Update metadata
+        lead.setUpdatedAt(LocalDateTime.now());
+        lead.getActions().add(delayedAction);
+        leadRepository.save(lead);
+    }
+
+
 
 }

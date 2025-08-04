@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0"
+          name="viewport"/>
+    <title>User Activity Report</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f7f9fc;
+            color: #333;
+        }
+
+        .cover {
+            text-align: center;
+            padding: 40px 0;
+            background-color: #3c78b5;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .cover h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            color: #3c78b5;
+            font-size: 22px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #3c78b5;
+            color: white;
+        }
+
+        .summary-table {
+            width: 70%;
+            margin: 0 auto;
+        }
+
+        .chart {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .chart canvas {
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .approval-section {
+            margin-top: 50px;
+        }
+
+        .approval-section p {
+            margin: 20px 0;
+        }
+
+        .chart canvas {
+            width: 300px !important;
+            height: 250px !important;
+            max-width: 100%;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="cover">
+    <h1>User Activity Report</h1>
+    <p>Generated on: <span id="generatedDate"></span></p>
+</div>
+
+<div class="section">
+    <h2>Activity Details</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>User</th>
+            <th>Action</th>
+            <th>Timestamp</th>
+        </tr>
+        </thead>
+        <tbody id="activityTable">
+        <!-- Dynamically injected rows -->
+        </tbody>
+    </table>
+</div>
+
+<div class="section">
+    <h2>Summary Statistics</h2>
+    <table class="summary-table">
+        <tbody id="summaryStats">
+        <!-- Filled with JS -->
+        </tbody>
+    </table>
+</div>
+
+<div class="section">
+    <h2>Charts & Visualizations</h2>
+    <div class="chart">
+        <canvas height="300"
+                id="pieChart"
+                width="350"></canvas>
+        <canvas height="300"
+                id="barChart"
+                width="350"></canvas>
+        <canvas height="300"
+                id="lineChart"
+                width="350"></canvas>
+    </div>
+</div>
+
+<div class="section">
+    <h2>Insights & Observations</h2>
+    <p id="insights"></p>
+</div>
+
+<div class="approval-section">
+    <h2>Approval</h2>
+    <p>Name: ____________________________</p>
+    <p>Position: _________________________</p>
+    <p>Date: ____________________________</p>
+</div>
+
+<script>
+    const activities = [
+        {user: "safwat@gmail.com", action: "Login", timestamp: "2025-07-26 10:12"},
+        {user: "safwat@gmail.com", action: "Edit Profile", timestamp: "2025-07-26 11:33"},
+        {user: "safwat@gmail.com", action: "Logout", timestamp: "2025-07-26 11:40"},
+        {user: "safwat@gmail.com", action: "Login", timestamp: "2025-07-27 09:20"},
+        {user: "safwat@gmail.com", action: "Edit Profile", timestamp: "2025-07-27 10:05"},
+        {user: "safwat@gmail.com", action: "Calls", timestamp: "2025-07-26 10:12"},
+        {user: "safwat@gmail.com", action: "Edit Profile", timestamp: "2025-07-26 11:33"},
+        {user: "safwat@gmail.com", action: "Logout", timestamp: "2025-07-26 11:40"},
+        {user: "safwat@gmail.com", action: "Calls", timestamp: "2025-07-27 09:20"},
+        {user: "safwat@gmail.com", action: "Edit Lead Profile", timestamp: "2025-07-27 10:05"}
+    ];
+
+    document.getElementById("generatedDate").textContent = new Date().toLocaleString();
+
+    const tbody = document.getElementById("activityTable");
+    activities.forEach(act => {
+        const row = `<tr><td>${act.user}</td><td>${act.action}</td><td>${act.timestamp}</td></tr>`;
+        tbody.insertAdjacentHTML('beforeend', row);
+    });
+
+    const actions = activities.map(a => a.action);
+    const uniqueActions = [...new Set(actions)];
+
+    const actionCount = actions.reduce((acc, a) => {
+        acc[a] = (acc[a] || 0) + 1;
+        return acc;
+    }, {});
+
+    const summary = `
+    <tr><td>Total Users</td><td>1</td></tr>
+    <tr><td>Unique Actions</td><td>${uniqueActions.length}</td></tr>
+    <tr><td>Total Activities</td><td>${activities.length}</td></tr>
+    <tr><td>Most Common Action</td><td>${Object.entries(actionCount).sort((a, b) => b[1] - a[1])[0][0]}</td></tr>
+    <tr><td>Least Common Action</td><td>${Object.entries(actionCount).sort((a, b) => a[1] - b[1])[0][0]}</td></tr>
+  `;
+    document.getElementById("summaryStats").innerHTML = summary;
+
+    const hours = activities.map(a => parseInt(a.timestamp.split(" ")[1].split(":")[0]));
+    const peakHour = hours.sort((a, b) =>
+        hours.filter(h => h === b).length - hours.filter(h => h === a).length
+    )[0];
+    document.getElementById("insights").textContent = `Most Active Hour: ${peakHour}:00`;
+
+    const labels = Object.keys(actionCount);
+    const values = Object.values(actionCount);
+
+    new Chart(document.getElementById('pieChart'), {
+        type: 'pie',
+        data: {
+            labels,
+            datasets: [{
+                data: values,
+                backgroundColor: ['#4e79a7', '#f28e2c', '#e15759', '#76b7b2']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('barChart'), {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Action Counts',
+                data: values,
+                backgroundColor: '#59a14f'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+
+    const dateLabels = [...new Set(activities.map(a => a.timestamp.split(" ")[0]))];
+    const dailyCounts = dateLabels.map(date =>
+        activities.filter(a => a.timestamp.startsWith(date)).length
+    );
+
+    new Chart(document.getElementById('lineChart'), {
+        type: 'line',
+        data: {
+            labels: dateLabels,
+            datasets: [{
+                label: 'Activity Over Time',
+                data: dailyCounts,
+                fill: false,
+                borderColor: '#edc949',
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+
+</html>

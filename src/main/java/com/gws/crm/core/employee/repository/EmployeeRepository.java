@@ -1,4 +1,4 @@
-package com.gws.crm.core.actions.repository.repository;
+package com.gws.crm.core.employee.repository;
 
 import com.gws.crm.core.employee.entity.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -40,5 +40,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
 
     @Query("SELECT e FROM Employee e WHERE e.privilegeGroup.id =:id")
     List<Employee> getEmployeesByPrivilegeGroupId(@Param("id") long id);
+
+
+    @Query(value = "SELECT COUNT(*) > 0 FROM employee_subordinates " +
+            "WHERE manager_id = :managerId AND subordinate_id = :employeeId", nativeQuery = true)
+    long isSubordinate(@Param("managerId") Long managerId, @Param("employeeId") Long employeeId);
 
 }

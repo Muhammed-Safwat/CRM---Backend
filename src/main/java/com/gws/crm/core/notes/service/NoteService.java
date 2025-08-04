@@ -16,4 +16,10 @@ public interface NoteService {
     ResponseEntity<?> deleteNote(Long id, Transition transition);
 
     ResponseEntity<?> getAllNotes(NoteCriteria noteCriteria, Transition transition);
+
+    ResponseEntity<?> updateNote(Long id, CreateNoteDTO noteDto, Transition transition);
+
+    ResponseEntity<?> archiveNote(Long id, Transition transition);
+
+    ResponseEntity<?> markAsFavorite(Long id, Transition transition);
 }

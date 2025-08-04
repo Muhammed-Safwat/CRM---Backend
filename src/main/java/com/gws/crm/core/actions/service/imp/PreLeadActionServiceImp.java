@@ -7,8 +7,10 @@ import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.core.actions.entity.ActionType;
 import com.gws.crm.core.actions.entity.LeadActionDetails;
 import com.gws.crm.core.actions.entity.UserAction;
+import com.gws.crm.core.actions.event.*;
+import com.gws.crm.core.actions.listener.PreLeadActionEventListener;
 import com.gws.crm.core.actions.mapper.ActionMapper;
-import com.gws.crm.core.actions.repository.repository.UserActionRepository;
+import com.gws.crm.core.actions.repository.UserActionRepository;
 import com.gws.crm.core.leads.entity.PreLead;
 import com.gws.crm.core.leads.repository.PreLeadRepository;
 import lombok.extern.java.Log;
@@ -39,6 +41,7 @@ public class PreLeadActionServiceImp extends GenericLeadActionServiceImp<PreLead
     @Override
     @Transactional
     public void setLeadCreationAction(PreLead lead, Transition transition) {
+        log.info("Worked yaaaaaaaaaaaaaaaaaaaa !!!!!!!!!!!!!!!!!!");
         User creator = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
 
@@ -170,6 +173,5 @@ public class PreLeadActionServiceImp extends GenericLeadActionServiceImp<PreLead
             leadRepository.save(lead);
         }
     }
-
 
 }

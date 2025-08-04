@@ -90,7 +90,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        return path.contains("/auth") || path.contains("notifications");
+        return path.contains("/auth");
     }
 }
 

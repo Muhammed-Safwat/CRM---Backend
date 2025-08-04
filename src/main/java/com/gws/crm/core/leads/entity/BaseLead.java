@@ -82,5 +82,8 @@ public class BaseLead {
     @Column(name = "delay")
     private boolean delay;
 
+    private boolean reviewedBySales;
+
+    private boolean archive ;
 
 }

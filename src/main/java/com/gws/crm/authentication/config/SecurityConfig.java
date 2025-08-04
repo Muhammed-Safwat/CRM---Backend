@@ -66,7 +66,8 @@ public class SecurityConfig {
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.authorizeHttpRequests((requests) ->
-                        requests.requestMatchers("/auth/**",
+                        requests.requestMatchers(
+                                        "/auth/**",
                                         "/mail/**",
                                         "/oauth2/**",
                                         "/world/**",

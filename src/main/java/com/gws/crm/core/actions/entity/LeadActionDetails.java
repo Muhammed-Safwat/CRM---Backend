@@ -28,11 +28,11 @@ public class LeadActionDetails {
     @JoinColumn(name = "user_action_id", nullable = false)
     private UserAction userAction;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.DETACH})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private BaseLead lead;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.DETACH})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = true)
     private CallOutcome callOutcome;
 

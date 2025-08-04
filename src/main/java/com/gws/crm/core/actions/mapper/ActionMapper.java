@@ -43,7 +43,8 @@ public class ActionMapper {
                 .toList();
     }
 
-    public Page<ActionResponse> toDto(Page<LeadActionDetails> leadActionDetailsPage) {
-        return leadActionDetailsPage.map(details -> toDto(details.getUserAction()));
+    public Page<ActionResponse> toDto(Page<UserAction> userActionPage) {
+        return userActionPage.map(this::toDto);
     }
+
 }

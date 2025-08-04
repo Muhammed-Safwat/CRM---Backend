@@ -90,14 +90,14 @@ public class NoteSpecification {
     private static Specification<Note> byFavorite(Boolean favorite) {
         return (root, query, cb) -> {
             if (favorite == null) return null;
-            return cb.isTrue(root.get("favorite"));
+            return cb.equal(root.get("favorite"), favorite);
         };
     }
 
     private static Specification<Note> byArchived(Boolean archived) {
         return (root, query, cb) -> {
             if (archived == null) return null;
-            return cb.isTrue(root.get("archived"));
+            return cb.equal(root.get("archived"), archived);
         };
     }
 }

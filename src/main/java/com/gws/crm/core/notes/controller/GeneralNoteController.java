@@ -36,6 +36,25 @@ public class GeneralNoteController {
         return noteService.getAllNotes(criteria, transition);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateNote(@PathVariable Long id,
+                                        @RequestBody CreateNoteDTO noteDto,
+                                        Transition transition) {
+        return noteService.updateNote(id, noteDto, transition);
+    }
+
+    @PutMapping("/{id}/archive")
+    public ResponseEntity<?> archiveNote(@PathVariable Long id,
+                                         Transition transition) {
+        return noteService.archiveNote(id, transition);
+    }
+
+    @PutMapping("/{id}/favorite")
+    public ResponseEntity<?> favoriteNote(@PathVariable Long id,
+                                          Transition transition) {
+        return noteService.markAsFavorite(id, transition);
+    }
+
 
 }
 

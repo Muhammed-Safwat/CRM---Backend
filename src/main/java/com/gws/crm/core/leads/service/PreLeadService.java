@@ -33,4 +33,6 @@ public interface PreLeadService {
     ResponseEntity<?> isPhoneExist(String phone, Transition transition);
 
     ResponseEntity<?> getDetails(long leadId, Transition transition);
+
+    ResponseEntity<?> addToArchive(long leadId, Transition transition);
 }

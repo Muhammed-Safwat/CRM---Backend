@@ -33,4 +33,6 @@ public interface SalesLeadService<T extends SalesLead, D extends AddLeadDTO> {
     ResponseEntity<?> isPhoneExist(List<String> phones, Transition transition);
 
     ResponseEntity<?> isPhoneExist(String phone, Transition transition);
+
+    ResponseEntity<?> addToArchive(long leadId, Transition transition);
 }

@@ -46,6 +46,15 @@ public class JwtTokenService {
         }
     }
 
+    public String extractUserName(String token) {
+        try {
+            return extractClaim(token, Claims::getIssuer);
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new JwtValidationException("Failed to extract user Name from token.",
+                    List.of(new OAuth2Error("invalid_token", "Token is invalid or malformed.", null)));
+        }
+    }
+
 
     private Map<String, Object> generateExtraClaims(User user) {
         String roleName = user.getRoles().stream()

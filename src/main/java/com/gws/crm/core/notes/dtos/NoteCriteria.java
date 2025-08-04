@@ -12,7 +12,7 @@ public class NoteCriteria {
     private String noteType;
     private Long targetId;
     private LocalDate createdAt;
-    private String keyword; // search into title and discription
+    private String keyword;
     private String label;
     private Boolean favorite;
     private Boolean archived;

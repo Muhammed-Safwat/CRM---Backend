@@ -86,4 +86,8 @@ public abstract class SalesLeadController<T extends SalesLead, D extends AddLead
         return service.isPhoneExist(phones, transition);
     }
 
+    @PutMapping("archive/{leadId}")
+    public ResponseEntity<?> addToArchive(@PathVariable long leadId, Transition transition) {
+        return service.addToArchive(leadId, transition);
+    }
 }

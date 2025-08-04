@@ -38,10 +38,12 @@ public class TransitionBuilderFilter extends OncePerRequestFilter {
 
             Long userId = jwtTokenService.extractUserId(token);
             String role = jwtTokenService.extractUserRole(token);
+            String userName = jwtTokenService.extractUserName(token);
+
             int os = request.getHeader("os") != null ? Integer.parseInt(request.getHeader("os")) : 0;
             Transition transition = new Transition(
                     transitionUtilHandler.validateLanguage(request.getHeader("lang")),
-                    userId, role, os, request.getHeader("version")
+                    userId,userName, role, os, request.getHeader("version")
             );
 
             request.setAttribute("transition", transition);

@@ -1,8 +1,7 @@
-package com.gws.crm.core.actions.controller.controller;
+package com.gws.crm.core.actions.controller;
 
 
-import com.gws.crm.core.actions.controller.ActionController;
-import com.gws.crm.core.employee.service.imp.PreLeadActionServiceImp;
+import com.gws.crm.core.actions.service.imp.PreLeadActionServiceImp;
 import com.gws.crm.core.leads.entity.PreLead;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -1,9 +1,8 @@
-package com.gws.crm.core.actions.controller.controller;
+package com.gws.crm.core.actions.controller;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.actions.controller.ActionController;
 import com.gws.crm.core.actions.dtos.ActionOnLeadDTO;
-import com.gws.crm.core.employee.service.imp.SalesLeadActionServiceImp;
+import com.gws.crm.core.actions.service.imp.SalesLeadActionServiceImp;
 import com.gws.crm.core.leads.entity.Lead;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

@@ -6,13 +6,15 @@ import com.gws.crm.common.entities.ExcelFile;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.common.handler.ApiResponseHandler;
+import com.gws.crm.common.helper.ApiResponse;
 import com.gws.crm.common.service.ExcelSheetService;
-import com.gws.crm.core.actions.repository.repository.EmployeeRepository;
+import com.gws.crm.core.actions.event.*;
+import com.gws.crm.core.actions.event.lead.*;
+import com.gws.crm.core.actions.event.prelead.*;
 import com.gws.crm.core.admin.entity.Admin;
 import com.gws.crm.core.admin.repository.AdminRepository;
 import com.gws.crm.core.employee.entity.Employee;
-import com.gws.crm.core.employee.service.imp.PreLeadActionServiceImp;
-import com.gws.crm.core.employee.service.imp.SalesLeadActionServiceImp;
+import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.leads.dto.*;
 import com.gws.crm.core.leads.entity.Lead;
 import com.gws.crm.core.leads.entity.PhoneNumber;
@@ -25,16 +27,24 @@ import com.gws.crm.core.leads.service.PreLeadService;
 import com.gws.crm.core.lookups.repository.ChannelRepository;
 import com.gws.crm.core.lookups.repository.LeadStatusRepository;
 import com.gws.crm.core.lookups.repository.ProjectRepository;
+import com.gws.crm.core.notification.publisher.PreLeadNotificationEventPublisher;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.reactive.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -49,7 +59,7 @@ import static com.gws.crm.core.leads.specification.PreLeadSpecification.filter;
 @Service
 @Transactional
 @AllArgsConstructor
-public class PreLeadServiceImp implements PreLeadService {
+public class PreLeadServiceImp implements PreLeadService  {
 
     private final PreLeadRepository preLeadRepository;
     private final UserRepository userRepository;
@@ -62,9 +72,8 @@ public class PreLeadServiceImp implements PreLeadService {
     private final AdminRepository adminRepository;
     private final LeadRepository leadRepository;
     private final LeadStatusRepository leadStatusRepository;
-    private final PreLeadActionServiceImp preLeadActionService;
-    private final SalesLeadActionServiceImp salesLeadActionServiceImp;
-
+    private final ApplicationEventPublisher eventPublisher;
+    private final PreLeadNotificationEventPublisher preLeadNotificationEventPublisher;
 
     @Override
     public ResponseEntity<?> getAllPreLead(PreLeadCriteria preLeadCriteria, Transition transition) {
@@ -84,6 +93,7 @@ public class PreLeadServiceImp implements PreLeadService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<?> addPreLead(AddPreLeadDTO preLeadDTO, Transition transition) {
         User creator = userRepository.findById(transition.getUserId())
                 .orElseThrow(NotFoundResourceException::new);
@@ -120,32 +130,34 @@ public class PreLeadServiceImp implements PreLeadService {
 
         preLead.setPhoneNumbers(phoneNumbers);
         PreLead savedPreLead = preLeadRepository.save(preLead);
-        preLeadActionService.setLeadCreationAction(savedPreLead, transition);
+        publishCreateLeadEvent(savedPreLead, transition);
         return ApiResponseHandler.success("Pre Lead added successfully");
     }
 
     @Override
-    public ResponseEntity<?> deletePreLead(Long leadId, Transition transition) {
-        PreLead preLead = preLeadRepository.findById(leadId).orElseThrow(NotFoundResourceException::new);
-        preLeadRepository.delete(preLead);
-        preLeadActionService.setLeadCreationAction(preLead, transition);
-        return success("Lead Deleted Successfully");
+    public ResponseEntity<ApiResponse<String>> deletePreLead(Long leadId, Transition transition) {
+        PreLead preLead = preLeadRepository.findById(leadId)
+                .orElseThrow(NotFoundResourceException::new);
+
+        preLeadRepository.deleteLead(leadId); // error here
+        publishDeleteLeadEvent(preLead, transition);
+        return success("Lead deleted successfully");
     }
 
     @Override
-    public ResponseEntity<?> restorePreLead(Long leadId, Transition transition) {
+    public ResponseEntity<ApiResponse<String>> restorePreLead(Long leadId, Transition transition) {
         PreLead preLead = preLeadRepository.findById(leadId)
                 .orElseThrow(NotFoundResourceException::new);
-        preLeadActionService.setLeadRestoreAction(preLead, transition);
         preLeadRepository.restoreLead(leadId);
-        return success("Lead Deleted Successfully");
+        publishRestoreLeadEvent(preLead, transition);
+        return success("Lead restored successfully");
     }
 
     @Override
     public ResponseEntity<?> importLead(List<ImportPreLeadDTO> leads, Transition transition) {
         List<PreLead> leadList = createLeadsList(leads, transition);
         List<PreLead> savedLead = preLeadRepository.saveAll(leadList);
-        preLeadActionService.setImportLeads(savedLead, transition);
+         // preLeadActionService.setImportLeads(savedLead, transition);
         return success("Pre Lead Imported Successfully");
     }
 
@@ -223,7 +235,8 @@ public class PreLeadServiceImp implements PreLeadService {
             preLead.setImportedAt(LocalDateTime.now());
             preLead.setAssignedTo(sales.getName());
             leads.add(toSalesLead(preLead, admin, sales, transition));
-            preLeadActionService.setAssignAction(preLead, transition);
+            publishAssignLeadEvent(preLead,transition);
+            //preLeadActionService.setAssignAction(preLead, transition);
         });
 
         List<Lead> leadsList = leadRepository.saveAll(leads);
@@ -231,6 +244,7 @@ public class PreLeadServiceImp implements PreLeadService {
         //preLeadRepository.saveAll(preLeads);
         log.info("{} ================", leadsList.size());
         // here contain problem
+        publishLeadsCreatedEvent(leadsList,transition);
         // salesLeadActionServiceImp.setLeadCreationAction(leadsList,transition);
         return success("Pre Lead Assigned Successfully");
     }
@@ -274,6 +288,13 @@ public class PreLeadServiceImp implements PreLeadService {
         return success(preLeadDto);
     }
 
+    @Override
+    public ResponseEntity<?> addToArchive(long leadId, Transition transition) {
+        PreLead lead = preLeadRepository.findById(leadId).orElseThrow(NotFoundResourceException::new);
+        preLeadRepository.archiveLead(leadId);
+        return success("Lead Archived Successfully");
+    }
+
     public Lead toSalesLead(PreLead preLeads, Admin admin, Employee employee, Transition transition) {
         Lead lead = Lead.builder()
                 .name(preLeads.getName())
@@ -296,5 +317,41 @@ public class PreLeadServiceImp implements PreLeadService {
         lead.setPhoneNumbers(phoneNumbers);
 
         return lead;
+    }
+
+    public void publishCreateLeadEvent(PreLead lead, Transition transition) {
+       preLeadNotificationEventPublisher.publishCreateLeadEvent(lead,transition);
+       eventPublisher.publishEvent(new PreLeadCreatedEvent(lead, transition));
+    }
+
+    public void publishDeleteLeadEvent(PreLead lead, Transition transition) {
+        preLeadNotificationEventPublisher.publishDeleteLeadEvent(lead,transition);
+        eventPublisher.publishEvent(new PreLeadDeletedEvent(lead, transition));
+    }
+
+    public void publishEditLeadEvent(PreLead lead, Transition transition) {
+        preLeadNotificationEventPublisher.publishEditLeadEvent(lead,transition);
+        eventPublisher.publishEvent(new PreLeadEditedEvent(lead, transition));
+    }
+
+    public void publishRestoreLeadEvent(PreLead lead, Transition transition) {
+        preLeadNotificationEventPublisher.publishRestoreLeadEvent(lead,transition);
+        eventPublisher.publishEvent(new PreLeadRestoredEvent(lead, transition));
+    }
+
+    public void publishAssignLeadEvent(PreLead lead, Transition transition) {
+        eventPublisher.publishEvent(new PreLeadAssignedEvent(lead, transition));
+    }
+
+    public void publishViewLeadEvent(PreLead lead, Transition transition) {
+        eventPublisher.publishEvent(new PreLeadViewedEvent(lead, transition));
+    }
+
+    public void publishDelayLeadEvent(PreLead lead, Transition transition) {
+        eventPublisher.publishEvent(new PreLeadDelayedEvent(lead, transition));
+    }
+
+    public void publishLeadsCreatedEvent(List<Lead> leads, Transition transition){
+        eventPublisher.publishEvent(new LeadsCreatedEvent(leads,transition));
     }
 }
