@@ -14,9 +14,6 @@ import com.gws.crm.core.leads.entity.Lead;
 import com.gws.crm.core.leads.factory.LeadFactory;
 import com.gws.crm.core.leads.mapper.LeadMapper;
 import com.gws.crm.core.leads.repository.LeadRepository;
-import com.gws.crm.core.notification.builder.LeadNotificationEventBuilder;
-import com.gws.crm.core.notification.enums.NotificationCode;
-import com.gws.crm.core.notification.event.NotificationEvent;
 import com.gws.crm.core.notification.publisher.LeadNotificationEventPublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -28,7 +25,6 @@ import java.util.List;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
 import static com.gws.crm.common.utils.ExcelFileUtils.generateHeader;
-import static com.gws.crm.core.notification.dtos.NotificationUser.to;
 
 @Service
 @Slf4j
@@ -77,23 +73,22 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
 
     @Override
     public ResponseEntity<?> isPhoneExist(List<String> phones, Transition transition) {
-        return phoneValidationService.isPhoneExist(phones,transition);
+        return phoneValidationService.isPhoneExist(phones, transition);
     }
 
     @Override
     public ResponseEntity<?> isPhoneExist(String phone, Transition transition) {
-        return phoneValidationService.isPhoneExist(phone,transition);
+        return phoneValidationService.isPhoneExist(phone, transition);
     }
 
 
-
     private List<Lead> createLeadsList(List<ImportLeadDTO> importLeadDTOS, Transition transition) {
-        return leadFactory.createLeadsList(importLeadDTOS,transition);
+        return leadFactory.createLeadsList(importLeadDTOS, transition);
     }
 
     @Override
     protected Lead mapDtoToEntity(AddLeadDTO leadDTO, Transition transition) {
-        return leadFactory.mapDtoToEntity(leadDTO,transition);
+        return leadFactory.mapDtoToEntity(leadDTO, transition);
     }
 
     @Override
@@ -108,54 +103,54 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
 
     @Override
     protected void updateEntityFromDto(Lead existingLead, AddLeadDTO leadDTO, Transition transition) {
-        leadFactory.updateEntityFromDto(existingLead,leadDTO,transition);
+        leadFactory.updateEntityFromDto(existingLead, leadDTO, transition);
     }
 
     @Override
     public void publishCreateLeadEvent(Lead lead, Transition transition) {
         eventPublisher.publishEvent(new LeadCreatedEvent(lead, transition));
         // create lead but not admin
-        leadNotificationEventPublisher.publishCreateLeadEvent(lead,transition);
+        leadNotificationEventPublisher.publishCreateLeadEvent(lead, transition);
     }
 
     @Override
     public void publishDeleteLeadEvent(Lead lead, Transition transition) {
         eventPublisher.publishEvent(new LeadDeletedEvent(lead, transition));
         // admin delete lead
-        leadNotificationEventPublisher.publishDeleteLeadEvent(lead,transition);
+        leadNotificationEventPublisher.publishDeleteLeadEvent(lead, transition);
     }
 
     @Override
     public void publishEditLeadEvent(Lead lead, Transition transition) {
         eventPublisher.publishEvent(new LeadEditedEvent(lead, transition));
         // admin update lead
-        leadNotificationEventPublisher.publishEditLeadEvent(lead,transition);
+        leadNotificationEventPublisher.publishEditLeadEvent(lead, transition);
     }
 
     @Override
     public void publishRestoreLeadEvent(Lead lead, Transition transition) {
         eventPublisher.publishEvent(new LeadRestoredEvent(lead, transition));
         // admin restore lead
-        leadNotificationEventPublisher.publishRestoreLeadEvent(lead,transition);
+        leadNotificationEventPublisher.publishRestoreLeadEvent(lead, transition);
     }
 
     @Override
     public void publishAssignLeadEvent(Lead lead, Employee lastSales, Transition transition) {
         eventPublisher.publishEvent(new LeadAssignedEvent(lead, transition));
         // for new sales
-        leadNotificationEventPublisher.publishAssignLeadEvent(lead,lastSales,transition);
+        leadNotificationEventPublisher.publishAssignLeadEvent(lead, lastSales, transition);
     }
 
     @Override
     public void publishViewLeadEvent(Lead lead, Transition transition) {
         // send this event once (first time reviewed by sales)
-        leadNotificationEventPublisher.publishViewLeadEvent(lead,transition);
+        leadNotificationEventPublisher.publishViewLeadEvent(lead, transition);
     }
 
     @Override
     public void publishDelayLeadEvent(Lead lead, Transition transition) {
         eventPublisher.publishEvent(new LeadDelayedEvent(lead, transition));
         // when delayed event occur send notification to sales admin
-        leadNotificationEventPublisher.publishDelayLeadEvent(lead,transition);
+        leadNotificationEventPublisher.publishDelayLeadEvent(lead, transition);
     }
 }

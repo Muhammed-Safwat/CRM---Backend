@@ -19,7 +19,6 @@ import com.gws.crm.core.leads.repository.PhoneNumberRepository;
 import com.gws.crm.core.leads.repository.TeleSalesLeadRepository;
 import com.gws.crm.core.lookups.repository.*;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;

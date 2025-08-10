@@ -21,7 +21,6 @@ public class PushNotificationChannel implements NotificationChannel {
     private final NotificationRepository notificationRepository;
     private final NotificationTokenRepository notificationTokenRepository;
 
-
     @Override
     public void send(CrmNotification crmNotification) throws FirebaseMessagingException {
         if (!crmNotification.getType().isPushEnabled()) return;
@@ -38,8 +37,8 @@ public class PushNotificationChannel implements NotificationChannel {
         // Build and send push notification
         List<Message> message = buildFcmMessage(crmNotification, deviceToken);
         BatchResponse response = FirebaseMessaging.getInstance().sendEach(message);
-        response.getResponses().forEach(res->{
-            log.info("✅ Push notification sent. FCM response: {}", res );
+        response.getResponses().forEach(res -> {
+            log.info("✅ Push notification sent. FCM response: {}", res);
         });
 
 
@@ -48,7 +47,7 @@ public class PushNotificationChannel implements NotificationChannel {
 
     private List<Message> buildFcmMessage(CrmNotification crmNotification, List<NotificationToken> userTokens) {
         List<Message> messages = new ArrayList<>();
-        for(NotificationToken notificationToken: userTokens){
+        for (NotificationToken notificationToken : userTokens) {
             messages.add(Message.builder()
                     .setToken(notificationToken.getToken())
                     .setNotification(Notification.builder()

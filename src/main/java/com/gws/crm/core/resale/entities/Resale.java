@@ -108,4 +108,5 @@ public class Resale {
 
     private boolean delay;
 
+    private boolean archive;
 }

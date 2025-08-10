@@ -24,7 +24,6 @@ public interface GenericBaseLeadRepository<T extends BaseLead> extends JpaReposi
     void restoreLead(Long leadId);
 
     @Modifying
-    @Query("UPDATE BaseLead l SET l.archive = true  WHERE l.id =: leadId")
-    void archiveLead(long leadId);
-
+    @Query("UPDATE BaseLead l SET l.archive = :archived WHERE l.id = :leadId")
+    void toggleArchive(long leadId, boolean archived);
 }

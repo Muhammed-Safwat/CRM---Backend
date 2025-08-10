@@ -13,13 +13,11 @@ import org.springframework.stereotype.Service;
 public class NotificationEventServiceImp implements NotificationEventService {
 
     private final NotificationBuilder notificationBuilder;
-    // private final NotificationRepository notificationRepository;
     private final NotificationDispatcher notificationDispatcher;
 
     @Override
     public void handel(NotificationEvent notificationEvent) {
-        CrmNotification crmNotification =  notificationBuilder.build(notificationEvent);
-        // notificationRepository.save(notification);
+        CrmNotification crmNotification = notificationBuilder.build(notificationEvent);
         notificationDispatcher.dispatch(crmNotification);
     }
 

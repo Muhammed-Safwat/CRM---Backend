@@ -46,5 +46,4 @@ public class Employee extends User {
     private List<Employee> subordinates = new ArrayList<>();
 
 
-
 }

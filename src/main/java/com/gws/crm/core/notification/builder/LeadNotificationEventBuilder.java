@@ -1,6 +1,5 @@
 package com.gws.crm.core.notification.builder;
 
-import com.gws.crm.authentication.entity.User;
 import com.gws.crm.core.leads.entity.BaseLead;
 import com.gws.crm.core.notification.dtos.NotificationUser;
 import com.gws.crm.core.notification.enums.NotificationCode;
@@ -16,9 +15,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class LeadNotificationEventBuilder<T extends BaseLead> {
 
-    public NotificationEvent build(T lead, NotificationUser sender, NotificationUser recipient, NotificationCode code,
-                                   Map<String,
-            String> data) {
+    public NotificationEvent build(T lead, NotificationUser sender,
+                                   NotificationUser recipient,
+                                   NotificationCode code,
+                                   Map<String, String> data) {
         return NotificationEvent.builder()
                 .code(code)
                 .senderId(sender.getId())
@@ -28,10 +28,10 @@ public class LeadNotificationEventBuilder<T extends BaseLead> {
                 .referenceId(lead.getId())
                 .referenceType(ReferenceType.LEAD.name())
                 .data(data)
+                .recipientName(recipient.getName())
+                .recipientEmail(recipient.getEmail())
                 .build();
     }
-
-
 
 
 }

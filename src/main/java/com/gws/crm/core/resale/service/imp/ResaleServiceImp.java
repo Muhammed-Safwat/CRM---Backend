@@ -33,6 +33,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -262,6 +263,20 @@ public class ResaleServiceImp implements ResaleService {
                 .assignAt(LocalDateTime.now())
                 .build();
         return success(response);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> toggleArchive(long leadId, Transition transition) {
+        Resale resale = resaleRepository.findById(leadId).orElseThrow(NotFoundResourceException::new);
+
+        boolean newArchiveStatus = !resale.isArchive();
+
+        resaleRepository.toggleArchive(leadId, newArchiveStatus);
+
+        String message = newArchiveStatus ? "Lead Archived Successfully" : "Lead Unarchived Successfully";
+
+        return success(message);
     }
 
     private List<Resale> createResaleList(List<ImportResaleDTO> importResaleDTOS, Transition transition) {

@@ -2,8 +2,7 @@
 package com.gws.crm.core.actions.event.lead;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.leads.entity.BaseLead;
 import com.gws.crm.core.leads.entity.Lead;
 
-public record LeadEditedEvent (Lead lead, Transition transition) {
+public record LeadEditedEvent(Lead lead, Transition transition) {
 }

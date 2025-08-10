@@ -87,7 +87,7 @@ public abstract class SalesLeadController<T extends SalesLead, D extends AddLead
     }
 
     @PutMapping("archive/{leadId}")
-    public ResponseEntity<?> addToArchive(@PathVariable long leadId, Transition transition) {
-        return service.addToArchive(leadId, transition);
+    public ResponseEntity<?> toggleArchive(@PathVariable long leadId, Transition transition) {
+        return service.toggleArchive(leadId, transition);
     }
 }

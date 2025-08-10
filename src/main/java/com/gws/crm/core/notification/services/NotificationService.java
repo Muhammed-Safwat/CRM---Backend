@@ -5,7 +5,6 @@ import com.gws.crm.core.notification.dtos.RegistrationTokenReq;
 import org.springframework.http.ResponseEntity;
 
 
-
 public interface NotificationService {
     ResponseEntity<?> registerToken(RegistrationTokenReq registrationTokenReq, Transition transition);
 

@@ -32,6 +32,7 @@ public class SalesLeadSpecification<T extends SalesLead> {
             specs.add(filterByCommunicateWays(salesLeadCriteria.getCommunicateWay()));
             specs.add(filterByCancelReasons(salesLeadCriteria.getCancelReasons()));
             specs.add(filterByChannels(salesLeadCriteria.getChannel()));
+            specs.add(filterByArchived(salesLeadCriteria.getArchived()));
             specs.add(filterByDeleted(salesLeadCriteria.getDeleted()));
             specs.add(filterByDelayed(salesLeadCriteria.getDelayed()));
             specs.add(filterByBrokers(salesLeadCriteria.getBroker()));
@@ -48,6 +49,8 @@ public class SalesLeadSpecification<T extends SalesLead> {
             specs.add(filterByUser(ids, salesLeadCriteria.getMyLead(), transition));
             specs.add(filterBySalesReps(salesLeadCriteria.getSalesRep(), transition));
             specs.add(filterByCreators(salesLeadCriteria.getCreator(), transition));
+            specs.add(filterByLastActionDate(salesLeadCriteria.getLastActionDate()));
+            specs.add(filterByNextActionDate(salesLeadCriteria.getNextActionDate()));
         }
 
         return Specification.allOf(specs);
@@ -271,6 +274,16 @@ public class SalesLeadSpecification<T extends SalesLead> {
         };
     }
 
+    private static <T extends SalesLead> Specification<T> filterByArchived(Boolean archived) {
+        return (root, query, criteriaBuilder) -> {
+            if (archived == null) {
+                return null;
+            }
+
+            return criteriaBuilder.equal(root.get("archive"), archived);
+        };
+    }
+
     private static <T extends SalesLead> Specification<T> filterByDeleted(Boolean deleted) {
         return (root, query, criteriaBuilder) -> {
             if (deleted == null) {
@@ -290,53 +303,6 @@ public class SalesLeadSpecification<T extends SalesLead> {
         };
     }
 
-    /*
-      private static <T extends SalesLead>  Specification<SalesLead> filterByLastActionDate(LocalDate lastActionDate) {
-          return (root, query, criteriaBuilder) -> {
-              if (lastActionDate == null) {
-                  return null;
-              }
-              return criteriaBuilder.equal(root.get("lastActionDate"), lastActionDate);
-          };
-      }
-
-      private static <T extends SalesLead>  Specification<SalesLead> filterByLastActionNoAction(LocalDate lastActionNoAction) {
-          return (root, query, criteriaBuilder) -> {
-              if (lastActionNoAction == null) {
-                  return null;
-              }
-              return criteriaBuilder.equal(root.get("lastActionNoAction"), lastActionNoAction);
-          };
-      }
-
-
-          private static <T extends SalesLead>  Specification<SalesLead> filterByStageDate(LocalDate stageDate) {
-              return (root, query, criteriaBuilder) -> {
-                  if (stageDate == null) {
-                      return null;
-                  }
-                  return criteriaBuilder.equal(root.get("stageDate"), stageDate);
-              };
-          }
-
-          private static <T extends SalesLead>  Specification<SalesLead> filterByActionDate(LocalDate actionDate) {
-              return (root, query, criteriaBuilder) -> {
-                  if (actionDate == null) {
-                      return null;
-                  }
-                  return criteriaBuilder.equal(root.get("actionDate"), actionDate);
-              };
-          }
-
-          private static <T extends SalesLead>  Specification<SalesLead> filterByAssignDate(LocalDate assignDate) {
-              return (root, query, criteriaBuilder) -> {
-                  if (assignDate == null) {
-                      return null;
-                  }
-                  return criteriaBuilder.equal(root.get("assignDate"), assignDate);
-              };
-          }
-      */
     private static <T extends SalesLead> Specification<T> filterByBudget(String budget) {
         return (root, query, criteriaBuilder) -> {
             if (!StringUtils.hasText(budget)) {
@@ -430,6 +396,47 @@ public class SalesLeadSpecification<T extends SalesLead> {
         };
     }
 
+    private static <T extends SalesLead> Specification<T> filterByLastActionDate(List<LocalDateTime> lastActionDate) {
+        return (root, query, criteriaBuilder) -> {
+            if (lastActionDate == null || lastActionDate.isEmpty()) {
+                return criteriaBuilder.conjunction();
+            }
+
+            LocalDateTime startDate = lastActionDate.size() > 0 ? lastActionDate.get(0) : null;
+            LocalDateTime endDate = lastActionDate.size() > 1 ? lastActionDate.get(1) : null;
+
+            if (startDate != null && endDate != null) {
+                return criteriaBuilder.between(root.get("lastActionDate"), startDate, endDate);
+            } else if (startDate != null) {
+                return criteriaBuilder.lessThanOrEqualTo(root.get("lastActionDate"), LocalDateTime.now());
+            } else if (endDate != null) {
+                return criteriaBuilder.lessThanOrEqualTo(root.get("lastActionDate"), endDate);
+            }
+
+            return criteriaBuilder.conjunction();
+        };
+    }
+
+    private static <T extends SalesLead> Specification<T> filterByNextActionDate(List<LocalDateTime> nextActionDate) {
+        return (root, query, criteriaBuilder) -> {
+            if (nextActionDate == null || nextActionDate.isEmpty()) {
+                return criteriaBuilder.conjunction();
+            }
+
+            LocalDateTime startDate = nextActionDate.size() > 0 ? nextActionDate.get(0) : null;
+            LocalDateTime endDate = nextActionDate.size() > 1 ? nextActionDate.get(1) : null;
+
+            if (startDate != null && endDate != null) {
+                return criteriaBuilder.between(root.get("nextActionDate"), startDate, endDate);
+            } else if (startDate != null) {
+                return criteriaBuilder.lessThanOrEqualTo(root.get("nextActionDate"), LocalDateTime.now());
+            } else if (endDate != null) {
+                return criteriaBuilder.lessThanOrEqualTo(root.get("nextActionDate"), endDate);
+            }
+
+            return criteriaBuilder.conjunction();
+        };
+    }
 
     private static <T extends SalesLead> Specification<T> filterByAdminId(Long id) {
         return (root, query, criteriaBuilder) -> {

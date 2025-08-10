@@ -120,6 +120,7 @@ public class LeadMapper {
                 .lastStage(lead.getLastStage())
                 .assignAt(lead.getAssignAt())
                 .delayed(lead.isDelay())
+                .archived(lead.isArchive())
                 .build();
     }
 

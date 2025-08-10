@@ -7,8 +7,6 @@ import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.core.actions.entity.ActionType;
 import com.gws.crm.core.actions.entity.LeadActionDetails;
 import com.gws.crm.core.actions.entity.UserAction;
-import com.gws.crm.core.actions.event.*;
-import com.gws.crm.core.actions.listener.PreLeadActionEventListener;
 import com.gws.crm.core.actions.mapper.ActionMapper;
 import com.gws.crm.core.actions.repository.UserActionRepository;
 import com.gws.crm.core.leads.entity.PreLead;

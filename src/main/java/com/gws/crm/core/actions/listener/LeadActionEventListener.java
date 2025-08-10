@@ -1,9 +1,6 @@
 package com.gws.crm.core.actions.listener;
 
-import com.gws.crm.core.actions.event.lead.*;
 import com.gws.crm.core.leads.entity.BaseLead;
-import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -36,4 +33,5 @@ public abstract class LeadActionEventListener<T extends BaseLead> {
     @Async
     @EventListener
     abstract public void onLeadDelayed(LeadDelayedEvent<T> event);
-*/}
+*/
+}

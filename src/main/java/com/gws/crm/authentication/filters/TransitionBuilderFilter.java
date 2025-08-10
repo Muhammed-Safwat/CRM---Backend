@@ -43,7 +43,7 @@ public class TransitionBuilderFilter extends OncePerRequestFilter {
             int os = request.getHeader("os") != null ? Integer.parseInt(request.getHeader("os")) : 0;
             Transition transition = new Transition(
                     transitionUtilHandler.validateLanguage(request.getHeader("lang")),
-                    userId,userName, role, os, request.getHeader("version")
+                    userId, userName, role, os, request.getHeader("version")
             );
 
             request.setAttribute("transition", transition);

@@ -29,4 +29,8 @@ public class PhoneNumber {
     @JoinColumn(nullable = false)
     // @JsonBackReference
     private BaseLead lead;
+
+    public String getNumber() {
+        return code.concat(phone);
+    }
 }

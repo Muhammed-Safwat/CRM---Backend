@@ -21,4 +21,5 @@ public class PreLeadCriteria {
     private int page;
     private int size;
     private Boolean delayed;
+    private Boolean archived;
 }

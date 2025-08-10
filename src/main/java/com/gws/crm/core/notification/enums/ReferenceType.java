@@ -4,8 +4,8 @@ public enum ReferenceType {
 
     LEAD,
     ADMIN,
-    COMMENT ,
-    TASK ;
+    COMMENT,
+    TASK;
 
     public String getCode() {
         return this.name();

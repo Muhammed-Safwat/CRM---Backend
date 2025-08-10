@@ -17,6 +17,7 @@ import static com.gws.crm.common.handler.ApiResponseHandler.success;
 public class TeleSalesPhoneValidator {
 
     private final TeleSalesLeadRepository leadRepository;
+
     public ResponseEntity<?> isPhoneExist(String phone, Transition transition) {
         boolean exists = leadRepository.isPhoneExist(phone);
         HashMap<String, Boolean> body = new HashMap<>();

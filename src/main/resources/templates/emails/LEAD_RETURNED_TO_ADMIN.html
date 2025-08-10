@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0"
+          name="viewport">
+    <title>Lead Returned to Admin</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f4f4f4 0%, #e1e1e1 100%);
+            min-height: 100vh;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            padding: 30px 25px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(45deg,
+            transparent,
+            transparent 10px,
+            rgba(255, 255, 255, 0.05) 10px,
+            rgba(255, 255, 255, 0.05) 20px);
+        }
+
+
+        .notification-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            padding: 30px 25px;
+        }
+
+        .return-card {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.3);
+        }
+
+        .return-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            display: block;
+            position: relative;
+            z-index: 1;
+        }
+
+        .return-card h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .return-card p {
+            position: relative;
+            z-index: 1;
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .action-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(240, 147, 251, 0.1), rgba(245, 87, 108, 0.1));
+            border-radius: 15px;
+            border: 2px solid rgba(240, 147, 251, 0.2);
+        }
+
+        .action-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            padding: 14px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .action-button:hover::before {
+            left: 100%;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 12px 30px rgba(240, 147, 251, 0.6);
+        }
+
+        .next-steps {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 25px 0;
+            border-left: 4px solid #28a745;
+            color: #155724;
+        }
+
+        .footer {
+            background: #2d3436;
+            color: white;
+            padding: 25px;
+            text-align: center;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #f093fb, #f5576c);
+            background-size: 200% 100%;
+        }
+
+
+        @media (max-width: 600px) {
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="email-container">
+    <div class="header">
+        <div class="notification-badge">↩️ Lead Return Alert</div>
+        <h1>Lead Returned to Admin</h1>
+    </div>
+
+    <div class="content">
+        <p style="font-size: 16px; color: #2d3436; margin-bottom: 10px;">
+            Attention <strong style="color: #f093fb;">{{RECIPIENT_NAME}}</strong>! 📋
+        </p>
+
+        <p style="font-size: 14px; color: #666; margin-bottom: 25px;">
+            A lead has been returned to the admin pool and requires immediate reassignment or review.
+        </p>
+
+        <div class="return-card">
+            <span class="return-icon">🔄</span>
+            <h2>Lead Returned for Review</h2>
+            <p>This lead has been returned by {{RETURNED_BY}} and needs admin attention.</p>
+        </div>
+
+        <div class="action-section">
+            <h3 style="color: #2d3436; margin-bottom: 15px;">Take immediate action 🎯</h3>
+            <a class="action-button"
+               href="{{CRM_LINK}}">
+                🔍 Review & Reassign Lead
+            </a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p style="margin-bottom: 15px;"><strong>RNB CRM</strong> 🏢</p>
+        <p style="margin-bottom: 15px;">
+            Cairo, Egypt
+        </p>
+        <p style="font-size: 12px; opacity: 0.8; margin-bottom: 15px;">
+            This is an automated reminder from your smart CRM system 🤖
+        </p>
+        <p style="font-size: 12px;">
+            <a>Manage notification preferences</a>
+        </p>
+    </div>
+</div>
+</body>
+
+</html>

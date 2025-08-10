@@ -40,6 +40,8 @@ public class NotificationBuilder {
         return CrmNotification.builder()
                 .senderId(event.getSenderId())
                 .recipientId(event.getRecipientId())
+                .recipientName(event.getRecipientName())
+                .recipientEmail(event.getRecipientEmail())
                 .title(title)
                 .body(body)
                 .read(false)

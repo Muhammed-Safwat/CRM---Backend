@@ -8,20 +8,17 @@ import com.gws.crm.core.actions.dtos.ActionResponse;
 import com.gws.crm.core.actions.entity.ActionType;
 import com.gws.crm.core.actions.entity.LeadActionDetails;
 import com.gws.crm.core.actions.entity.UserAction;
-import com.gws.crm.core.actions.event.*;
 import com.gws.crm.core.actions.mapper.ActionMapper;
 import com.gws.crm.core.actions.repository.UserActionRepository;
 import com.gws.crm.core.actions.service.LeadActionService;
 import com.gws.crm.core.leads.entity.BaseLead;
 import com.gws.crm.core.leads.repository.GenericBaseLeadRepository;
 import lombok.extern.java.Log;
-import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -211,7 +208,6 @@ public abstract class GenericLeadActionServiceImp<T extends BaseLead> implements
         lead.getActions().add(delayedAction);
         leadRepository.save(lead);
     }
-
 
 
 }

@@ -84,6 +84,8 @@ public class BaseLead {
 
     private boolean reviewedBySales;
 
-    private boolean archive ;
+    private boolean archive;
+
+    private String lastActionComment;
 
 }

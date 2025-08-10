@@ -18,7 +18,7 @@ public class NotificationController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerFcmToken(@RequestBody RegistrationTokenReq registrationTokenReq,
-                                        Transition transition) {
+                                              Transition transition) {
         log.info("Received FCM token: " + registrationTokenReq.getToken());
         log.info("Token received");
         return notificationService.registerToken(registrationTokenReq, transition);
@@ -26,9 +26,9 @@ public class NotificationController {
 
     @GetMapping
     public ResponseEntity<?> getAllNotification(@RequestParam("page") int page,
-                                              @RequestParam("size") int size,
-                                              Transition transition) {
-        log.info(transition.getUserName()+" ==> ****************************88");
+                                                @RequestParam("size") int size,
+                                                Transition transition) {
+        log.info(transition.getUserName() + " ==> ****************************88");
         return notificationService.getAllNotification(page, size, transition);
     }
 
@@ -49,6 +49,6 @@ public class NotificationController {
 
     @DeleteMapping("/{notificationId}")
     public ResponseEntity<?> deleteNotification(@PathVariable long notificationId, Transition transition) {
-        return notificationService.deleteNotification(notificationId,transition);
+        return notificationService.deleteNotification(notificationId, transition);
     }
 }

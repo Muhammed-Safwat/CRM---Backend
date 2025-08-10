@@ -35,4 +35,6 @@ public interface ResaleService {
     ResponseEntity<?> isPhoneExist(String phone, Transition transition);
 
     ResponseEntity<?> assignSalesToLead(AssignDTO assignDTO, Transition transition);
+
+    ResponseEntity<?> toggleArchive(long leadId, Transition transition);
 }

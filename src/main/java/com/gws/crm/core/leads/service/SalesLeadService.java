@@ -34,5 +34,5 @@ public interface SalesLeadService<T extends SalesLead, D extends AddLeadDTO> {
 
     ResponseEntity<?> isPhoneExist(String phone, Transition transition);
 
-    ResponseEntity<?> addToArchive(long leadId, Transition transition);
+    ResponseEntity<?> toggleArchive(long leadId, Transition transition);
 }

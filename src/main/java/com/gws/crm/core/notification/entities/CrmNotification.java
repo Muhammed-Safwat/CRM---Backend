@@ -22,6 +22,10 @@ public class CrmNotification {
 
     private Long recipientId;
 
+    private String recipientName;
+
+    private String recipientEmail;
+
     @ManyToOne
     @JoinColumn(name = "type_id")
     private NotificationType type;
@@ -34,7 +38,7 @@ public class CrmNotification {
 
     private String body;
 
-    @Column(name="is_read")
+    @Column(name = "is_read")
     private Boolean read;
 
     private LocalDateTime createdAt;

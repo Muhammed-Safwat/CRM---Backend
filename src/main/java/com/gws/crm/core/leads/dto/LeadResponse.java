@@ -60,7 +60,11 @@ public class LeadResponse {
     private ProjectDTO project;
 
     private boolean deleted;
+
+    private boolean archived;
+
     private LocalDateTime assignAt;
+
     private EmployeeSimpleDTO creator;
 
     private boolean delayed;

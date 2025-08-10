@@ -11,8 +11,17 @@ public class LeadScheduler {
 
     private final LeadMonitoringService leadMonitoringService;
 
-    @Scheduled(fixedRate = 60000) // 1min
+   @Scheduled(fixedRate = 60000) // 1min
     public void scheduleCheckDelayedLeads() {
         leadMonitoringService.checkAndUpdateDelayedLeads();
     }
+
+
+    @Scheduled(fixedRate = 300000) // 5 minutes - تردد أقل لأنه تحذير مسبق
+    public void scheduleCheckLeadsNearingDelay() {
+        leadMonitoringService.checkAndNotifyLeadsNearingDelay();
+    }
+
+
+
 }

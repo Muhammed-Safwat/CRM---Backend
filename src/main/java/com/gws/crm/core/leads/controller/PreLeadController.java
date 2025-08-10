@@ -82,7 +82,7 @@ public class PreLeadController {
     }
 
     @PutMapping("archive/{leadId}")
-    public ResponseEntity<?> addToArchive(@PathVariable long leadId, Transition transition) {
-        return preLeadService.addToArchive(leadId, transition);
+    public ResponseEntity<?> toggleArchive(@PathVariable long leadId, Transition transition) {
+        return preLeadService.toggleArchive(leadId, transition);
     }
 }

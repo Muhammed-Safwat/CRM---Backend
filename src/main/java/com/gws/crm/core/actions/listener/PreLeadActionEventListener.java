@@ -1,12 +1,9 @@
 package com.gws.crm.core.actions.listener;
 
-import com.gws.crm.common.exception.NotFoundResourceException;
-import com.gws.crm.core.actions.event.*;
-import com.gws.crm.core.actions.event.lead.*;
+import com.gws.crm.core.actions.event.TestEvent;
 import com.gws.crm.core.actions.event.prelead.*;
 import com.gws.crm.core.actions.service.imp.PreLeadActionServiceImp;
 import com.gws.crm.core.leads.entity.PreLead;
-import com.gws.crm.core.leads.repository.PreLeadRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -71,8 +68,6 @@ public class PreLeadActionEventListener extends LeadActionEventListener<PreLead>
     public void onLeadDelayed(PreLeadDelayedEvent event) {
         actionService.setDelayedAction(event.lead(), event.transition());
     }
-
-
 
 
 }

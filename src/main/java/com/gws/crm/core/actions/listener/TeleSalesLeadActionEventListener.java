@@ -1,9 +1,7 @@
 package com.gws.crm.core.actions.listener;
 
-import com.gws.crm.core.actions.event.lead.*;
 import com.gws.crm.core.actions.event.telesales.*;
 import com.gws.crm.core.actions.service.imp.TeleSalesLeadActionServiceImp;
-import com.gws.crm.core.leads.entity.TeleSalesLead;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;

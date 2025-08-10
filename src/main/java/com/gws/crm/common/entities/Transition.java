@@ -45,7 +45,7 @@ public class Transition {
         this.userName = "";
     }
 
-    public Transition(Language language, Long userId,String userName , String role, int os, String version) {
+    public Transition(Language language, Long userId, String userName, String role, int os, String version) {
         this.role = role;
         this.id = System.currentTimeMillis();
         this.language = language;
@@ -54,7 +54,6 @@ public class Transition {
         this.version = version;
         this.userName = userName;
     }
-
 
 
 }

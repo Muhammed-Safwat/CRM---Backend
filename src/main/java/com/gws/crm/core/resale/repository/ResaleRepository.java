@@ -25,4 +25,8 @@ public interface ResaleRepository extends JpaRepository<Resale, Long>, JpaSpecif
 
     boolean existsByPhone(String phone);
 
+    @Modifying
+    @Query("UPDATE Resale r SET r.archive = :archived WHERE r.id = :resaleId")
+    void toggleArchive(long resaleId, boolean archived);
+
 }

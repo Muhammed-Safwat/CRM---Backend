@@ -20,11 +20,13 @@ public class SalesLeadCriteria {
     private Boolean deleted;
     private Boolean myLead;
     private Boolean delayed;
+    private Boolean archived;
     private List<Long> project;
     private String country;
     private List<Long> creator;
     private String campaignId;
     private List<LocalDateTime> lastActionDate;
+    private List<LocalDateTime> nextActionDate;
     private List<Long> lastAction;
     private List<Long> stage;
     private List<LocalDateTime> stageDate;

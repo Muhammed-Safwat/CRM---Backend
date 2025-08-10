@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0"
+          name="viewport">
+    <title>Lead Follow-up Warning</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f6f6f6 0%, #eeeeee 100%);
+            min-height: 100vh;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff9f43, #feca57);
+            padding: 30px 25px;
+            text-align: center;
+            position: relative;
+        }
+
+        .notification-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .content {
+            padding: 30px 25px;
+        }
+
+        .warning-card {
+            background: linear-gradient(135deg, #ff9f43, #feca57);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .warning-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .warning-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+
+        .warning-card h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+        }
+
+        .countdown-info {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 25px 0;
+            border-left: 4px solid #ffc107;
+            color: #856404;
+            text-align: center;
+        }
+
+        .countdown-timer {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ff9f43;
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .detail-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border-left: 4px solid #ff9f43;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+
+        .detail-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3436;
+        }
+
+        .detail-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .priority-indicator {
+            display: inline-block;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+        }
+
+        .action-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(255, 159, 67, 0.1), rgba(254, 202, 87, 0.1));
+            border-radius: 15px;
+            border: 2px solid rgba(255, 159, 67, 0.2);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .action-button {
+            display: inline-block;
+            color: white;
+            padding: 14px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+
+        .primary-button {
+            background: linear-gradient(135deg, #ff9f43, #feca57);
+            box-shadow: 0 8px 25px rgba(255, 159, 67, 0.4);
+        }
+
+        .primary-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(255, 159, 67, 0.6);
+        }
+
+        .secondary-button {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            box-shadow: 0 8px 25px rgba(116, 185, 255, 0.4);
+        }
+
+        .secondary-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(116, 185, 255, 0.6);
+        }
+
+        .tips-section {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 25px 0;
+            border-left: 4px solid #27ae60;
+        }
+
+        .tip-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            color: #2d5016;
+        }
+
+        .tip-icon {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .footer {
+            background: #2d3436;
+            color: white;
+            padding: 25px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
+
+            .action-buttons {
+                flex-direction: row;
+                align-items: center;
+            }
+
+            .action-button {
+                width: 100%;
+                max-width: 280px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="email-container">
+    <div class="header">
+        <div class="notification-badge">⏳ Reminder Alert</div>
+        <h1>Lead Follow-up Due Soon</h1>
+    </div>
+
+    <div class="content">
+        <p style="font-size: 16px; color: #2d3436; margin-bottom: 10px;">
+            Hello <strong style="color: #ff9f43;">{{RECIPIENT_NAME}}</strong>! 📋
+        </p>
+
+        <p style="font-size: 14px; color: #666; margin-bottom: 25px;">
+            Important reminder: You need to follow up with a potential lead within the next hour to avoid delays.
+        </p>
+
+        <div class="warning-card">
+            <span class="warning-icon">⏰</span>
+            <h2>Follow-up Required Soon</h2>
+            <p style="margin: 10px 0;">Time remaining until the scheduled follow-up</p>
+            <div class="countdown-timer">{{TIME_REMAINING}}</div>
+            <div style="margin-top: 15px;">
+                <span class="priority-indicator">Medium Priority</span>
+            </div>
+        </div>
+
+        <div class="countdown-info">
+            <h4 style="margin: 0 0 10px 0; color: #856404;">⚡ Required Action</h4>
+            <p style="margin: 0; font-weight: 600;">
+                Please follow up with this potential lead before the hour ends to ensure a quick response and improve
+                the conversion rate.
+            </p>
+        </div>
+
+        <div class="details-grid">
+            <div class="detail-item">
+                <span class="detail-icon">👤</span>
+                <div class="detail-label">Lead Contact</div>
+                <div class="detail-value">{{LEAD_NAME}}</div>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-icon">📧</span>
+                <div class="detail-label">Email</div>
+                <div class="detail-value">{{LEAD_EMAIL}}</div>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-icon">📱</span>
+                <div class="detail-label">Phone</div>
+                <div class="detail-value">{{LEAD_PHONE}}</div>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-icon">🏢</span>
+                <div class="detail-label">Project</div>
+                <div class="detail-value">{{LEAD_PROJECT}}</div>
+            </div>
+
+        </div>
+
+        <div class="action-section">
+            <h3 style="color: #2d3436; margin-bottom: 15px;">Follow-up Options 🎯</h3>
+            <div class="action-buttons">
+                <a class="action-button primary-button"
+                   href="{{CRM_LINK}}">
+                    📞 Contact Lead Now
+                </a>
+                <a class="action-button secondary-button"
+                   href="{{SCHEDULE_LINK}}">
+                    📅 Schedule Follow-up
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p style="margin-bottom: 15px;"><strong>RNB CRM</strong> 🏢</p>
+        <p style="margin-bottom: 15px;">
+            Cairo, Egypt
+        </p>
+        <p style="font-size: 12px; opacity: 0.8; margin-bottom: 15px;">
+            This is an automated reminder from your smart CRM system 🤖
+        </p>
+        <p style="font-size: 12px;">
+            <a href="{{PREFERENCES_LINK}}"
+               style="color: #74b9ff; text-decoration: none;">Manage notification preferences</a>
+        </p>
+    </div>
+</div>
+</body>
+
+
+</html>

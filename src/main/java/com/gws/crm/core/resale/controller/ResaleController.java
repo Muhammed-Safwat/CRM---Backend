@@ -92,5 +92,10 @@ public class ResaleController {
         return resaleService.assignSalesToLead(assignDTO, transition);
     }
 
+    @PutMapping("archive/{leadId}")
+    public ResponseEntity<?> toggleArchive(@PathVariable long leadId, Transition transition) {
+        return resaleService.toggleArchive(leadId, transition);
+    }
+
 
 }

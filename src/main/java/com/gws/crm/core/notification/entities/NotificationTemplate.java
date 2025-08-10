@@ -16,7 +16,7 @@ public class NotificationTemplate {
 
     private String language;
 
-    private String title ;
+    private String title;
 
-    private String body  ;
+    private String body;
 }

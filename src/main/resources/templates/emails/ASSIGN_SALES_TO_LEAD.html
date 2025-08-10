@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0"
+          name="viewport">
+    <title>Sales Assignment Notification</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #fafafb 0%, #e5e5e6 100%);
+            min-height: 100vh;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 30px 25px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .notification-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            padding: 30px 25px;
+        }
+
+        .assignment-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .assignment-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            opacity: 0.3;
+        }
+
+        .assignment-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            display: block;
+            position: relative;
+            z-index: 1;
+        }
+
+        .assignment-card h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .assignment-card p {
+            position: relative;
+            z-index: 1;
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .detail-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .detail-item::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            left: -75px;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, rgba(204, 210, 238, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+        }
+
+        .detail-item:hover {
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #666;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3436;
+        }
+
+        .detail-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            display: block;
+            color: #667eea;
+        }
+
+
+        .action-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(204, 210, 238, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 15px;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .action-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 14px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .action-button:hover::before {
+            left: 100%;
+        }
+
+        .action-button:hover {
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.6);
+        }
+
+
+        .footer {
+            background: #2d3436;
+            color: white;
+            padding: 25px;
+            text-align: center;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        @media (max-width: 600px) {
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="email-container">
+    <div class="header">
+        <div class="notification-badge">🎯 Sales Assignment</div>
+        <h1>New Lead Assignment</h1>
+    </div>
+
+    <div class="content">
+        <p style="font-size: 16px; color: #2d3436; margin-bottom: 10px;">
+            Congratulations <strong style="color: #667eea;">{{RECIPIENT_NAME}}</strong>! 🎉
+        </p>
+
+        <p style="font-size: 14px; color: #666; margin-bottom: 25px;">
+            A qualified lead has been assigned to you. Time to work your magic!
+        </p>
+
+        <div class="assignment-card">
+            <span class="assignment-icon">🚀</span>
+            <h2>New Lead Assignment</h2>
+            <p>You've been assigned a new sales opportunity with high potential for conversion.</p>
+        </div>
+
+        <div class="details-grid">
+            <div class="detail-item">
+                <span class="detail-icon">👤</span>
+                <div class="detail-label">Lead Contact</div>
+                <div class="detail-value">{{LEAD_NAME}}</div>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-icon">📧</span>
+                <div class="detail-label">Email</div>
+                <div class="detail-value">{{LEAD_EMAIL}}</div>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-icon">📱</span>
+                <div class="detail-label">Phone</div>
+                <div class="detail-value">{{LEAD_PHONE}}</div>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-icon">🏢</span>
+                <div class="detail-label">Project</div>
+                <div class="detail-value">{{LEAD_PROJECT}}</div>
+            </div>
+
+        </div>
+
+        <div class="action-section">
+            <h3 style="color: #2d3436; margin-bottom: 15px;">Ready to close the deal? 💪</h3>
+            <a class="action-button"
+               href="{{CRM_LINK}}">
+                📈 Start Sales Process
+            </a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p style="margin-bottom: 15px;"><strong>RNB CRM</strong> 🏢</p>
+        <p style="margin-bottom: 15px;">
+            Cairo, Egypt
+        </p>
+        <p style="font-size: 12px; opacity: 0.8; margin-bottom: 15px;">
+            This is an automated reminder from your smart CRM system 🤖
+        </p>
+        <p style="font-size: 12px;">
+            <a>Manage notification preferences</a>
+        </p>
+    </div>
+</div>
+</div>
+</body>
+
+</html>

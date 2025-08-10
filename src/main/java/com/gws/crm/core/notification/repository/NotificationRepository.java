@@ -17,9 +17,9 @@ public interface NotificationRepository extends JpaRepository<CrmNotification, L
 
     @Modifying
     @Transactional
-    int deleteByIdAndRecipientId(long notificationId,long recipientId);
+    int deleteByIdAndRecipientId(long notificationId, long recipientId);
 
-    int countByRecipientIdAndRead(Long userId,boolean read);
+    int countByRecipientIdAndRead(Long userId, boolean read);
 
     @Modifying
     @Transactional

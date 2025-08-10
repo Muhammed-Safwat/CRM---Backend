@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0"
+          name="viewport">
+    <title>New Lead Comment</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #e6e7e6 0%, #ebebeb 100%);
+            min-height: 100vh;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #36d1dc, #5b86e5);
+            padding: 30px 25px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .notification-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.25);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            padding: 30px 25px;
+        }
+
+        .comment-card {
+            background: linear-gradient(135deg, #36d1dc, #5b86e5);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(54, 209, 220, 0.3);
+        }
+
+        .comment-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            display: block;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .comment-card h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .comment-preview {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .comment-preview::before {
+            content: '"';
+            font-size: 48px;
+            color: rgba(255, 255, 255, 0.3);
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            font-family: serif;
+        }
+
+        .comment-text {
+            font-size: 16px;
+            line-height: 1.6;
+            margin: 15px 0 0 0;
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .comment-meta {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 25px 0;
+            border: 1px solid #36d1dc;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .meta-item {
+            text-align: center;
+        }
+
+        .meta-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .meta-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2d3436;
+        }
+
+        .meta-icon {
+            font-size: 20px;
+            margin-bottom: 8px;
+            display: block;
+            color: #36d1dc;
+        }
+
+        .action-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(54, 209, 220, 0.1), rgba(91, 134, 229, 0.1));
+            border-radius: 15px;
+            border: 2px solid rgba(54, 209, 220, 0.2);
+        }
+
+        .action-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #36d1dc, #5b86e5);
+            color: white;
+            padding: 14px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 8px 25px rgba(54, 209, 220, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .action-button:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .action-button:hover {
+            box-shadow: 0 12px 30px rgba(54, 209, 220, 0.6);
+        }
+
+        .context-info {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 25px 0;
+            border-left: 4px solid #2196f3;
+            color: #1565c0;
+        }
+
+        .footer {
+            background: #2d3436;
+            color: white;
+            padding: 25px;
+            text-align: center;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #36d1dc, #5b86e5);
+            background-size: 200% 100%;
+        }
+
+        @media (max-width: 600px) {
+
+            .details-grid,
+            .comment-meta {
+                grid-template-columns: 1fr;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="email-container">
+    <div class="header">
+        <div class="notification-badge">💬 New Comment</div>
+        <h1>Lead Comment Added</h1>
+    </div>
+
+    <div class="content">
+        <p style="font-size: 16px; color: #2d3436; margin-bottom: 10px;">
+            Hi <strong style="color: #36d1dc;">{{RECIPIENT_NAME}}</strong>! 👋
+        </p>
+
+        <p style="font-size: 14px; color: #666; margin-bottom: 25px;">
+            A new comment has been added to a lead that requires your attention.
+        </p>
+
+        <div class="comment-card">
+            <span class="comment-icon">💬</span>
+            <h2>New Lead Comment</h2>
+            <div class="comment-preview">
+                <p class="comment-text">{{COMMENT_TEXT}}</p>
+            </div>
+        </div>
+
+        <div class="comment-meta">
+            <div class="meta-item">
+                <span class="meta-icon">👤</span>
+                <div class="meta-label">Comment By</div>
+                <div class="meta-value">{{COMMENT_AUTHOR}}</div>
+            </div>
+
+            <div class="meta-item">
+                <span class="meta-icon">📅</span>
+                <div class="meta-label">Date & Time</div>
+                <div class="meta-value">{{COMMENT_DATE}}</div>
+            </div>
+        </div>
+
+        <div class="action-section">
+            <h3 style="color: #2d3436; margin-bottom: 15px;">View full conversation 💭</h3>
+            <a class="action-button"
+               href="{{CRM_LINK}}">
+                👁️ View Lead & Comments
+            </a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p style="margin-bottom: 15px;"><strong>RNB CRM</strong> 🏢</p>
+        <p style="margin-bottom: 15px;">
+            Cairo, Egypt
+        </p>
+        <p style="font-size: 12px; opacity: 0.8; margin-bottom: 15px;">
+            This is an automated reminder from your smart CRM system 🤖
+        </p>
+        <p style="font-size: 12px;">
+            <a>Manage notification preferences</a>
+        </p>
+    </div>
+</div>
+</body>
+
+</html>

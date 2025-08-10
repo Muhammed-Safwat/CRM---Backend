@@ -24,7 +24,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.gws.crm.common.handler.ApiResponseHandler.*;
+import static com.gws.crm.common.handler.ApiResponseHandler.success;
+import static com.gws.crm.common.handler.ApiResponseHandler.unauthorized;
 import static com.gws.crm.core.notification.enums.ClientType.fromString;
 
 @Service
@@ -39,16 +40,16 @@ public class NotificationServiceImp implements NotificationService {
 
     @Override
     public ResponseEntity<?> registerToken(RegistrationTokenReq registrationTokenReq, Transition transition) {
-       if(transition.getUserId()==null){
-           return unauthorized("Authentication Error");
-           }
+        if (transition.getUserId() == null) {
+            return unauthorized("Authentication Error");
+        }
         boolean isExists = notificationTokenRepository
                 .existsByTokenAndUserId(registrationTokenReq.getToken(), transition.getUserId());
         if (isExists) {
             return success();
         }
 
-        NotificationToken notificationToken =  NotificationToken.builder()
+        NotificationToken notificationToken = NotificationToken.builder()
                 .token(registrationTokenReq.getToken())
                 .user(userRepository.findById(transition.getUserId())
                         .orElseThrow(NotFoundResourceException::new))
@@ -64,15 +65,15 @@ public class NotificationServiceImp implements NotificationService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<CrmNotification> notificationsPage = notificationRepository.findAllByRecipientId(transition.getUserId(),
                 pageable);
-        Page<NotificationDTO> notificationDTOSPage  =  NotificationMapper.toDto(notificationsPage);
+        Page<NotificationDTO> notificationDTOSPage = NotificationMapper.toDto(notificationsPage);
         return success(notificationDTOSPage);
     }
 
     @Override
     public ResponseEntity<?> countClientNotification(Transition transition) {
-        int count = notificationRepository.countByRecipientIdAndRead(transition.getUserId(),false);
-        Map<String,Integer> notificationCountMap = new HashMap<>();
-        notificationCountMap.put("count",count);
+        int count = notificationRepository.countByRecipientIdAndRead(transition.getUserId(), false);
+        Map<String, Integer> notificationCountMap = new HashMap<>();
+        notificationCountMap.put("count", count);
         return success(notificationCountMap);
     }
 
@@ -88,15 +89,15 @@ public class NotificationServiceImp implements NotificationService {
     }
 
     @Override
-    public  ResponseEntity<?> markAsRead(long notificationId, Transition transition) {
-        int count = notificationRepository.markAsReadByIdAndRecipientId(notificationId,transition.getUserId());
+    public ResponseEntity<?> markAsRead(long notificationId, Transition transition) {
+        int count = notificationRepository.markAsReadByIdAndRecipientId(notificationId, transition.getUserId());
         return success();
     }
 
     @Override
     public ResponseEntity<?> deleteNotification(long notificationId, Transition transition) {
-        int count =  notificationRepository.deleteByIdAndRecipientId(notificationId, transition.getUserId());
-        log.info("========== {}",count);
+        int count = notificationRepository.deleteByIdAndRecipientId(notificationId, transition.getUserId());
+        log.info("========== {}", count);
         return success();
     }
 
