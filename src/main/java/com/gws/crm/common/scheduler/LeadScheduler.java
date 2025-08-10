@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class LeadScheduler {
 
     private final LeadMonitoringService leadMonitoringService;
-
+/*
    @Scheduled(fixedRate = 60000) // 1min
     public void scheduleCheckDelayedLeads() {
         leadMonitoringService.checkAndUpdateDelayedLeads();
@@ -21,7 +21,7 @@ public class LeadScheduler {
     public void scheduleCheckLeadsNearingDelay() {
         leadMonitoringService.checkAndNotifyLeadsNearingDelay();
     }
-
+*/
 
 
 }
