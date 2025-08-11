@@ -1,13 +1,12 @@
 package com.gws.crm.core.admin.entity;
 
 
+import com.gws.crm.authentication.entity.Company;
 import com.gws.crm.authentication.entity.User;
 import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.leads.entity.BaseLead;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
+import com.gws.crm.core.lookups.entity.DevCompany;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,5 +36,8 @@ public class Admin extends User {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BaseLead> leads;
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "company_id")
+    private Company company;
 
 }

@@ -35,5 +35,20 @@ public class AdminRegistrationDto {
     @Min(value = 1, message = "Number of users should be greater than 1")
     private int numberOfUsers;
 
+    // ====== Company Info ======
+    private String companyAddress;
 
+    private String companyDescription;
+
+    @Email(message = "Company email should be valid")
+    private String companyEmail;
+
+    private String companyLogoUrl;
+
+    @NotBlank(message = "Company name is required")
+    private String companyName;
+
+    private String companyPhone;
+
+    private String companyWebsite;
 }

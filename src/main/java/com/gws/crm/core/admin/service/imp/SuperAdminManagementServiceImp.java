@@ -2,6 +2,7 @@ package com.gws.crm.core.admin.service.imp;
 
 import com.gws.crm.authentication.constants.RoleName;
 import com.gws.crm.authentication.dto.AdminRegistrationDto;
+import com.gws.crm.authentication.entity.Company;
 import com.gws.crm.authentication.entity.Role;
 import com.gws.crm.authentication.repository.RoleRepository;
 import com.gws.crm.authentication.repository.UserRepository;
@@ -89,6 +90,14 @@ public class SuperAdminManagementServiceImp implements SuperAdminManagementServi
         Role adminRole = roleRepository.findByName(RoleName.ADMIN.toString());
         Set<Role> roles = new HashSet<>();
         roles.add(adminRole);
+        Company company = Company.builder()
+                .email(adminRegistrationDto.getCompanyEmail())
+                .address(adminRegistrationDto.getCompanyEmail())
+                .logoUrl(adminRegistrationDto.getCompanyLogoUrl())
+                .website(adminRegistrationDto.getCompanyWebsite())
+                .name(adminRegistrationDto.getCompanyName())
+                .phone(adminRegistrationDto.getCompanyPhone())
+                .build();
         return Admin.builder()
                 .maxNumberOfUsers(adminRegistrationDto.getNumberOfUsers())
                 .name(adminRegistrationDto.getName())
@@ -103,6 +112,7 @@ public class SuperAdminManagementServiceImp implements SuperAdminManagementServi
                 .username(adminRegistrationDto.getUsername())
                 .password(passwordEncoder.encode(adminRegistrationDto.getPassword()))
                 .phone(adminRegistrationDto.getPhone())
+                .company(company)
                 .build();
     }
 
