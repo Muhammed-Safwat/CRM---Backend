@@ -194,7 +194,6 @@
         </dependency>
     </dependencies>
     <build>
-    
         <finalName>CRM</finalName>
         <plugins>
             <!--plugin>
