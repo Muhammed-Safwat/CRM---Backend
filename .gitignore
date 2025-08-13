@@ -33,3 +33,4 @@ build/
 .vscode/
 src/main/resources/crm-system-41d91-firebase-adminsdk-it7d6-45504e96d7.json
 /src/main/resources/scripts/node_modules/
+/bin/
