@@ -48,7 +48,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(Arrays.asList("http://localhost:4200",
-                "http://localhost:8080", "https://www.rnbinvesment.com", "www.rnbinvesment.com", "https://rnbinvesment.com"));
+                "http://localhost:8080", "https://www.estshir.com", "https://estshir.com", "https://www.rnbinvesment.com", "www.rnbinvesment.com", "https://rnbinvesment.com"));
         config.setAllowCredentials(true);
         config.setExposedHeaders(List.of("*"));
         config.setAllowedMethods(List.of("*"));
