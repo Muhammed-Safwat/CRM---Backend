@@ -13,7 +13,7 @@ public interface SuperAdminManagementService {
 
     ResponseEntity<?> deleteAdmin(long id, Transition transition);
 
-    ResponseEntity<?> editAdmin(@Valid AdminRegistrationDto adminRegistrationDto, Transition transition);
+    ResponseEntity<?> editAdmin(@Valid AdminRegistrationDto adminRegistrationDto, Transition transition) throws Exception;
 
     ResponseEntity<?> toggleAdminLockStatus(long adminId, Transition transition);
 

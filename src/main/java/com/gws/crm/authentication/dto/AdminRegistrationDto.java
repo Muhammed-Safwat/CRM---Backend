@@ -43,7 +43,8 @@ public class AdminRegistrationDto {
     @Email(message = "Company email should be valid")
     private String companyEmail;
 
-    private String companyLogoUrl;
+    @NotNull
+    private String companyLogo;
 
     @NotBlank(message = "Company name is required")
     private String companyName;

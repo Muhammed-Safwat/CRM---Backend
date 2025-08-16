@@ -84,7 +84,7 @@ public class SecurityConfig {
                                         "/swagger-ui/**")
                                 .permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/lookups/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/employees/**").hasAnyRole("ADMIN", "USER")
+                                .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()                                .requestMatchers(HttpMethod.GET, "/api/employees/**").hasAnyRole("ADMIN", "USER")
                                 .requestMatchers("/api/super-admin/admins/**").hasRole("SUPER_ADMIN")
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/api/employees/**").hasRole("ADMIN")

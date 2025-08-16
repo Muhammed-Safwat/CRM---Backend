@@ -22,6 +22,7 @@ public class CompanyController {
     public ResponseEntity<?> updateCompany(@RequestBody CompanyDTO company, Transition transition) {
         return companyService.updateCompany(company,transition);
     }
+
     @GetMapping()
     public ResponseEntity<?> getCompany(Transition transition) {
         return companyService.getCompany(transition) ;

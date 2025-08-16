@@ -42,7 +42,7 @@ public class SuperAdminManagementController {
 
     @PutMapping
     public ResponseEntity<?> editAdmin(@Valid @RequestBody AdminRegistrationDto adminRegistrationDto,
-                                       Transition transition) {
+                                       Transition transition) throws Exception {
 
         return superAdminManagementService.editAdmin(adminRegistrationDto, transition);
     }

@@ -25,6 +25,7 @@ public class SalesLeadSpecification<T extends SalesLead> {
         }
         ids.add(transition.getUserId());
         if (salesLeadCriteria != null) {
+            specs.add(getOnlyForAdmin(transition));
             specs.add(orderByCreatedOrUpdated());
             specs.add(fullTextSearch(salesLeadCriteria.getKeyword()));
             specs.add(filterByStatus(salesLeadCriteria.getStatus()));
@@ -54,6 +55,23 @@ public class SalesLeadSpecification<T extends SalesLead> {
         }
 
         return Specification.allOf(specs);
+    }
+
+    public static <T extends SalesLead> Specification<T> getOnlyForAdmin(Transition transition){
+        return (root, query, criteriaBuilder) -> {
+            Predicate predicate = criteriaBuilder.conjunction();
+            if (transition.getRole().equals("USER")) {
+
+                predicate = criteriaBuilder.and(predicate,
+                        criteriaBuilder.equal(root.get("salesRep").get("id"), transition.getUserId())
+                );
+            } else if (transition.getRole().equals("ADMIN")) {
+                predicate = criteriaBuilder.and(predicate,
+                        criteriaBuilder.equal(root.get("admin").get("id"), transition.getUserId())
+                );
+            }
+            return predicate;
+        };
     }
 
     public static <T extends SalesLead> Specification<T> orderByCreatedOrUpdated() {

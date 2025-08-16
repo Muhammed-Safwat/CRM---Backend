@@ -7,7 +7,6 @@ import com.gws.crm.authentication.repository.CompanyRepository;
 import com.gws.crm.authentication.service.CompanyService;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
-import io.netty.util.ResourceLeakException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,7 @@ public class CompanyServiceImp implements CompanyService {
         Company existing = companyRepository.findById(companyDTO.getId())
                 .orElseThrow(() -> new RuntimeException("Company not found"));
         existing.setName(companyDTO.getName());
-        existing.setLogoUrl(companyDTO.getLogoUrl());
+       // existing.setLogoUrl(companyDTO.getLogoUrl());
         existing.setEmail(companyDTO.getEmail());
         existing.setPhone(companyDTO.getPhone());
         existing.setWebsite(companyDTO.getWebsite());

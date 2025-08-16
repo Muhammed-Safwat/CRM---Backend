@@ -1,5 +1,6 @@
 package com.gws.crm.core.admin.dto;
 
+import com.gws.crm.authentication.dto.CompanyDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,5 +32,5 @@ public class AdminBasicsInfo {
 
     private int maxNumberOfUsers;
 
-
+    private CompanyDTO companyDTO;
 }
