@@ -4,7 +4,7 @@ import com.gws.crm.authentication.entity.User;
 import com.gws.crm.authentication.repository.UserRepository;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
-import com.gws.crm.core.admin.entity.Admin;
+import com.gws.crm.core.employee.entity.Admin;
 import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.leads.dto.AddLeadDTO;

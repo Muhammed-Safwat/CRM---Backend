@@ -1,7 +1,7 @@
 package com.gws.crm.core.lookups.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.gws.crm.core.admin.entity.Admin;
+import com.gws.crm.core.employee.entity.Admin;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

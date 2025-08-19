@@ -21,7 +21,6 @@ public class CommentMapper {
                 .comment(comment.getComment())
                 .name(comment.getUser().getName())
                 .image(comment.getUser().getImage())
-                //.jobTile(comment.getEmployee().getJobName().getJobName())
                 .createdAt(comment.getCreatedAt())
                 .replies(replyMapper.toDto(comment.getReplies()))
                 .build();

@@ -1,10 +1,12 @@
 package com.gws.crm.authentication.utils;
 
+import com.gws.crm.authentication.dto.UserDetailsDTO;
 import com.gws.crm.authentication.entity.Role;
 import com.gws.crm.authentication.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.jwt.JwtValidationException;
@@ -17,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
+@Slf4j
 @Service
 public class JwtTokenService {
 
@@ -33,6 +36,14 @@ public class JwtTokenService {
     }
 
     public String generateAccessToken(User user) {
+        return generateToken(user, generateExtraClaims(user), accessExpirationTime);
+    }
+
+    public String generateRefreshToken(UserDetailsDTO user) {
+        return generateToken(user, generateExtraClaims(user), refreshExpirationTime);
+    }
+
+    public String generateAccessToken(UserDetailsDTO user) {
         return generateToken(user, generateExtraClaims(user), accessExpirationTime);
     }
 
@@ -55,8 +66,17 @@ public class JwtTokenService {
         }
     }
 
-
     private Map<String, Object> generateExtraClaims(User user) {
+        String roleName = user.getRoles().stream()
+                .map(Role::getName)
+                .filter(ALLOWED_ROLES::contains)
+                .findFirst()
+                .orElse("USER");
+
+        return Map.of("authority", user.getMainRoles(), "role", roleName);
+    }
+
+    private Map<String, Object> generateExtraClaims(UserDetailsDTO user) {
         String roleName = user.getRoles().stream()
                 .map(Role::getName)
                 .filter(ALLOWED_ROLES::contains)
@@ -103,6 +123,18 @@ public class JwtTokenService {
                 .compact();
     }
 
+    private String generateToken(UserDetailsDTO user, Map<String, Object> extraClaims, int expirationTime) {
+        return Jwts.builder()
+                .setClaims(extraClaims)
+                .setId(String.valueOf(user.getId()))
+                .setIssuer(user.getName())
+                .setSubject(user.getUsername())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
@@ -110,9 +142,18 @@ public class JwtTokenService {
 
     public boolean isTokenExpired(String token) {
         try {
-            return extractClaim(token, Claims::getExpiration).before(new Date());
-        } catch (JwtException | IllegalArgumentException e) {
-            return true;
+            Date expirationDate = extractClaim(token, Claims::getExpiration);
+            Date now = new Date();
+
+            log.info("Checking token expiration:");
+            log.info("  Expiration time: {}", expirationDate);
+            log.info("  Current time: {}", now);
+            log.info("  Is expired: {}", expirationDate.before(now));
+
+            return expirationDate.before(now);
+        } catch (Exception e) {
+            log.error("Error checking token expiration: {}", e.getMessage());
+            return true; // في حالة خطأ، اعتبر الـ token expired
         }
     }
 

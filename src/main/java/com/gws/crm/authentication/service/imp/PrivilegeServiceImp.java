@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -81,7 +82,7 @@ public class PrivilegeServiceImp implements PrivilegeService {
     public ResponseEntity<?> getGroupDetails(long id, Transition transition) {
         PrivilegeGroup privilegeGroup = privilegeGroupRepository.findById(id)
                 .orElseThrow(NotFoundResourceException::new);
-        List<Employee> employees = employeeRepository.getEmployeesByPrivilegeGroupId(id);
+        Set<Employee> employees = employeeRepository.getEmployeesByPrivilegeGroupId(id);
         List<EmployeeSimpleDTO> employeeSimpleDTOS = employeeMapper.toListSimpleDto(employees);
         PrivilegeGroupDetailsRes privRes = privilegeGroupMapper.toDto(privilegeGroup, employeeSimpleDTOS);
         return success(privRes);

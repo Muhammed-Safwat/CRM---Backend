@@ -1,8 +1,8 @@
 package com.gws.crm.common.utils;
 
 
-import com.gws.crm.authentication.properites.AppInfo;
 import com.gws.crm.common.constant.Language;
+import com.gws.crm.common.properites.AppInfo;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

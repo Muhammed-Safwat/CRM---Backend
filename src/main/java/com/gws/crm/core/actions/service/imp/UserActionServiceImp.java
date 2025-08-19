@@ -33,7 +33,7 @@ public class UserActionServiceImp implements UserActionService {
     public ResponseEntity<?> getActions(long userId, int page, int size, Transition transition) {
         boolean isSubordinate = employeeRepository.isSubordinate(userId, transition.getUserId()) > 0;
 
-        log.info("{} ================ " + transition.getRole().toString());
+        log.info("{} ================ " + transition.getRole());
         if (!transition.getRole().equals("ADMIN") && !isSubordinate) return badRequest();
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<UserAction> actions = userActionRepository.findAllByCreatorId(userId, pageable);

@@ -2,7 +2,6 @@ package com.gws.crm.common.scheduler;
 
 import com.gws.crm.core.leads.service.imp.LeadMonitoringService;
 import lombok.AllArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component

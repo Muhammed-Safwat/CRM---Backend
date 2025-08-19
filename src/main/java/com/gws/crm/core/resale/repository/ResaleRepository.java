@@ -29,4 +29,26 @@ public interface ResaleRepository extends JpaRepository<Resale, Long>, JpaSpecif
     @Query("UPDATE Resale r SET r.archive = :archived WHERE r.id = :resaleId")
     void toggleArchive(long resaleId, boolean archived);
 
+
+/*
+    @Query("SELECT r FROM Resale r " +
+            "LEFT JOIN FETCH r.status " +
+            "LEFT JOIN FETCH r.type " +
+            "LEFT JOIN FETCH r.project p " +
+            "LEFT JOIN FETCH p.category " +
+            "LEFT JOIN FETCH r.creator " +
+            "LEFT JOIN FETCH r.salesRep sr " +
+            "WHERE r.id = :id")
+
+    @EntityGraph(attributePaths = {
+            "status",
+            "type",
+            "project.category",
+            "creator",
+            "salesRep"
+    })
+    @Query("SELECT r FROM Resale r WHERE r.id = :id")
+    Optional<Resale> findByIdWithAllRelations(@Param("id") Long id);
+
+ */
 }

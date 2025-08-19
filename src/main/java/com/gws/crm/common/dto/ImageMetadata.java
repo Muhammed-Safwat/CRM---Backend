@@ -18,20 +18,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ImageMetadata {
+    private static final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule());
     private String originalFileName;
     private String contentType;
     private Long fileSize;
     private LocalDateTime uploadedAt;
     private String uploadedBy;
-
-    private static final ObjectMapper objectMapper = new ObjectMapper()
-            .registerModule(new JavaTimeModule());
-
-
-    // Methods to save/load metadata
-    public void saveToFile(String metadataFilePath) throws IOException {
-        objectMapper.writeValue(new File(metadataFilePath), this);
-    }
 
     public static ImageMetadata loadFromFile(String metadataFilePath) throws IOException {
         File file = new File(metadataFilePath);
@@ -39,5 +32,10 @@ public class ImageMetadata {
             return null;
         }
         return objectMapper.readValue(file, ImageMetadata.class);
+    }
+
+    // Methods to save/load metadata
+    public void saveToFile(String metadataFilePath) throws IOException {
+        objectMapper.writeValue(new File(metadataFilePath), this);
     }
 }

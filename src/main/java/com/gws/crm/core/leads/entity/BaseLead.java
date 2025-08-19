@@ -2,7 +2,7 @@ package com.gws.crm.core.leads.entity;
 
 import com.gws.crm.authentication.entity.User;
 import com.gws.crm.core.actions.entity.UserAction;
-import com.gws.crm.core.admin.entity.Admin;
+import com.gws.crm.core.employee.entity.Admin;
 import com.gws.crm.core.lookups.entity.Channel;
 import com.gws.crm.core.lookups.entity.Project;
 import jakarta.persistence.*;

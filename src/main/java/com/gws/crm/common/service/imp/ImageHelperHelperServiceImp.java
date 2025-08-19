@@ -25,18 +25,15 @@ import java.util.UUID;
 @Slf4j
 public class ImageHelperHelperServiceImp implements ImageHelperService {
 
+    private final String[] allowedExtensions = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"};
+    private final String[] allowedMimeTypes = {"image/jpeg", "image/jpg", "image/png", "image/svg+xml", "image/gif",
+            "image/webp"};
     @Value("${app.image.upload-path:uploads/images}")
     private String uploadPath;
-
     @Value("${app.image.base-url:http://localhost:8080}")
     private String baseUrl;
-
     @Value("${app.image.max-file-size:5242880}") // 5MB default
     private Long maxFileSize;
-
-    private final String[] allowedExtensions = {".jpg", ".jpeg", ".png", ".gif", ".webp",".svg"};
-    private final String[] allowedMimeTypes = {"image/jpeg", "image/jpg", "image/png","image/svg+xml", "image/gif",
-            "image/webp"};
 
     public String uploadImage(ImageUploadRequest request, Transition transition) throws Exception {
         try {
@@ -64,7 +61,7 @@ public class ImageHelperHelperServiceImp implements ImageHelperService {
             Path metadataPath = uploadDir.resolve(metadataFileName);
 
             ImageMetadata metadata = new ImageMetadata(
-                     imageId,
+                    imageId,
                     imageData.getContentType(),
                     (long) imageData.getData().length,
                     LocalDateTime.now(),
@@ -154,6 +151,7 @@ public class ImageHelperHelperServiceImp implements ImageHelperService {
     public String extractImageIdFromUrl(String imageUrl) {
         return Paths.get(URI.create(imageUrl).getPath()).getFileName().toString();
     }
+
     // Check if image exists
     public boolean imageExists(String imageId) {
         Path imagePath = Paths.get(uploadPath, imageId);
@@ -215,21 +213,22 @@ public class ImageHelperHelperServiceImp implements ImageHelperService {
 
         // Check for common image file signatures
         // JPEG: FF D8 FF
-        if (data[0] == (byte)0xFF && data[1] == (byte)0xD8 && data[2] == (byte)0xFF) return true;
+        if (data[0] == (byte) 0xFF && data[1] == (byte) 0xD8 && data[2] == (byte) 0xFF) return true;
 
         // PNG: 89 50 4E 47
-        if (data[0] == (byte)0x89 && data[1] == (byte)0x50 && data[2] == (byte)0x4E && data[3] == (byte)0x47) return true;
+        if (data[0] == (byte) 0x89 && data[1] == (byte) 0x50 && data[2] == (byte) 0x4E && data[3] == (byte) 0x47)
+            return true;
 
         // GIF: 47 49 46 38
-        if (data[0] == (byte)0x47 && data[1] == (byte)0x49 && data[2] == (byte)0x46 && data[3] == (byte)0x38) return true;
+        if (data[0] == (byte) 0x47 && data[1] == (byte) 0x49 && data[2] == (byte) 0x46 && data[3] == (byte) 0x38)
+            return true;
 
         // WebP: 52 49 46 46 (RIFF)
-        if (data[0] == (byte)0x52 && data[1] == (byte)0x49 && data[2] == (byte)0x46 && data[3] == (byte)0x46) return true;
+        if (data[0] == (byte) 0x52 && data[1] == (byte) 0x49 && data[2] == (byte) 0x46 && data[3] == (byte) 0x46)
+            return true;
 
         String fileStart = new String(data, 0, Math.min(data.length, 100)).toLowerCase();
-        if (fileStart.contains("<svg") || fileStart.contains("<?xml")) return true;
-
-        return false;
+        return fileStart.contains("<svg") || fileStart.contains("<?xml");
     }
 
     private String generateSecureFileName(String originalFileName, String contentType) {

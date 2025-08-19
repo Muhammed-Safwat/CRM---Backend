@@ -43,16 +43,22 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("http://localhost:4200",
-                "http://localhost:8080", "https://www.estshir.com", "https://estshir.com", "https://www.rnbinvesment.com", "www.rnbinvesment.com", "https://rnbinvesment.com"));
+        config.setAllowedOrigins(Arrays.asList(
+                "http://localhost:4200",
+                "http://localhost:8080",
+                "https://www.estshir.com",
+                "https://estshir.com",
+                "https://www.rnbinvesment.com",
+                "https://rnbinvesment.com"
+        ));
         config.setAllowCredentials(true);
         config.setExposedHeaders(List.of("*"));
-        config.setAllowedMethods(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
@@ -84,7 +90,7 @@ public class SecurityConfig {
                                         "/swagger-ui/**")
                                 .permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/lookups/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()                                .requestMatchers(HttpMethod.GET, "/api/employees/**").hasAnyRole("ADMIN", "USER")
+                                .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll().requestMatchers(HttpMethod.GET, "/api/employees/**").hasAnyRole("ADMIN", "USER")
                                 .requestMatchers("/api/super-admin/admins/**").hasRole("SUPER_ADMIN")
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/api/employees/**").hasRole("ADMIN")

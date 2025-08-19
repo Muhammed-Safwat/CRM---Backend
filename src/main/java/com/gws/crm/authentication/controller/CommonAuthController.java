@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import static com.gws.crm.common.utils.CountryCodeMapper.getRegionCode;
 
 @RestController
-@RequestMapping("auth")
+@RequestMapping("/auth")
 @AllArgsConstructor
 @Slf4j
 public class CommonAuthController {

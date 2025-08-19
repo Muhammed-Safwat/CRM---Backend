@@ -40,7 +40,7 @@ public class EmailPlaceholdersFactoryImp implements EmailPlaceholdersFactory {
         BaseLead lead = baseLeadRepository.findById(notification.getReferenceId())
                 .orElseThrow(NotFoundResourceException::new);
         AssignSalesTemplateData assignSalesTemplateData = new AssignSalesTemplateData();
-        setBasicInfo(notification,lead,assignSalesTemplateData);
+        setBasicInfo(notification, lead, assignSalesTemplateData);
         assignSalesTemplateData.setCrmLink("");
         return assignSalesTemplateData;
     }
@@ -49,7 +49,7 @@ public class EmailPlaceholdersFactoryImp implements EmailPlaceholdersFactory {
         BaseLead lead = baseLeadRepository.findById(notification.getReferenceId())
                 .orElseThrow(NotFoundResourceException::new);
         LeadReturnedTemplateData leadReturnedTemplateData = new LeadReturnedTemplateData();
-        setBasicInfo(notification,lead,leadReturnedTemplateData);
+        setBasicInfo(notification, lead, leadReturnedTemplateData);
         leadReturnedTemplateData.setCrmLink("");
         return leadReturnedTemplateData;
     }
@@ -58,7 +58,7 @@ public class EmailPlaceholdersFactoryImp implements EmailPlaceholdersFactory {
         BaseLead lead = baseLeadRepository.findById(notification.getReferenceId())
                 .orElseThrow(NotFoundResourceException::new);
         LeadCommentTemplateData leadCommentTemplateData = new LeadCommentTemplateData();
-        setBasicInfo(notification,lead,leadCommentTemplateData);
+        setBasicInfo(notification, lead, leadCommentTemplateData);
         leadCommentTemplateData.setCrmLink("");
         return leadCommentTemplateData;
     }
@@ -67,7 +67,7 @@ public class EmailPlaceholdersFactoryImp implements EmailPlaceholdersFactory {
         BaseLead lead = baseLeadRepository.findById(notification.getReferenceId())
                 .orElseThrow(NotFoundResourceException::new);
         LeadDelayedTemplateData leadDelayedTemplateData = new LeadDelayedTemplateData();
-        setBasicInfo(notification,lead,leadDelayedTemplateData);
+        setBasicInfo(notification, lead, leadDelayedTemplateData);
         leadDelayedTemplateData.setCrmLink("");
         return leadDelayedTemplateData;
     }
@@ -76,7 +76,7 @@ public class EmailPlaceholdersFactoryImp implements EmailPlaceholdersFactory {
         BaseLead lead = baseLeadRepository.findById(notification.getReferenceId())
                 .orElseThrow(NotFoundResourceException::new);
         LeadTransferTemplateData leadTransferTemplateData = new LeadTransferTemplateData();
-        setBasicInfo(notification,lead,leadTransferTemplateData);
+        setBasicInfo(notification, lead, leadTransferTemplateData);
         leadTransferTemplateData.setCrmLink("");
         return leadTransferTemplateData;
     }
@@ -85,20 +85,20 @@ public class EmailPlaceholdersFactoryImp implements EmailPlaceholdersFactory {
         BaseLead lead = baseLeadRepository.findById(notification.getReferenceId())
                 .orElseThrow(NotFoundResourceException::new);
         LeadDelayRememberTemplateData leadDelayRememberTemplateData = new LeadDelayRememberTemplateData();
-        setBasicInfo(notification,lead,leadDelayRememberTemplateData);
+        setBasicInfo(notification, lead, leadDelayRememberTemplateData);
         leadDelayRememberTemplateData.setCrmLink("");
         return leadDelayRememberTemplateData;
     }
 
-    private void setBasicInfo(CrmNotification notification,BaseLead lead,BaseTemplateData baseTemplateData){
+    private void setBasicInfo(CrmNotification notification, BaseLead lead, BaseTemplateData baseTemplateData) {
         baseTemplateData.setLeadName(lead.getName());
         baseTemplateData.setLeadEmail(lead.getEmail());
         baseTemplateData.setLeadPhone(lead.getPhoneNumbers() == null ? "" :
-                                lead.getPhoneNumbers().stream().map(PhoneNumber::getNumber).collect(Collectors.joining(", ")));
+                lead.getPhoneNumbers().stream().map(PhoneNumber::getNumber).collect(Collectors.joining(", ")));
         baseTemplateData.setLeadProject(lead.getProject().getName());
-        baseTemplateData.setRecipientName(notification.getRecipientName()) ;
+        baseTemplateData.setRecipientName(notification.getRecipientName());
         baseTemplateData.setCompanyName("");
-        baseTemplateData.setCompanyAddress("") ;
+        baseTemplateData.setCompanyAddress("");
     }
 
 
