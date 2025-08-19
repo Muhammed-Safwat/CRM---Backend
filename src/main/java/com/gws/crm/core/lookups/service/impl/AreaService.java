@@ -1,7 +1,7 @@
 package com.gws.crm.core.lookups.service.impl;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.admin.repository.AdminRepository;
+import com.gws.crm.core.employee.repository.AdminRepository;
 import com.gws.crm.core.lookups.dto.AreaDTO;
 import com.gws.crm.core.lookups.dto.LookupDTO;
 import com.gws.crm.core.lookups.entity.Area;

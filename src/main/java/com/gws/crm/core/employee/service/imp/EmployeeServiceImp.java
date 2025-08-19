@@ -9,11 +9,11 @@ import com.gws.crm.authentication.repository.RoleRepository;
 import com.gws.crm.authentication.repository.UserRepository;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
-import com.gws.crm.core.admin.entity.Admin;
-import com.gws.crm.core.admin.repository.AdminRepository;
 import com.gws.crm.core.employee.dto.*;
+import com.gws.crm.core.employee.entity.Admin;
 import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.employee.mapper.EmployeeMapper;
+import com.gws.crm.core.employee.repository.AdminRepository;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.employee.service.EmployeeService;
 import com.gws.crm.core.employee.spcification.EmployeeSpecification;
@@ -83,12 +83,26 @@ public class EmployeeServiceImp implements EmployeeService {
         roles.add(role);
         roles.add(jobNameRole);
         Employee employee =
-                Employee.builder().name(employeeDto.getName()).privilegeGroup(jobName).admin(admin).username(employeeDto.getEmail()).phone(employeeDto.getPhone()).password(passwordEncoder.encode(employeeDto.getPassword())).jobName(jobName.getJobName()).createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).enabled(true).locked(false).accountNonExpired(admin.getAccountNonExpired()).credentialsNonExpired(admin.getCredentialsNonExpired()).roles(roles).privileges(privileges).subordinates(new ArrayList<>()).build();
+                Employee.builder()
+                        .name(employeeDto.getName())
+                        .privilegeGroup(jobName)
+                        .admin(admin)
+                        .username(employeeDto.getEmail())
+                        .phone(employeeDto.getPhone())
+                        .password(passwordEncoder.encode(employeeDto.getPassword()))
+                        .jobName(jobName.getJobName())
+                        .createdAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now())
+                        .enabled(true).locked(false)
+                        .accountNonExpired(admin.getAccountNonExpired())
+                        .credentialsNonExpired(admin.getCredentialsNonExpired()
+                        ).roles(roles)
+                        .privileges(privileges).subordinates(new HashSet<>()).build();
         admin.getEmployees().add(employee);
         log.info("********************* 5555555 **********************");
         log.info("********* 444 *************" + employeeDto.getTeamIds());
         if (!employeeDto.getTeamIds().isEmpty()) {
-            List<Employee> subordinates = employeeRepository.findAllById(employeeDto.getTeamIds());
+            Set<Employee> subordinates = employeeRepository.findAllEmpById(employeeDto.getTeamIds());
             employee.setSubordinates(subordinates);
         }
         adminRepository.save(admin);
@@ -99,7 +113,7 @@ public class EmployeeServiceImp implements EmployeeService {
     @Override
     public ResponseEntity<?> getAllEmployee(Transition transition) {
         long adminId = transition.getUserId();
-        List<Employee> employees = employeeRepository.findAllByAdminId(adminId);
+        Set<Employee> employees = employeeRepository.findAllByAdminId(adminId);
         List<EmployeeSimpleDTO> employeeInfoResponseList = employeeMapper.toListSimpleDto(employees);
         return success(employeeInfoResponseList);
     }
@@ -135,7 +149,7 @@ public class EmployeeServiceImp implements EmployeeService {
         log.info("*******************************************");
         log.info("**********************" + employeeDto.getTeamIds());
         if (!employeeDto.getTeamIds().isEmpty()) {
-            List<Employee> subordinates = employeeRepository.findAllById(employeeDto.getTeamIds());
+            Set<Employee> subordinates = employeeRepository.findAllEmpById(employeeDto.getTeamIds());
             employee.setSubordinates(subordinates);
         }
         employeeRepository.save(employee);
@@ -169,7 +183,7 @@ public class EmployeeServiceImp implements EmployeeService {
 
     @Override
     public ResponseEntity<?> getEmployee(long employeeId, Transition transition) {
-        Employee employee = employeeRepository.getByIdAndAdminId(employeeId, transition.getUserId()).orElseThrow(NotFoundResourceException::new);
+        Employee employee = employeeRepository.getByIdAndAdminIdWithRelations(employeeId, transition.getUserId()).orElseThrow(NotFoundResourceException::new);
         EmployeeInfoResponse employeeResponse = employeeMapper.toDto(employee);
         return success(employeeResponse);
     }
@@ -179,8 +193,8 @@ public class EmployeeServiceImp implements EmployeeService {
         Specification<Employee> spec = EmployeeSpecification.filter(employeeCriteria, transition);
         Pageable pageable = PageRequest.of(employeeCriteria.getPage(), employeeCriteria.getSize());
         Page<Employee> employees = employeeRepository.findAll(spec, pageable);
-        List<EmployeeInfoResponse> employeeInfoResponseList = employeeMapper.toListDto(employees.getContent());
-        Page<EmployeeInfoResponse> employeeInfoResponsesPage = new PageImpl<>(employeeInfoResponseList, pageable, employees.getTotalElements());
+        List<EmployeeResponse> employeeInfoResponseList = employeeMapper.toEmployeeResponseList(employees.getContent());
+        Page<EmployeeResponse> employeeInfoResponsesPage = new PageImpl<>(employeeInfoResponseList, pageable, employees.getTotalElements());
         return success(employeeInfoResponsesPage);
     }
 
@@ -195,7 +209,7 @@ public class EmployeeServiceImp implements EmployeeService {
     public ResponseEntity<?> getAllEmployeeType(List<String> types, Transition transition) {
         long adminId = transition.getUserId();
 
-        List<Employee> employees = employeeRepository.findAllByAdminIdAndJobNameIn(adminId, types);
+        Set<Employee> employees = employeeRepository.findAllByAdminIdAndJobNameIn(adminId, types);
 
         List<EmployeeSimpleDTO> employeeInfoResponseList = employeeMapper.toListSimpleDto(employees);
 
@@ -205,15 +219,15 @@ public class EmployeeServiceImp implements EmployeeService {
     @Override
     public ResponseEntity<?> getSubEmployee(Transition transition) {
         long id = transition.getUserId();
-        List<Employee> employees = new ArrayList<>();
+        Set<Employee> employees = null;
         EmployeeSimpleDTO employeeSimpleDTO = null;
         EmployeeSimpleDTO adminSimpleDTO = null;
         if (transition.getRole().equals("ADMIN")) {
-            Admin admin = adminRepository.getReferenceById(transition.getUserId());
+            Admin admin = adminRepository.findByIdWithEmployees(transition.getUserId());
             employees = admin.getEmployees();
             employeeSimpleDTO = employeeMapper.toSimpleDto(admin);
         } else {
-            Employee employee = employeeRepository.getReferenceById(id);
+            Employee employee = employeeRepository.findByIdWithSubordinates(id);
             employees = employee.getSubordinates();
             employeeSimpleDTO = employeeMapper.toSimpleDto(employee);
             adminSimpleDTO = employeeMapper.toSimpleDto(employee.getAdmin());

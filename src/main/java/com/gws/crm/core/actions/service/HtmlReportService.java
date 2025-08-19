@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class HtmlReportService {
@@ -53,7 +54,7 @@ public class HtmlReportService {
         int exitCode = process.waitFor();
 
         if (exitCode != 0) {
-            String errorOutput = errorStream.toString("UTF-8");
+            String errorOutput = errorStream.toString(StandardCharsets.UTF_8);
             System.err.println("[NodeJS Error Output] " + errorOutput); // useful in logs
             throw new IllegalStateException("PDF generation failed. Exit code: " + exitCode + ", Error: " + errorOutput);
         }

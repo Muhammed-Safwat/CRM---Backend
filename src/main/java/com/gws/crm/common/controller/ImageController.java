@@ -18,7 +18,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.gws.crm.common.handler.ApiResponseHandler.*;
+import static com.gws.crm.common.handler.ApiResponseHandler.error;
+import static com.gws.crm.common.handler.ApiResponseHandler.success;
 
 @RestController
 @RequestMapping("/api/images")
@@ -30,8 +31,8 @@ public class ImageController {
     @PostMapping("/upload")
     public ResponseEntity<?> uploadImage(@Valid @RequestBody ImageUploadRequest request, Transition transition) {
         try {
-             String path = imageService.uploadImage(request,transition);
-             return success(path);
+            String path = imageService.uploadImage(request, transition);
+            return success(path);
         } catch (Exception ex) {
             return error(ex.getMessage());
         }

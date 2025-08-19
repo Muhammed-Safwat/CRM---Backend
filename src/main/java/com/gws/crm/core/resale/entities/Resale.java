@@ -2,7 +2,7 @@ package com.gws.crm.core.resale.entities;
 
 
 import com.gws.crm.authentication.entity.User;
-import com.gws.crm.core.admin.entity.Admin;
+import com.gws.crm.core.employee.entity.Admin;
 import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.lookups.entity.Category;
 import com.gws.crm.core.lookups.entity.Project;
@@ -40,18 +40,17 @@ public class Resale {
 
     private String email;
 
-    @ManyToOne(fetch = FetchType.LAZY,
-            cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
-                    CascadeType.PERSIST, CascadeType.DETACH})
+    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
+            CascadeType.PERSIST, CascadeType.DETACH})
     private Project project;
 
-    @ManyToOne(fetch = FetchType.LAZY,
+    @ManyToOne(
             cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
                     CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(nullable = false)
     private ResaleType type;
 
-    @ManyToOne(fetch = FetchType.LAZY,
+    @ManyToOne(
             cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
                     CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(nullable = false)
@@ -63,12 +62,12 @@ public class Resale {
 
     private String code;
 
-    @ManyToOne(fetch = FetchType.LAZY,
+    @ManyToOne(
             cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
                     CascadeType.PERSIST, CascadeType.DETACH})
     private Category category;
 
-    @ManyToOne(fetch = FetchType.LAZY,
+    @ManyToOne(
             cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
                     CascadeType.PERSIST, CascadeType.DETACH})
     private PropertyType property;
@@ -77,13 +76,13 @@ public class Resale {
 
     private String budget;
 
-    @ManyToOne(fetch = FetchType.LAZY,
+    @ManyToOne(
             cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
                     CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(name = "creator_id")
     private User creator;
 
-    @ManyToOne(fetch = FetchType.LAZY,
+    @ManyToOne(
             cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
                     CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(name = "admin_id")

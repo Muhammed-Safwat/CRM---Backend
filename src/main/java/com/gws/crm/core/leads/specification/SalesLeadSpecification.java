@@ -57,7 +57,7 @@ public class SalesLeadSpecification<T extends SalesLead> {
         return Specification.allOf(specs);
     }
 
-    public static <T extends SalesLead> Specification<T> getOnlyForAdmin(Transition transition){
+    public static <T extends SalesLead> Specification<T> getOnlyForAdmin(Transition transition) {
         return (root, query, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
             if (transition.getRole().equals("USER")) {

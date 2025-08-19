@@ -1,14 +1,16 @@
 package com.gws.crm.authentication.repository;
 
-import com.gws.crm.authentication.entity.Company;
+import com.gws.crm.core.employee.entity.Company;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface CompanyRepository extends JpaRepository<Company,Long> {
+public interface CompanyRepository extends JpaRepository<Company, Long> {
 
     Optional<Company> findByAdminId(Long userId);
+
+
 }
 

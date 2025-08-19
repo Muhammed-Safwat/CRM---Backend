@@ -2,7 +2,6 @@ package com.gws.crm.core.employee.entity;
 
 import com.gws.crm.authentication.entity.PrivilegeGroup;
 import com.gws.crm.authentication.entity.User;
-import com.gws.crm.core.admin.entity.Admin;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +11,9 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -43,7 +44,6 @@ public class Employee extends User {
     @JoinTable(name = "employee_subordinates",
             joinColumns = @JoinColumn(name = "manager_id"),
             inverseJoinColumns = @JoinColumn(name = "subordinate_id"))
-    private List<Employee> subordinates = new ArrayList<>();
-
+    private Set<Employee> subordinates = new HashSet<>();
 
 }

@@ -1,30 +1,10 @@
 package com.gws.crm.common.handler;
 
-import com.gws.crm.common.entities.Transition;
-import com.gws.crm.common.exception.InvalidPhoneNumberException;
-import com.gws.crm.common.exception.NotFoundResourceException;
-import com.gws.crm.common.helper.ApiResponse;
-import io.jsonwebtoken.JwtException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailSendException;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.*;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
+/*
     private static final Logger errorLogger = LoggerFactory.getLogger("appErrorLogger");
 
     private long getTransactionId() {
@@ -176,5 +156,5 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleNotFoundResourceException(NotFoundResourceException ex) {
         return ApiResponseHandler.notFound(ex.getMessage());
     }
-
+*/
 }

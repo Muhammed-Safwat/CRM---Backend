@@ -33,7 +33,6 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
 
     private final GenericSalesLeadRepository<T> repository;
     private final EmployeeRepository employeeRepository;
-    ;
 
     protected SalesLeadServiceImp(GenericSalesLeadRepository<T> repository,
                                   EmployeeRepository employeeRepository) {

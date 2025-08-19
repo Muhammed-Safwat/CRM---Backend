@@ -1,10 +1,6 @@
 package com.gws.crm.authentication.service.imp;
 
-import com.gws.crm.authentication.config.AuthenticationProviderService;
-import com.gws.crm.authentication.dto.RefreshTokenDto;
-import com.gws.crm.authentication.dto.ResetPasswordDto;
-import com.gws.crm.authentication.dto.SignInRequest;
-import com.gws.crm.authentication.dto.SignInResponse;
+import com.gws.crm.authentication.dto.*;
 import com.gws.crm.authentication.entity.ForgetPasswordRequest;
 import com.gws.crm.authentication.entity.User;
 import com.gws.crm.authentication.repository.ForgetPasswordTokenRepository;
@@ -18,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -57,18 +52,11 @@ public class CommonAuthServiceImp implements CommonAuthService {
                     signInRequest.getPassword()
             ));
             if (authentication.isAuthenticated()) {
-                Optional<User> userOptional = userRepository.findByUsername(signInRequest.getUsername());
-                User user = userOptional.get();
-                if (user.isDeleted()) {
-                    throw new DisabledException("UnKnown user");
-                }
-                log.info("*****************************************");
-                log.info(user.getRoles().isEmpty() + "");
-                log.info("*****************************************");
-                user.getRoles().forEach(el -> log.info("********************************** " + el.toString()));
+                UserDetailsDTO user = (UserDetailsDTO) authentication.getPrincipal();
+                log.info("✅ Login successful for User: {}", user);
                 SignInResponse signInResponse = SignInResponse.builder()
-                        .accessToken(jwtTokenService.generateAccessToken(userOptional.get()))
-                        .refreshToken(jwtTokenService.generateRefreshToken(userOptional.get()))
+                        .accessToken(jwtTokenService.generateAccessToken(user))
+                        .refreshToken(jwtTokenService.generateRefreshToken(user))
                         .build();
                 return success(signInResponse);
             }
