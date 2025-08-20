@@ -35,7 +35,7 @@ public class EmployeeController {
 
     @PostMapping("/type")
     public ResponseEntity<?> getAllEmployeeType(@RequestBody List<String> types, Transition transition) {
-        return employeeService.getAllEmployeeType(types, transition);
+        return employeeService.getAllEmployeeInType(types, transition);
     }
 
     @PostMapping("all")

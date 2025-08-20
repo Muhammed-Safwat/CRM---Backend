@@ -43,7 +43,7 @@ public class CommentServiceImp implements CommentService {
     @Override
     public ResponseEntity<?> getComments(long leadId, int page, Transition transition) {
         Pageable pageable = PageRequest.of(page, 10);
-        Page<Comment> commentPage = commentRepository.getCommentByLeadIdOrderByCreatedAtDesc(leadId, pageable);
+        Page<Comment> commentPage = commentRepository.getCommentsWithReplies(leadId, pageable);
         Page<CommentResponse> commentResponses = commentMapper.toDto(commentPage);
         return success(commentResponses);
     }

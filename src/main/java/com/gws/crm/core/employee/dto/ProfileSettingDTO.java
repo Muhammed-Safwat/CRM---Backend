@@ -19,5 +19,6 @@ public class ProfileSettingDTO {
     private Long numEmployees;
     private String status;
     private Long id;
-    private List<EmployeeTeamMemberDto> subordinates;
+   // private List<EmployeeTeamMemberDto> subordinates;
+    private List<EmployeeSimpleDTO> subordinates;
 }

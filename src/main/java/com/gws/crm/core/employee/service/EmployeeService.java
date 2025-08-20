@@ -30,7 +30,7 @@ public interface EmployeeService {
 
     ResponseEntity<?> restoreEmployee(long employeeId, Transition transition);
 
-    ResponseEntity<?> getAllEmployeeType(List<String> types, Transition transition);
+    ResponseEntity<?> getAllEmployeeInType(List<String> types, Transition transition);
 
     ResponseEntity<?> getSubEmployee(Transition transition);
 }

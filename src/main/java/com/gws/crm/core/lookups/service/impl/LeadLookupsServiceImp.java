@@ -60,7 +60,6 @@ public class LeadLookupsServiceImp implements LeadLookupsService {
         List<CommunicateWay> communicateWays = communicateWayRepository.findAllByAdminId(id);
         List<CallOutcome> callOutcomes = callOutcomeRepository.findAllByAdminId(id);
         List<Stage> stages = stageRepository.findAllByAdminId(id);
-
         LeadLookupsDTO leadLookupsDTO = LeadLookupsDTO.builder()
                 .brokers(brokers)
                 .leadStatuses(leadStatuses)

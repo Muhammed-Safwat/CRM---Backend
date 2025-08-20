@@ -44,14 +44,10 @@ public class ProfileSettingServiceImp implements ProfileSettingService {
         ProfileSettingDTO profileSettingDTO = null;
 
         if (transition.getRole().equals("ADMIN")) {
-            Admin admin = adminRepository.findById(transition.getUserId())
+            Admin admin = adminRepository.findByIdWithEmployees(transition.getUserId())
                     .orElseThrow(NotFoundResourceException::new);
 
-            List<Employee> activeEmployees = employeeRepository.getEmployeesByAdminId(admin.getId());
-
-            activeEmployees = activeEmployees.stream()
-                    .filter(employee -> employee.isEnabled() && !employee.isDeleted() && !employee.isLocked())
-                    .collect(Collectors.toList());
+            // List<Employee> activeEmployees = employeeRepository.getEmployeesByAdminId(admin.getId());
 
             profileSettingDTO = ProfileSettingDTO.builder()
                     .id(admin.getId())
@@ -60,9 +56,10 @@ public class ProfileSettingServiceImp implements ProfileSettingService {
                     .status(admin.isEnabled() ? "Active" : "InActive")
                     .maxUsers((long) admin.getMaxNumberOfUsers())
                     .phoneNumber(admin.getPhone())
-                    .numEmployees((long) activeEmployees.size())
+                    .numEmployees((long) admin.getEmployees().size())
                     .expirationDate(admin.getAccountNonExpired())
-                    .subordinates(employeeMapper.toTeamMemberDto(activeEmployees))
+                  //  .subordinates(employeeMapper.toTeamMemberDto(employee.getSubordinates()))
+                    .subordinates(employeeMapper.toListSimpleDto(admin.getEmployees()))
                     .build();
         } else {
             Employee employee = employeeRepository.findWithSubordinatesById(transition.getUserId())
@@ -75,7 +72,8 @@ public class ProfileSettingServiceImp implements ProfileSettingService {
                     .status(employee.isEnabled() ? "Active" : "InActive")
                     .phoneNumber(employee.getPhone())
                     .expirationDate(employee.getAccountNonExpired())
-                    .subordinates(employeeMapper.toTeamMemberDto(employee.getSubordinates()))
+                    .subordinates(employeeMapper.toListSimpleDto(employee.getSubordinates()))
+                    //.subordinates(employeeMapper.toTeamMemberDto(employee.getSubordinates()))
                     .build();
         }
 
