@@ -24,27 +24,19 @@ public class Project {
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne(fetch = FetchType.EAGER,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @ManyToOne(fetch = FetchType.LAZY)
     private Region region;
 
-    @ManyToOne(fetch = FetchType.EAGER,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @ManyToOne(fetch = FetchType.LAZY)
     private Category category;
 
-    @ManyToOne(fetch = FetchType.EAGER,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @ManyToOne(fetch = FetchType.LAZY)
     private DevCompany devCompany;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE,
-            CascadeType.DETACH,
-            CascadeType.REFRESH
-    })
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id")
     @JsonIgnore
     private Admin admin;

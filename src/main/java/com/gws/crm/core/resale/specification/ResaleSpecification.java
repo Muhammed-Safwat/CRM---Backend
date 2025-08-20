@@ -2,6 +2,7 @@ package com.gws.crm.core.resale.specification;
 
 
 import com.gws.crm.common.entities.Transition;
+import com.gws.crm.core.leads.entity.PreLead;
 import com.gws.crm.core.resale.dto.ResaleCriteria;
 import com.gws.crm.core.resale.entities.Resale;
 import jakarta.persistence.criteria.JoinType;
@@ -21,6 +22,7 @@ public class ResaleSpecification {
         if (resaleCriteria.getSubordinates() != null) {
             ids.addAll(resaleCriteria.getSubordinates());
         }
+        specs.add(fetchData());
         ids.add(transition.getUserId());
         if (resaleCriteria != null) {
             specs.add(fullTextSearch(resaleCriteria.getKeyword()));
@@ -37,6 +39,19 @@ public class ResaleSpecification {
             specs.add(filterByDelayed(resaleCriteria.getDelayed()));
         }
         return Specification.allOf(specs);
+    }
+
+    public static  Specification<Resale> fetchData() {
+        return (root, query, cb) -> {
+            if (query.getResultType() != Long.class && query.getResultType() != long.class) {
+                root.fetch("project",JoinType.LEFT);
+                root.fetch("salesRep",JoinType.LEFT);
+                root.fetch("type",JoinType.LEFT);
+                root.fetch("status",JoinType.LEFT);
+            }
+            query.distinct(true);
+            return cb.conjunction();
+        };
     }
 
     private static Specification<Resale> filterByDelayed(Boolean delayed) {

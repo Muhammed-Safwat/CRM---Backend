@@ -40,4 +40,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "WHERE u.username = :username")
     Optional<UserDetailsDTO> findDTOByUsername(String username);
 
+    @Query("SELECT new com.gws.crm.authentication.dto.UserDetailsDTO(" +
+            "u.id,u.name,u.username,u.password,u.locked, u.enabled, u.deleted, u.accountNonExpired, u.credentialsNonExpired, r, " +
+            "p) " +
+            "FROM User u " +
+            "LEFT JOIN u.roles r " +
+            "LEFT JOIN u.privileges p " +
+            "WHERE u.id = :id")
+    Optional<UserDetailsDTO> findDTOById(long id);
 }

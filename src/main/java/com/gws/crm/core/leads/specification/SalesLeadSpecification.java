@@ -23,7 +23,7 @@ public class SalesLeadSpecification<T extends SalesLead> {
         if (salesLeadCriteria.getSubordinates() != null) {
             ids.addAll(salesLeadCriteria.getSubordinates());
         }
-        specs.add(fetchEmployees());
+        specs.add(fetchData());
         ids.add(transition.getUserId());
         if (salesLeadCriteria != null) {
             specs.add(getOnlyForAdmin(transition));
@@ -58,11 +58,13 @@ public class SalesLeadSpecification<T extends SalesLead> {
         return Specification.allOf(specs);
     }
 
-    public static <T extends SalesLead> Specification<T> fetchEmployees() {
+    public static <T extends SalesLead> Specification<T> fetchData() {
         return (root, query, cb) -> {
             if (query.getResultType() != Long.class && query.getResultType() != long.class) {
                 root.fetch("salesRep", JoinType.LEFT);
                 root.fetch("creator", JoinType.LEFT);
+                root.fetch("status",JoinType.LEFT);
+                root.fetch("phoneNumbers", JoinType.LEFT);
             }
             query.distinct(true);
             return cb.conjunction();

@@ -72,7 +72,7 @@ public class PreLeadServiceImp implements PreLeadService {
     public ResponseEntity<?> getAllPreLead(PreLeadCriteria preLeadCriteria, Transition transition) {
         if (transition.getRole().equals("USER")) {
             Employee employee =
-                    employeeRepository.findById(transition.getUserId())
+                    employeeRepository.findByIdWithSubordinates(transition.getUserId())
                             .orElseThrow(NotFoundResourceException::new);
             preLeadCriteria.setSubordinates(employee.getSubordinates()
                     .stream().map(User::getId).toList());
@@ -81,7 +81,7 @@ public class PreLeadServiceImp implements PreLeadService {
         Pageable pageable = PageRequest.of(preLeadCriteria.getPage(), preLeadCriteria.getSize(),
                 Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<PreLead> leadPage = preLeadRepository.findAll(leadSpecification, pageable);
-        Page<PreLeadResponse> leadResponses = preLeadMapper.toDTOPage(leadPage);
+        Page<PreLeadResponse> leadResponses = preLeadMapper.toSimpleDTOPage(leadPage);
         return success(leadResponses);
     }
 
