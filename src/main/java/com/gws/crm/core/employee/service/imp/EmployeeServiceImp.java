@@ -206,7 +206,7 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
     @Override
-    public ResponseEntity<?> getAllEmployeeType(List<String> types, Transition transition) {
+    public ResponseEntity<?> getAllEmployeeInType(List<String> types, Transition transition) {
         long adminId = transition.getUserId();
 
         Set<Employee> employees = employeeRepository.findAllByAdminIdAndJobNameIn(adminId, types);
@@ -223,11 +223,14 @@ public class EmployeeServiceImp implements EmployeeService {
         EmployeeSimpleDTO employeeSimpleDTO = null;
         EmployeeSimpleDTO adminSimpleDTO = null;
         if (transition.getRole().equals("ADMIN")) {
-            Admin admin = adminRepository.findByIdWithEmployees(transition.getUserId());
+            Admin admin =
+                    adminRepository.findByIdWithEmployees(transition.getUserId())
+                            .orElseThrow(NotFoundResourceException::new);
             employees = admin.getEmployees();
             employeeSimpleDTO = employeeMapper.toSimpleDto(admin);
         } else {
-            Employee employee = employeeRepository.findByIdWithSubordinates(id);
+            Employee employee = employeeRepository.findByIdWithSubordinates(id)
+                    .orElseThrow(NotFoundResourceException::new);
             employees = employee.getSubordinates();
             employeeSimpleDTO = employeeMapper.toSimpleDto(employee);
             adminSimpleDTO = employeeMapper.toSimpleDto(employee.getAdmin());

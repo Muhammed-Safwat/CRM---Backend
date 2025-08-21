@@ -28,7 +28,6 @@ public class PreLeadController {
         return preLeadService.getAllPreLead(preLeadCriteria, transition);
     }
 
-
     @PostMapping
     public ResponseEntity<?> addPreLead(@Valid @RequestBody AddPreLeadDTO preLeadDTO,
                                         Transition transition) {

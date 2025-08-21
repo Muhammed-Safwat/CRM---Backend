@@ -14,6 +14,59 @@ import java.util.stream.Collectors;
 @Component
 public class ResaleMapper {
 
+    public ResaleResponse toSimpleDTO(Resale resale) {
+        if (resale == null) {
+            return null;
+        }
+
+
+        LookupDTO statusDTO = resale.getStatus() != null ?
+                LookupDTO.builder()
+                        .id(resale.getStatus().getId())
+                        .name(resale.getStatus().getName())
+                        .build() :
+                null;
+
+        /*ProjectDTO projectDTO = resale.getProject() != null ?
+                ProjectDTO.builder()
+                        .id(resale.getProject().getId())
+                        .name(resale.getProject().getName())
+                        .build()
+                : null;
+
+         */
+
+        EmployeeSimpleDTO sealRep = resale.getSalesRep() != null ?
+                EmployeeSimpleDTO.builder()
+                        .id(resale.getSalesRep().getId())
+                        .name(resale.getSalesRep().getName())
+                        .build()
+                : null;
+
+
+        return ResaleResponse.builder()
+                .id(resale.getId())
+                .phone(resale.getPhone())
+                .name(resale.getName())
+               // .project(projectDTO)
+                .status(statusDTO)
+                .salesRep(sealRep)
+                .deleted(resale.isDeleted())
+                .assignAt(resale.getAssignAt())
+                .delayed(resale.isDelay())
+                .build();
+    }
+
+    public List<ResaleResponse> toSimpleDTOList(List<Resale> leads) {
+        return leads.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public Page<ResaleResponse> toSimpleDTOPage(Page<Resale> leadPage) {
+        return leadPage.map(this::toDTO);
+    }
+
     public ResaleResponse toDTO(Resale resale) {
         if (resale == null) {
             return null;
@@ -86,7 +139,6 @@ public class ResaleMapper {
                 .delayed(resale.isDelay())
                 .build();
     }
-
 
     public List<ResaleResponse> toDTOList(List<Resale> leads) {
         return leads.stream()

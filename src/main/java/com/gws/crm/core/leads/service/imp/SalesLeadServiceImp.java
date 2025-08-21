@@ -44,7 +44,7 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
     public ResponseEntity<?> getLeadDetails(long leadId, Transition transition) {
         T lead = repository.findById(leadId)
                 .orElseThrow(NotFoundResourceException::new);
-        LeadResponse leadResponse = mapEntityToDto(lead);
+        LeadResponse leadResponse = mapEntityToSimpleDto(lead);
         // actionServiceImp.setSalesViewLeadAction(lead, transition);
         return success(leadResponse);
     }
@@ -98,17 +98,15 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
     public ResponseEntity<?> getLeads(SalesLeadCriteria salesLeadCriteria, Transition transition) {
         if (transition.getRole().equals("USER")) {
             Employee employee =
-                    employeeRepository.findById(transition.getUserId())
+                    employeeRepository.findByIdWithSubordinates(transition.getUserId())
                             .orElseThrow(NotFoundResourceException::new);
             salesLeadCriteria.setSubordinates(employee.getSubordinates()
                     .stream().map(User::getId).toList());
-            log.info("********************** %%%%%%%%%%%%%%%%% **********************");
-            log.info(salesLeadCriteria.getSubordinates().toString());
         }
         Specification<T> leadSpecification = filter(salesLeadCriteria, transition);
         Pageable pageable = PageRequest.of(salesLeadCriteria.getPage(), salesLeadCriteria.getSize());
         Page<T> leadPage = repository.findAll(leadSpecification, pageable);
-        Page<LeadResponse> leadResponses = mapEntityToDto(leadPage);
+        Page<LeadResponse> leadResponses = mapEntityToSimpleDto(leadPage);
         return success(leadResponses);
     }
 
@@ -154,7 +152,11 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
 
     protected abstract LeadResponse mapEntityToDto(T entity);
 
+    protected abstract LeadResponse mapEntityToSimpleDto(T entity);
+
     protected abstract Page<LeadResponse> mapEntityToDto(Page<T> entityPage);
+
+    protected abstract Page<LeadResponse> mapEntityToSimpleDto(Page<T> entityPage);
 
     protected abstract void updateEntityFromDto(T entity, D dto, Transition transition);
 

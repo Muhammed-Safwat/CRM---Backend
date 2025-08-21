@@ -4,6 +4,7 @@ package com.gws.crm.core.leads.specification;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.leads.dto.PreLeadCriteria;
 import com.gws.crm.core.leads.entity.PreLead;
+import com.gws.crm.core.leads.entity.SalesLead;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -21,6 +22,7 @@ public class PreLeadSpecification {
         if (leadCriteria.getSubordinates() != null) {
             ids.addAll(leadCriteria.getSubordinates());
         }
+        specs.add(fetchData());
         ids.add(transition.getUserId());
         specs.add(fullTextSearch(leadCriteria.getKeyword()));
         specs.add(filterByCampaignId(leadCriteria.getCampaignId()));
@@ -35,6 +37,20 @@ public class PreLeadSpecification {
 
         return Specification.allOf(specs);
     }
+
+    public static  Specification<PreLead> fetchData() {
+        return (root, query, cb) -> {
+            if (query.getResultType() != Long.class && query.getResultType() != long.class) {
+                root.fetch("phoneNumbers", JoinType.LEFT);
+                root.fetch("project",JoinType.LEFT);
+                root.fetch("channel",JoinType.LEFT);
+                root.fetch("creator",JoinType.LEFT);
+            }
+            query.distinct(true);
+            return cb.conjunction();
+        };
+    }
+
 
     private static Specification<PreLead> filterByUser(List<Long> ids, Boolean isMyLead, Transition transition) {
         return (root, query, criteriaBuilder) -> {

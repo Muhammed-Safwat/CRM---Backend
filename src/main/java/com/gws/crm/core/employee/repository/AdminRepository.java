@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AdminRepository extends JpaRepository<Admin, Long> {
@@ -35,5 +36,10 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
             FROM Admin a
             LEFT JOIN FETCH a.employees e
             where a.id= :userId""")
-    Admin findByIdWithEmployees(Long userId);
+    Optional<Admin> findByIdWithEmployees(Long userId);
+    @Query("""
+            SELECT DISTINCT a
+            FROM Admin a
+            LEFT JOIN FETCH a.company c where a.id = :adminId""")
+    Optional<Admin> findByIdWithCompany(Long adminId);
 }

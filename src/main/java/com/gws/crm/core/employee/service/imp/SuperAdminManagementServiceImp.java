@@ -108,7 +108,8 @@ public class SuperAdminManagementServiceImp implements SuperAdminManagementServi
 
     @Override
     public ResponseEntity<?> getAdmin(Long adminId, Transition transition) {
-        Admin admin = adminRepository.findById(adminId).orElseThrow(NotFoundResourceException::new);
+        Admin admin = adminRepository.findByIdWithCompany(adminId)
+                .orElseThrow(NotFoundResourceException::new);
         AdminBasicsInfo adminBasicsInfo = adminMapper.toDto(admin);
         return success(adminBasicsInfo, "Admin found successfully");
     }
