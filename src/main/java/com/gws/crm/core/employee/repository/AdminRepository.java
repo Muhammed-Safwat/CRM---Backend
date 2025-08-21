@@ -40,6 +40,6 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
     @Query("""
             SELECT DISTINCT a
             FROM Admin a
-            LEFT JOIN FETCH a.company c""")
+            LEFT JOIN FETCH a.company c where a.id = :adminId""")
     Optional<Admin> findByIdWithCompany(Long adminId);
 }
