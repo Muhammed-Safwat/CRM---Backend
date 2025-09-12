@@ -15,7 +15,7 @@ public class LeadLookupsDTO {
     private List<Broker> brokers;
     private List<LeadStatus> leadStatuses;
     private List<InvestmentGoal> investmentGoals;
-    private List<Project> projects;
+    private List<ProjectDTO> projects;
     private List<CancelReasons> cancelReasons;
     private List<EmployeeSimpleDTO> salesReps;
     private List<Channel> channels;

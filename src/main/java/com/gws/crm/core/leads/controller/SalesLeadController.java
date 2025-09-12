@@ -8,6 +8,7 @@ import com.gws.crm.core.leads.dto.SalesLeadCriteria;
 import com.gws.crm.core.leads.entity.SalesLead;
 import com.gws.crm.core.leads.service.SalesLeadService;
 import jakarta.validation.Valid;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -90,4 +91,10 @@ public abstract class SalesLeadController<T extends SalesLead, D extends AddLead
     public ResponseEntity<?> toggleArchive(@PathVariable long leadId, Transition transition) {
         return service.toggleArchive(leadId, transition);
     }
+
+    @GetMapping("count-by-status")
+    public ResponseEntity<?> countByStage(@Param("userId") Long userId , Transition transition){
+        return service.countByStage(userId,transition);
+    }
+
 }

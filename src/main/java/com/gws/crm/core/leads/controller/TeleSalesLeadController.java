@@ -16,4 +16,6 @@ public class TeleSalesLeadController extends SalesLeadController<TeleSalesLead, 
     public TeleSalesLeadController(TelesalesLeadService service) {
         super(service);
     }
+
+
 }

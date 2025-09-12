@@ -8,6 +8,7 @@ import com.gws.crm.core.leads.dto.PreLeadCriteria;
 import com.gws.crm.core.leads.service.PreLeadService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -83,5 +84,10 @@ public class PreLeadController {
     @PutMapping("archive/{leadId}")
     public ResponseEntity<?> toggleArchive(@PathVariable long leadId, Transition transition) {
         return preLeadService.toggleArchive(leadId, transition);
+    }
+
+    @GetMapping("count-by-channel")
+    public ResponseEntity<?> countByChannel(@Param("userId") Long userId , Transition transition){
+        return preLeadService.countByChannel(userId,transition);
     }
 }

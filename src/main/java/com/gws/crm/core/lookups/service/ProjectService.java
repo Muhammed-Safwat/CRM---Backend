@@ -10,15 +10,15 @@ import java.util.List;
 
 public interface ProjectService {
 
-    ResponseEntity<?> getProjects(int page, int size, Transition transition);
+    ResponseEntity<?> getProjects(int page, int size, String keyword, Transition transition);
 
-    ResponseEntity<ApiResponse<List<Project>>> getAllProjects(Transition transition);
+    ResponseEntity<?> getAllProjects(Transition transition);
 
-    ResponseEntity<ApiResponse<Project>> getProjectById(long id, Transition transition);
+    ResponseEntity<?> getProjectById(long id, Transition transition);
 
     ResponseEntity<?> createProject(ProjectDTO projectDTO, Transition transition);
 
-    ResponseEntity<ApiResponse<Project>> updateProject(ProjectDTO projectDTO, Transition transition);
+    ResponseEntity<?> updateProject(ProjectDTO projectDTO, Transition transition);
 
     ResponseEntity<?> deleteProject(long id, Transition transition);
 }

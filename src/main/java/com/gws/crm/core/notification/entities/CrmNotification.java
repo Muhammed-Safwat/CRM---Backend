@@ -26,7 +26,7 @@ public class CrmNotification {
 
     private String recipientEmail;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "type_id")
     private NotificationType type;
 

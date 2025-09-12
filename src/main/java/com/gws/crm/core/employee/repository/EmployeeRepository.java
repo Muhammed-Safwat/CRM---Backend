@@ -1,6 +1,8 @@
 package com.gws.crm.core.employee.repository;
 
+import com.gws.crm.core.employee.dto.EmployeeSimpleDTO;
 import com.gws.crm.core.employee.entity.Employee;
+import com.gws.crm.core.leads.dto.CountDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -17,6 +19,11 @@ import java.util.Set;
 public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSpecificationExecutor<Employee> {
 
     Set<Employee> findAllByAdminId(long adminId);
+
+    @Query("SELECT new com.gws.crm.core.employee.dto.EmployeeSimpleDTO(e.id,e.name,e.username,e.jobName,e.image) " +
+            "FROM Employee e " +
+            "WHERE e.admin.id = :adminId")
+    List<EmployeeSimpleDTO> findSimpleEmployeeByAdminId(long adminId);
 
     @Query("SELECT e FROM Employee e WHERE e.id IN :ids")
     Set<Employee> findAllEmpById(@Param("ids") List<Long> ids);
@@ -80,4 +87,35 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
             WHERE e.admin.id = :adminId 
             """)
     Optional<Employee> findByIdWithSubordinates(long adminId);
+
+    @Query("""
+            SELECT DISTINCT e
+            FROM Employee e
+             LEFT JOIN FETCH e.admin a
+            WHERE e.id = :id
+            """)
+    Optional<Employee> findByIdWithAdmin(Long id);
+
+    @Query("""
+            SELECT e.admin.id FROM Employee e where e.id =:id""")
+    long findAdminId(Long id);
+
+
+    @Query("SELECT s.id FROM Employee m JOIN m.subordinates s WHERE m.id = :managerId")
+    Set<Long> findSubordinateIds(@Param("managerId") Long managerId);
+
+    @Query("SELECT new com.gws.crm.core.leads.dto.CountDTO(e.id , e.jobName, COUNT(e)) " +
+            "FROM Employee e " +
+            "WHERE e.admin.id = :adminId " +
+            "GROUP BY e.jobName")
+    List<CountDTO> countEmployeesByJobTitleForAdmin(@Param("adminId") Long adminId);
+
+    @Query("SELECT new com.gws.crm.core.leads.dto.CountDTO(e.id, e.jobName, COUNT(e)) " +
+            "FROM Employee e " +
+            "WHERE e.id IN :employeeIds " +
+            "GROUP BY e.jobName")
+    List<CountDTO> countEmployeesByJobTitleForTeam(@Param("employeeIds") Set<Long> employeeIds);
+
+
+
 }

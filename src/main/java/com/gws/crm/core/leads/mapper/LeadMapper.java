@@ -175,4 +175,6 @@ public class LeadMapper {
     public Page<LeadResponse> toSimpleDTOPage(Page<Lead> entityPage) {
         return entityPage.map(this::toSimpleDTO) ;
     }
+
+
 }

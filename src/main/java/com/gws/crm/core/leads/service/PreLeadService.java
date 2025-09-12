@@ -35,4 +35,6 @@ public interface PreLeadService {
     ResponseEntity<?> getDetails(long leadId, Transition transition);
 
     ResponseEntity<?> toggleArchive(long leadId, Transition transition);
+
+    ResponseEntity<?> countByChannel(Long userId, Transition transition);
 }

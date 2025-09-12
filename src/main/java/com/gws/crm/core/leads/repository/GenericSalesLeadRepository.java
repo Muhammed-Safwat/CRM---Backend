@@ -1,11 +1,15 @@
 package com.gws.crm.core.leads.repository;
 
+import com.gws.crm.core.leads.dto.CountDTO;
 import com.gws.crm.core.leads.entity.SalesLead;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface GenericSalesLeadRepository<T extends SalesLead> extends GenericBaseLeadRepository<T> {
@@ -18,4 +22,10 @@ public interface GenericSalesLeadRepository<T extends SalesLead> extends Generic
     @Transactional
     @Query("UPDATE SalesLead l SET l.deleted = false WHERE l.id = :leadId")
     void restoreLead(Long leadId);
+
+    @Query("SELECT new com.gws.crm.core.leads.dto.CountDTO(s.id,s.stage.name, COUNT(s)) " +
+            "FROM SalesLead s WHERE s.salesRep.id IN :userIds GROUP BY s.stage.name")
+    List<CountDTO> countLeadsByStageForTeam(@Param("userIds") Set<Long> userIds);
+
+
 }

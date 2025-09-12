@@ -33,4 +33,6 @@ public interface EmployeeService {
     ResponseEntity<?> getAllEmployeeInType(List<String> types, Transition transition);
 
     ResponseEntity<?> getSubEmployee(Transition transition);
+
+    ResponseEntity<?> countEmployeesByJobTitle(Long userId, Transition transition);
 }

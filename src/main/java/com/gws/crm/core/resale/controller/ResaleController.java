@@ -9,6 +9,7 @@ import com.gws.crm.core.resale.service.ResaleLookupsService;
 import com.gws.crm.core.resale.service.ResaleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -98,4 +99,8 @@ public class ResaleController {
     }
 
 
+    @GetMapping("count-by-status")
+    public ResponseEntity<?> countByStatus(@Param("userId") Long userId , Transition transition){
+        return resaleService.countByStatus(userId,transition);
+    }
 }

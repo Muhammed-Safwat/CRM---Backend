@@ -17,6 +17,7 @@ import com.gws.crm.core.employee.repository.AdminRepository;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.employee.service.EmployeeService;
 import com.gws.crm.core.employee.spcification.EmployeeSpecification;
+import com.gws.crm.core.leads.dto.CountDTO;
 import com.gws.crm.core.leads.repository.PrivilegeGroupRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -243,5 +244,20 @@ public class EmployeeServiceImp implements EmployeeService {
         }
         return success(employeeInfoResponseList);
     }
+
+    @Override
+    public ResponseEntity<?> countEmployeesByJobTitle(Long userId, Transition transition) {
+        List<CountDTO> result = new ArrayList<>();
+
+        if ("ADMIN".equalsIgnoreCase(transition.getRole())) {
+            result = employeeRepository.countEmployeesByJobTitleForAdmin(transition.getUserId());
+        } else if (userId != null) {
+            Set<Long> userIds = employeeRepository.findSubordinateIds(userId);
+            userIds.add(userId);
+            result = employeeRepository.countEmployeesByJobTitleForTeam(userIds);
+        }
+        return success(result);
+    }
+
 
 }

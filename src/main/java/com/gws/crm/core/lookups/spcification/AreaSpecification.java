@@ -5,7 +5,8 @@ import com.gws.crm.core.lookups.entity.Area;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
-import java.time.LocalDate;
+import jakarta.persistence.criteria.Fetch;
+import jakarta.persistence.criteria.JoinType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,38 +14,42 @@ public class AreaSpecification {
 
     public static Specification<Area> filter(String keyword, Transition transition) {
         List<Specification<Area>> specs = new ArrayList<>();
-        specs.add(fullTextSearch(keyword));
-        specs.add(filterByAdminId(transition.getUserId()));
+
+        // Always fetch region + admin to avoid N+1
+        specs.add(fetchRelations());
+
+        if (StringUtils.hasText(keyword)) {
+            specs.add(fullTextSearch(keyword));
+        }
+
+        if (transition != null && transition.getUserId() != null) {
+            specs.add(filterByAdminId(transition.getUserId()));
+        }
+
         return Specification.allOf(specs);
     }
 
-    // Full text search specification
-    private static Specification<Area> fullTextSearch(String keyword) {
-        return (root, query, criteriaBuilder) -> {
-            if (!StringUtils.hasText(keyword)) {
-                return criteriaBuilder.conjunction(); // Return a no-op if no keyword is present
+    private static Specification<Area> fetchRelations() {
+        return (root, query, cb) -> {
+            if (query.getResultType() != Long.class && query.getResultType() != long.class) {
+                Fetch<Object, Object> regionFetch = root.fetch("region", JoinType.LEFT);
+                Fetch<Object, Object> adminFetch = root.fetch("admin", JoinType.LEFT);
             }
+            return cb.conjunction();
+        };
+    }
 
+    private static Specification<Area> fullTextSearch(String keyword) {
+        return (root, query, cb) -> {
             String lowerKeyword = "%" + keyword.toLowerCase() + "%";
-
-            return criteriaBuilder.or(
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), lowerKeyword)
+            return cb.or(
+                    cb.like(cb.lower(root.get("name")), lowerKeyword),
+                    cb.like(cb.lower(root.get("code")), lowerKeyword)
             );
         };
     }
 
-    private static Specification<Area> filterByCreatedAt(LocalDate createdAt) {
-        return (root, query, criteriaBuilder) -> {
-            if (createdAt == null) {
-                return null; // Return null if createdAt is null
-            }
-            return criteriaBuilder.equal(root.get("createdAt"), createdAt);
-        };
-    }
-
     private static Specification<Area> filterByAdminId(Long id) {
-        return (root, query, criteriaBuilder) -> {
-            return criteriaBuilder.equal(root.get("admin").get("id"), id);
-        };
+        return (root, query, cb) -> cb.equal(root.get("admin").get("id"), id);
     }
 }

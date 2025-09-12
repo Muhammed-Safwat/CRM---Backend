@@ -53,7 +53,24 @@ public class ResaleSpecification {
             return cb.conjunction();
         };
     }
+    private static Specification<Resale> addAdmin(List<Long> ids, boolean isMyLead, Transition transition) {
 
+        return (root, query, criteriaBuilder) -> {
+            Predicate predicate = criteriaBuilder.conjunction();
+            if (!isMyLead && transition.getRole().equals("USER")) {
+                predicate = criteriaBuilder.and(predicate, root.join("salesRep", JoinType.INNER).get("id").in(ids));
+            } else if (isMyLead && transition.getRole().equals("ADMIN")) {
+                predicate = criteriaBuilder.and(predicate,
+                        criteriaBuilder.isNull(root.get("salesRep"))
+                );
+            } else if (isMyLead && transition.getRole().equals("USER")) {
+                predicate = criteriaBuilder.and(predicate,
+                        criteriaBuilder.equal(root.get("salesRep").get("id"), transition.getUserId())
+                );
+            }
+            return predicate;
+        };
+    }
     private static Specification<Resale> filterByDelayed(Boolean delayed) {
         return (root, query, criteriaBuilder) -> {
             if (delayed == null) {

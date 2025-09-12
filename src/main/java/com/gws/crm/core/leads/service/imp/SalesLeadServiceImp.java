@@ -20,7 +20,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.*;
 import static com.gws.crm.core.leads.specification.SalesLeadSpecification.filter;
@@ -44,7 +47,7 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
     public ResponseEntity<?> getLeadDetails(long leadId, Transition transition) {
         T lead = repository.findById(leadId)
                 .orElseThrow(NotFoundResourceException::new);
-        LeadResponse leadResponse = mapEntityToSimpleDto(lead);
+        LeadResponse leadResponse = mapEntityToDto(lead);
         // actionServiceImp.setSalesViewLeadAction(lead, transition);
         return success(leadResponse);
     }
@@ -53,7 +56,7 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
     public ResponseEntity<?> addLead(D leadDTO, Transition transition) {
         T entity = mapDtoToEntity(leadDTO, transition);
         T savedLead = repository.save(entity);
-        LeadResponse leadResponse = mapEntityToDto(savedLead);
+        LeadResponse leadResponse = mapEntityToSimpleDto(savedLead);
         publishCreateLeadEvent(savedLead, transition);
         return created(leadResponse);
     }
@@ -67,7 +70,7 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
         updateEntityFromDto(existingEntity, leadDTO, transition);
         T updatedEntity = repository.save(existingEntity);
         // actionServiceImp.setLeadEditionAction(updatedEntity, transition);
-        LeadResponse leadResponse = mapEntityToDto(updatedEntity);
+        LeadResponse leadResponse = mapEntityToSimpleDto(updatedEntity);
         publishCreateLeadEvent(updatedEntity, transition);
         return ResponseEntity.ok(leadResponse);
     }
@@ -180,4 +183,6 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
 
     public void publishDelayLeadEvent(T lead, Transition transition) {
     }
+
+
 }

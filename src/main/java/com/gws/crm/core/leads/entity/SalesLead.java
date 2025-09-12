@@ -63,5 +63,8 @@ public abstract class SalesLead extends BaseLead {
     @JoinColumn(nullable = true)
     private Broker broker;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.DETACH})
+    @JoinColumn
+    private Stage stage;
 
 }

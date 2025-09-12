@@ -1,6 +1,7 @@
 package com.gws.crm.core.resale.repository;
 
 
+import com.gws.crm.core.leads.dto.CountDTO;
 import com.gws.crm.core.resale.entities.Resale;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -9,6 +10,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface ResaleRepository extends JpaRepository<Resale, Long>, JpaSpecificationExecutor<Resale> {
@@ -51,4 +55,16 @@ public interface ResaleRepository extends JpaRepository<Resale, Long>, JpaSpecif
     Optional<Resale> findByIdWithAllRelations(@Param("id") Long id);
 
  */
+
+    @Query("SELECT new com.gws.crm.core.leads.dto.CountDTO(r.id,r.status.name, COUNT(r)) " +
+            "FROM Resale r " +
+            "WHERE r.admin.id = :userId AND r.deleted = false " +
+            "GROUP BY r.status.name")
+    List<CountDTO> countResaleByStageForAdmin(Long userId);
+
+    @Query("SELECT new com.gws.crm.core.leads.dto.CountDTO(r.id,r.status.name, COUNT(r)) " +
+            "FROM Resale r " +
+            "WHERE r.admin.id IN :userIds AND r.deleted = false " +
+            "GROUP BY r.status.name")
+    List<CountDTO> countResaleByStageForTeam(Set<Long> userIds);
 }

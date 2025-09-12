@@ -38,39 +38,24 @@ public abstract class BaseLookupServiceImpl<T extends BaseLookup, D extends Look
 
     @Override
     public ResponseEntity<?> getAll(int page, int size, String keyword, Transition transition) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
-        long id = transition.getUserId();
-        if ("USER".equals(transition.getRole())) {
-            Employee employee = employeeRepository.findById(transition.getUserId())
-                    .orElseThrow(NotFoundResourceException::new);
-            id = employee.getAdmin().getId();
-        }
-
-        Specification<T> specification = LookupSpecification.filter(keyword, id, transition);
-
-        Page<T> lookupPage = repository.findAll(specification, pageable);
-
-        log.info("keyword ====== {}", lookupPage);
-
-        return success(lookupPage);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Specification<T>  spec  = LookupSpecification.filter(keyword,transition.getUserId(),transition);
+        Page<T> list = repository.findAll(spec ,pageable);
+        Page<D> dtoPage = list.map(this::mapEntityToDto);
+        return ResponseEntity.ok(dtoPage);
     }
 
     @Override
     public ResponseEntity<?> getAll(Transition transition) {
-        long id = transition.getUserId();
-        if ("USER".equals(transition.getRole())) {
-            Employee employee = employeeRepository.findById(transition.getUserId())
-                    .orElseThrow(NotFoundResourceException::new);
-            id = employee.getAdmin().getId();
-        }
-        List<T> lookupList = repository.findAllByAdminId(id);
-        log.info(lookupList.toString());
+        long adminId = resolveAdminId(transition);
+        List<T> lookupList = repository.findAllByAdminIdAndDeletedFalse(adminId);
         return success(lookupList);
     }
 
     @Override
     public ResponseEntity<?> getById(long id, Transition transition) {
-        T lookup = repository.findByIdAndAdminId(id, transition.getUserId())
+        long adminId = resolveAdminId(transition);
+        T lookup = repository.findByIdAndAdminId(id, adminId)
                 .orElseThrow(NotFoundResourceException::new);
         return success(lookup);
     }
@@ -78,15 +63,17 @@ public abstract class BaseLookupServiceImpl<T extends BaseLookup, D extends Look
     @Override
     public ResponseEntity<?> create(D dto, Transition transition) {
         T entity = mapDtoToEntity(dto, transition);
-        entity.setAdmin(adminRepository.getReferenceById(transition.getUserId()));
+        entity.setAdmin(adminRepository.getReferenceById(resolveAdminId(transition)));
         T savedEntity = repository.save(entity);
         return success(mapEntityToDto(savedEntity));
     }
 
     @Override
     public ResponseEntity<?> update(D dto, Transition transition) {
-        T entity = repository.findByIdAndAdminId(dto.getId(), transition.getUserId())
+        long adminId = resolveAdminId(transition);
+        T entity = repository.findByIdAndAdminId(dto.getId(), adminId)
                 .orElseThrow(NotFoundResourceException::new);
+
         updateEntityFromDto(entity, dto);
         T savedEntity = repository.save(entity);
         return success(mapEntityToDto(savedEntity));
@@ -94,8 +81,23 @@ public abstract class BaseLookupServiceImpl<T extends BaseLookup, D extends Look
 
     @Override
     public ResponseEntity<?> delete(long id, Transition transition) {
-        repository.deleteByIdAndAdminId(id, transition.getUserId());
+        long adminId = resolveAdminId(transition);
+        T entity = repository.findByIdAndAdminId(id, adminId)
+                .orElseThrow(NotFoundResourceException::new);
+
+        entity.setDeleted(true);
+        repository.save(entity);
+
         return success("Deleted successfully");
+    }
+
+    private long resolveAdminId(Transition transition) {
+        if ("USER".equals(transition.getRole())) {
+            Employee employee = employeeRepository.findById(transition.getUserId())
+                    .orElseThrow(NotFoundResourceException::new);
+            return employee.getAdmin().getId();
+        }
+        return transition.getUserId();
     }
 
     protected abstract T mapDtoToEntity(D dto, Transition transition);
@@ -103,5 +105,4 @@ public abstract class BaseLookupServiceImpl<T extends BaseLookup, D extends Look
     protected abstract D mapEntityToDto(T entity);
 
     protected abstract void updateEntityFromDto(T entity, D dto);
-
 }

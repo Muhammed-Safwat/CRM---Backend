@@ -10,6 +10,7 @@ import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.leads.dto.AddLeadDTO;
 import com.gws.crm.core.leads.dto.ImportLeadDTO;
 import com.gws.crm.core.leads.dto.LeadResponse;
+import com.gws.crm.core.leads.dto.CountDTO;
 import com.gws.crm.core.leads.entity.Lead;
 import com.gws.crm.core.leads.factory.LeadFactory;
 import com.gws.crm.core.leads.mapper.LeadMapper;
@@ -21,7 +22,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
 import static com.gws.crm.common.utils.ExcelFileUtils.generateHeader;
@@ -37,14 +40,14 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
     private final LeadMapper leadMapper;
     private final ApplicationEventPublisher eventPublisher;
     private final LeadNotificationEventPublisher leadNotificationEventPublisher;
+    private final EmployeeRepository employeeRepository;
 
 
-    protected LeadService(LeadRepository leadRepository,
-                          EmployeeRepository employeeRepository, ExcelSheetService excelSheetService,
+    protected LeadService(LeadRepository leadRepository, ExcelSheetService excelSheetService,
                           LeadFactory leadFactory,
                           PhoneValidationService phoneValidationService, LeadMapper leadMapper,
                           ApplicationEventPublisher eventPublisher,
-                          LeadNotificationEventPublisher leadNotificationEventPublisher) {
+                          LeadNotificationEventPublisher leadNotificationEventPublisher, EmployeeRepository employeeRepository) {
         super(leadRepository, employeeRepository);
         this.leadRepository = leadRepository;
         this.excelSheetService = excelSheetService;
@@ -53,6 +56,7 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
         this.leadMapper = leadMapper;
         this.eventPublisher = eventPublisher;
         this.leadNotificationEventPublisher = leadNotificationEventPublisher;
+        this.employeeRepository = employeeRepository;
     }
 
     @Override
@@ -162,5 +166,19 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
         eventPublisher.publishEvent(new LeadDelayedEvent(lead, transition));
         // when delayed event occur send notification to sales admin
         leadNotificationEventPublisher.publishDelayLeadEvent(lead, transition);
+    }
+
+    @Override
+    public ResponseEntity<?> countByStage(Long userId, Transition transition) {
+        List<CountDTO> result = new ArrayList<>();
+
+        if ("ADMIN".equalsIgnoreCase(transition.getRole())) {
+            result = leadRepository.countLeadsByStageForAdmin(transition.getUserId());
+        } else if(userId != null) {
+            Set<Long> userIds = employeeRepository.findSubordinateIds(userId);
+            userIds.add(userId);
+            result = leadRepository.countLeadsByStageForTeam(userIds);
+        }
+        return success(result);
     }
 }

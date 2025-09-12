@@ -8,6 +8,7 @@ import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.lookups.dto.ActionLookupDTO;
 import com.gws.crm.core.lookups.dto.LeadLookupsDTO;
 import com.gws.crm.core.lookups.entity.*;
+import com.gws.crm.core.lookups.mapper.ProjectMapper;
 import com.gws.crm.core.lookups.repository.*;
 import com.gws.crm.core.lookups.service.LeadLookupsService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
+import static com.gws.crm.core.notification.mapper.NotificationMapper.toDto;
 
 @Service
 @RequiredArgsConstructor
@@ -42,11 +44,11 @@ public class LeadLookupsServiceImp implements LeadLookupsService {
                     .orElseThrow(NotFoundResourceException::new);
             id = employee.getAdmin().getId();
         }
-        List<Broker> brokers = brokerRepository.findAllByAdminId(id);
+        List<Broker> brokers = brokerRepository.findAllByAdminIdAndDeletedFalse(id);
         List<LeadStatus> leadStatuses = leadStatusRepository.findAll();
-        List<InvestmentGoal> investmentGoals = investmentGoalRepository.findAllByAdminId(id);
+        List<InvestmentGoal> investmentGoals = investmentGoalRepository.findAllByAdminIdAndDeletedFalse(id);
         List<Project> projects = projectRepository.findAllByAdminId(id);
-        List<CancelReasons> cancelReasons = cancelReasonsRepository.findAllByAdminId(id);
+        List<CancelReasons> cancelReasons = cancelReasonsRepository.findAllByAdminIdAndDeletedFalse(id);
         List<EmployeeSimpleDTO> salesReps = employeeRepository.findAllByAdminId(id)
                 .stream()
                 .map(employee -> EmployeeSimpleDTO.builder()
@@ -56,15 +58,15 @@ public class LeadLookupsServiceImp implements LeadLookupsService {
                         .build()
                 )
                 .collect(Collectors.toList());
-        List<Channel> channels = channelRepository.findAllByAdminId(id);
-        List<CommunicateWay> communicateWays = communicateWayRepository.findAllByAdminId(id);
-        List<CallOutcome> callOutcomes = callOutcomeRepository.findAllByAdminId(id);
-        List<Stage> stages = stageRepository.findAllByAdminId(id);
+        List<Channel> channels = channelRepository.findAllByAdminIdAndDeletedFalse(id);
+        List<CommunicateWay> communicateWays = communicateWayRepository.findAllByAdminIdAndDeletedFalse(id);
+        List<CallOutcome> callOutcomes = callOutcomeRepository.findAllByAdminIdAndDeletedFalse(id);
+        List<Stage> stages = stageRepository.findAllByAdminIdAndDeletedFalse(id);
         LeadLookupsDTO leadLookupsDTO = LeadLookupsDTO.builder()
                 .brokers(brokers)
                 .leadStatuses(leadStatuses)
                 .investmentGoals(investmentGoals)
-                .projects(projects)
+                .projects(ProjectMapper.toDTO(projects))
                 .cancelReasons(cancelReasons)
                 .salesReps(salesReps)
                 .channels(channels)
@@ -84,9 +86,9 @@ public class LeadLookupsServiceImp implements LeadLookupsService {
                     .orElseThrow(NotFoundResourceException::new);
             id = employee.getAdmin().getId();
         }
-        List<CancelReasons> cancelReasons = cancelReasonsRepository.findAllByAdminId(id);
-        List<CallOutcome> callOutcomes = callOutcomeRepository.findAllByAdminId(id);
-        List<Stage> stages = stageRepository.findAllByAdminId(id);
+        List<CancelReasons> cancelReasons = cancelReasonsRepository.findAllByAdminIdAndDeletedFalse(id);
+        List<CallOutcome> callOutcomes = callOutcomeRepository.findAllByAdminIdAndDeletedFalse(id);
+        List<Stage> stages = stageRepository.findAllByAdminIdAndDeletedFalse(id);
 
         ActionLookupDTO actionLookupDTO = ActionLookupDTO.builder()
                 .cancelReasons(cancelReasons)

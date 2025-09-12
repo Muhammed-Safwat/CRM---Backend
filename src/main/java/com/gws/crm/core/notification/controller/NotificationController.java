@@ -28,7 +28,6 @@ public class NotificationController {
     public ResponseEntity<?> getAllNotification(@RequestParam("page") int page,
                                                 @RequestParam("size") int size,
                                                 Transition transition) {
-        log.info(transition.getUserName() + " ==> ****************************88");
         return notificationService.getAllNotification(page, size, transition);
     }
 

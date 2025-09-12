@@ -18,13 +18,23 @@ public class ProjectDTO {
     @NotBlank
     private String name;
 
-    @NotNull
-    private Region region;
+    /*
+        @NotNull
+        private Region region;
+
+        @NotNull
+        private Category category;
+
+        @NotNull
+        private DevCompany devCompany;
+    */
 
     @NotNull
-    private Category category;
+    private String region;
 
     @NotNull
-    private DevCompany devCompany;
+    private String category;
 
+    @NotNull
+    private String devCompany;
 }
