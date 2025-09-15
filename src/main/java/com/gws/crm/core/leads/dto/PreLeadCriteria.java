@@ -1,6 +1,5 @@
 package com.gws.crm.core.leads.dto;
 
-
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -22,4 +21,8 @@ public class PreLeadCriteria {
     private int size;
     private Boolean delayed;
     private Boolean archived;
+    private List<Long> channel;
+    private List<Long> project;
+    private LocalDate lastActionDate;
+    private LocalDate creationDate;
 }

@@ -104,13 +104,13 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
     @Query("SELECT s.id FROM Employee m JOIN m.subordinates s WHERE m.id = :managerId")
     Set<Long> findSubordinateIds(@Param("managerId") Long managerId);
 
-    @Query("SELECT new com.gws.crm.core.leads.dto.CountDTO(e.id , e.jobName, COUNT(e)) " +
+    @Query("SELECT new com.gws.crm.core.leads.dto.CountDTO(e.jobName, COUNT(e)) " +
             "FROM Employee e " +
             "WHERE e.admin.id = :adminId " +
             "GROUP BY e.jobName")
     List<CountDTO> countEmployeesByJobTitleForAdmin(@Param("adminId") Long adminId);
 
-    @Query("SELECT new com.gws.crm.core.leads.dto.CountDTO(e.id, e.jobName, COUNT(e)) " +
+    @Query("SELECT new com.gws.crm.core.leads.dto.CountDTO( e.jobName, COUNT(e)) " +
             "FROM Employee e " +
             "WHERE e.id IN :employeeIds " +
             "GROUP BY e.jobName")

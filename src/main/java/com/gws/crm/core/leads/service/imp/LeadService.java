@@ -173,11 +173,11 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
         List<CountDTO> result = new ArrayList<>();
 
         if ("ADMIN".equalsIgnoreCase(transition.getRole())) {
-            result = leadRepository.countLeadsByStageForAdmin(transition.getUserId());
+            result = leadRepository.countAllStagesWithLeadCountForAdmin(transition.getUserId());
         } else if(userId != null) {
             Set<Long> userIds = employeeRepository.findSubordinateIds(userId);
             userIds.add(userId);
-            result = leadRepository.countLeadsByStageForTeam(userIds);
+            result = leadRepository.countAllStagesWithLeadCountForTeam(userIds);
         }
         return success(result);
     }

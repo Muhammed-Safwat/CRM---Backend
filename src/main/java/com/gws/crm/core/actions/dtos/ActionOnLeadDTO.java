@@ -15,11 +15,11 @@ public class ActionOnLeadDTO {
 
     private Long leadId;
     private String actionType;
-    private Long callOutcome;
+    private Long nextAction;
     private LocalDateTime nextActionDate;
     private Long stage;
     private Long cancellationReason;
     private LocalDateTime callBackTime;
     private String comment;
-
+    private boolean answer;
 }

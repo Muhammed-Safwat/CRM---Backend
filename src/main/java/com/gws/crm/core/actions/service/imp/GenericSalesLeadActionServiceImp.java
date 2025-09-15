@@ -196,20 +196,19 @@ public abstract class GenericSalesLeadActionServiceImp<T extends SalesLead>
                 .orElseThrow(NotFoundResourceException::new);
 
         String leadName = lead.getName(); // استخدم اسم الليد
+        ActionType actionType = ActionType.NO_ANSWER;
 
         // Step 2: Determine Action Type
-        ActionType actionType = switch (actionDTO.getActionType().toLowerCase()) {
-            case "answered" -> ActionType.ANSWERED;
-            case "noanswer" -> ActionType.NO_ANSWER;
-            default -> throw new IllegalArgumentException("Invalid action type");
-        };
+        if (actionDTO.isAnswer()) {
+            actionType =  ActionType.ANSWERED;
+        }
 
         // Step 3: Generate Description and Outcome
         String description;
         CallOutcome outcome = null;
 
-        if (actionType == ActionType.ANSWERED && actionDTO.getCallOutcome() != null) {
-            outcome = callOutcomeRepository.getReferenceById(actionDTO.getCallOutcome());
+        if (actionType == ActionType.ANSWERED && actionDTO.getNextAction() != null) {
+            outcome = callOutcomeRepository.getReferenceById(actionDTO.getNextAction());
             description = "Answered call for lead: " + leadName + " - Outcome: " + outcome.getName();
         } else if (actionType == ActionType.NO_ANSWER) {
             description = "No answer from lead: " + leadName + ". Callback scheduled.";

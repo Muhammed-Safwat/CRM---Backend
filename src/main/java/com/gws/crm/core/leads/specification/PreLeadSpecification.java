@@ -34,7 +34,10 @@ public class PreLeadSpecification {
         specs.add(filterByUser(ids, leadCriteria.getMyLead(), transition));
         specs.add(filterByCreators(leadCriteria.getCreator(), transition));
         specs.add(filterByCountry(leadCriteria.getCountry()));
-
+        specs.add(filterByChannel(leadCriteria.getChannel()));
+        specs.add(filterByProject(leadCriteria.getProject()));
+        specs.add(filterByLastActionDate(leadCriteria.getLastActionDate()));
+        specs.add(filterByCreationDate(leadCriteria.getCreationDate()));
         return Specification.allOf(specs);
     }
 
@@ -50,7 +53,23 @@ public class PreLeadSpecification {
             return cb.conjunction();
         };
     }
+    private static Specification<PreLead> filterByChannel(List<Long> channelIds) {
+        return (root, query, cb) -> (channelIds == null || channelIds.isEmpty()) ? cb.conjunction() :
+                root.join("channel", JoinType.LEFT).get("id").in(channelIds);
+    }
 
+    private static Specification<PreLead> filterByProject(List<Long> projectIds) {
+        return (root, query, cb) -> (projectIds == null || projectIds.isEmpty()) ? cb.conjunction() :
+                root.join("project", JoinType.LEFT).get("id").in(projectIds);
+    }
+
+    private static Specification<PreLead> filterByLastActionDate(LocalDate lastActionDate) {
+        return (root, query, cb) -> lastActionDate != null ? cb.equal(root.get("lastActionDate"), lastActionDate) : cb.conjunction();
+    }
+
+    private static Specification<PreLead> filterByCreationDate(LocalDate creationDate) {
+        return (root, query, cb) -> creationDate != null ? cb.equal(root.get("creationDate"), creationDate) : cb.conjunction();
+    }
 
     private static Specification<PreLead> filterByUser(List<Long> ids, Boolean isMyLead, Transition transition) {
         return (root, query, criteriaBuilder) -> {
@@ -123,8 +142,7 @@ public class PreLeadSpecification {
             return criteriaBuilder.or(
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), lowerKeyword),
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), lowerKeyword),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("country")), lowerKeyword),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.join("phoneNumbers").get("phone")), lowerKeyword)
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("country")), lowerKeyword)
             );
         };
     }

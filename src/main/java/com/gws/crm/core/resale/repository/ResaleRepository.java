@@ -56,15 +56,18 @@ public interface ResaleRepository extends JpaRepository<Resale, Long>, JpaSpecif
 
  */
 
-    @Query("SELECT new com.gws.crm.core.leads.dto.CountDTO(r.id,r.status.name, COUNT(r)) " +
-            "FROM Resale r " +
-            "WHERE r.admin.id = :userId AND r.deleted = false " +
-            "GROUP BY r.status.name")
-    List<CountDTO> countResaleByStageForAdmin(Long userId);
+    @Query("SELECT new com.gws.crm.core.leads.dto.CountDTO(st.id, st.name, COUNT(r)) " +
+            "FROM ResaleStatus st " +
+            "LEFT JOIN Resale r ON r.status = st AND r.admin.id = :userId AND r.deleted = false " +
 
-    @Query("SELECT new com.gws.crm.core.leads.dto.CountDTO(r.id,r.status.name, COUNT(r)) " +
-            "FROM Resale r " +
-            "WHERE r.admin.id IN :userIds AND r.deleted = false " +
-            "GROUP BY r.status.name")
-    List<CountDTO> countResaleByStageForTeam(Set<Long> userIds);
+            "GROUP BY st.id, st.name")
+    List<CountDTO> countAllResaleByStatusForAdmin(Long userId);
+
+    @Query("SELECT new com.gws.crm.core.leads.dto.CountDTO(st.id, st.name, COUNT(r)) " +
+            "FROM ResaleStatus st " +
+            "LEFT JOIN Resale r ON r.status = st AND r.admin.id IN :userIds AND r.deleted = false " +
+
+            "GROUP BY st.id, st.name")
+    List<CountDTO> countAllResaleByStatusForTeam(Set<Long> userIds);
+
 }

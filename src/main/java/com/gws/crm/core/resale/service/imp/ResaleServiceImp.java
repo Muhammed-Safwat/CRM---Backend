@@ -69,7 +69,8 @@ public class ResaleServiceImp implements ResaleService {
                             .orElseThrow(NotFoundResourceException::new);
             resaleCriteria.setSubordinates(employee.getSubordinates()
                     .stream()
-                    .map(User::getId).toList());
+                    .map(User::getId)
+                    .toList());
         }
         Specification<Resale> leadSpecification = filter(resaleCriteria, transition);
         Pageable pageable = PageRequest.of(resaleCriteria.getPage(), resaleCriteria.getSize());
@@ -282,11 +283,11 @@ public class ResaleServiceImp implements ResaleService {
             List<CountDTO> result = new ArrayList<>();
 
             if ("ADMIN".equalsIgnoreCase(transition.getRole())) {
-                result = resaleRepository.countResaleByStageForAdmin(transition.getUserId());
+                result = resaleRepository.countAllResaleByStatusForAdmin(transition.getUserId());
             } else if(userId != null) {
                 Set<Long> userIds = employeeRepository.findSubordinateIds(userId);
                 userIds.add(userId);
-                result = resaleRepository.countResaleByStageForTeam(userIds);
+                result = resaleRepository.countAllResaleByStatusForTeam(userIds);
             }
             return success(result);
 

@@ -23,9 +23,4 @@ public interface GenericSalesLeadRepository<T extends SalesLead> extends Generic
     @Query("UPDATE SalesLead l SET l.deleted = false WHERE l.id = :leadId")
     void restoreLead(Long leadId);
 
-    @Query("SELECT new com.gws.crm.core.leads.dto.CountDTO(s.id,s.stage.name, COUNT(s)) " +
-            "FROM SalesLead s WHERE s.salesRep.id IN :userIds GROUP BY s.stage.name")
-    List<CountDTO> countLeadsByStageForTeam(@Param("userIds") Set<Long> userIds);
-
-
 }

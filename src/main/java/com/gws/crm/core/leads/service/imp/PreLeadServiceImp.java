@@ -300,11 +300,11 @@ public class PreLeadServiceImp implements PreLeadService {
         List<CountDTO> result = new ArrayList<>();
 
         if ("ADMIN".equalsIgnoreCase(transition.getRole())) {
-            result = preLeadRepository.countLeadsByChannelForAdmin(transition.getUserId());
+            result = preLeadRepository.countAllChannelsWithLeadCountForAdmin(transition.getUserId());
         } else if(userId != null) {
             Set<Long> userIds = employeeRepository.findSubordinateIds(userId);
             userIds.add(userId);
-            result = preLeadRepository.countLeadsByChannelForTeam(userIds);
+            result = preLeadRepository.countAllChannelsWithLeadCountForTeam(userIds);
         }
         return success(result);
     }
