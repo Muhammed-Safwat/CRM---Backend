@@ -56,10 +56,13 @@ public class ResaleSpecification {
 
     private static Specification<Resale> filterByUser(List<Long> ids, boolean isMyLead, Transition transition) {
         return (root, query, cb) -> {
+            if(!isMyLead && "ADMIN".equals(transition.getRole())){
+                return cb.equal(root.get("admin").get("id"),transition.getUserId());
+            }else
             if (!isMyLead && "USER".equals(transition.getRole()) && !ids.isEmpty()) {
                 return root.join("salesRep", JoinType.INNER).get("id").in(ids);
             } else if (isMyLead && "ADMIN".equals(transition.getRole())) {
-                return cb.isNull(root.get("salesRep"));
+                return cb.equal(root.get("salesRep"),transition.getUserId());
             } else if (isMyLead && "USER".equals(transition.getRole())) {
                 return cb.equal(root.get("salesRep").get("id"), transition.getUserId());
             }
