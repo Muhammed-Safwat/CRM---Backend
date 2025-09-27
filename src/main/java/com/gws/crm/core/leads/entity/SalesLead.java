@@ -44,6 +44,9 @@ public abstract class SalesLead extends BaseLead {
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.DETACH})
     private Employee salesRep;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.DETACH})
+    private Employee assignFrom;
+
     @CreationTimestamp
     private LocalDateTime assignAt;
 

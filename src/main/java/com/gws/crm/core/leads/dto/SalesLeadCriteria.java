@@ -15,6 +15,7 @@ public class SalesLeadCriteria {
     private List<Long> communicateWay;
     private List<Long> cancelReasons;
     private List<Long> salesRep;
+    private List<Long> assignFrom ;
     private List<Long> channel;
     private List<Long> broker;
     private Boolean deleted;

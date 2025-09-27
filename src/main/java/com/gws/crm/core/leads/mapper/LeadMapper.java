@@ -143,10 +143,18 @@ public class LeadMapper {
                         .build()
                 : null;
 
+
+        ProjectDTO projectDto = lead.getProject() != null ?
+                ProjectDTO.builder()
+                        .name(lead.getProject().getName())
+                        .id(lead.getProject().getId())
+                        .build()
+                : null;
         return LeadResponse.builder()
                 .id(lead.getId())
                 .phoneNumbers(phoneNumberMapper.toDtoList(lead.getPhoneNumbers()))
                 .name(lead.getName())
+                .project(projectDto)
                 .status(leadStatusDto)
                 .whatsappNumber(lead.getWhatsappNumber())
                 .email(lead.getEmail())

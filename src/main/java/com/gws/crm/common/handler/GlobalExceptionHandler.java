@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
     private long getTransactionId() {
         return new Transition().getId();
     }
-
+/*
     private void logError(Exception ex) {
         String transactionId = String.valueOf(getTransactionId());
         errorLogger.error("[Transaction ID: {}] Unexpected error", transactionId, ex);
@@ -228,5 +228,5 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleOptimisticLocking(Exception ex) {
         String userMessage = "The resource was updated by another process, please try again.";
         return buildError(HttpStatus.CONFLICT, userMessage, ex);
-    }
+    }*/
 }

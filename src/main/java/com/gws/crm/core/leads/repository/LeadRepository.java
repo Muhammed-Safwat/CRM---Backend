@@ -28,5 +28,20 @@ public interface LeadRepository extends GenericSalesLeadRepository<Lead> {
             "GROUP BY st.id, st.name")
     List<CountDTO> countAllStagesWithLeadCountForTeam(@Param("userIds") Set<Long> userIds);
 
+    @Query("SELECT l FROM Lead l " +
+            "LEFT JOIN FETCH l.status " +
+            "LEFT JOIN FETCH l.project " +
+            "WHERE l.id IN :ids")
+    List<Lead> findAllBasic(@Param("ids") List<Long> ids);
+
+    @Query("SELECT DISTINCT l FROM Lead l " +
+            "LEFT JOIN FETCH l.phoneNumbers " +
+            "WHERE l.id IN :ids")
+    List<Lead> findAllWithPhones(@Param("ids") List<Long> ids);
+
+    @Query("SELECT DISTINCT l FROM Lead l " +
+            "LEFT JOIN FETCH l.actions " +
+            "WHERE l.id IN :ids")
+    List<Lead> findAllWithActions(@Param("ids") List<Long> ids);
 
 }

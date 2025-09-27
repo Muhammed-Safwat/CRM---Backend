@@ -13,7 +13,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 @Component
 public class PerformanceAnalysisFilter implements Filter {
-
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        chain.doFilter(request,response);
+    }
+/*
     private static final ConcurrentHashMap<String, AtomicInteger> activeRequests = new ConcurrentHashMap<>();
     private static final AtomicInteger totalActiveRequests = new AtomicInteger(0);
 
@@ -91,4 +95,6 @@ public class PerformanceAnalysisFilter implements Filter {
         if (status >= 400 && status < 500) return "❌";
         return "💥";
     }
+
+ */
 }
