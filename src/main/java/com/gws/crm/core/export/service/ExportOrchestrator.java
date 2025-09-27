@@ -87,7 +87,7 @@ public class ExportOrchestrator {
         }
     }
 
-    @Scheduled(fixedRate = 600000)
+    @Scheduled(fixedRate = 900000)
     public void processQueuedTasks() {
         log.info("=== SCHEDULED TASK RUNNER STARTED ===");
 
