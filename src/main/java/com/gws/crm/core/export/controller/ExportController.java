@@ -1,16 +1,10 @@
 package com.gws.crm.core.export.controller;
 
-import com.gws.crm.authentication.entity.User;
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.export.dtos.ExportCritira;
+import com.gws.crm.core.export.dtos.ExportCriteria;
 import com.gws.crm.core.export.dtos.ExportRequestDto;
-import com.gws.crm.core.export.dtos.ExportResponseDto;
-import com.gws.crm.core.export.entity.ExportTask;
-import com.gws.crm.core.export.mapper.ExportTaskMapper;
 import com.gws.crm.core.export.service.ExportOrchestrator;
-import com.gws.crm.core.export.spcification.ExportSpecification;
 import lombok.AllArgsConstructor;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,8 +26,24 @@ public class ExportController {
     }
 
     @PostMapping("all")
-    public ResponseEntity<?> getTasks(@RequestBody ExportCritira exportCritira, Transition transition) {
-        return orchestrator.getTasks(exportCritira, transition);
+    public ResponseEntity<?> getTasks(@RequestBody ExportCriteria exportCriteria, Transition transition) {
+        return orchestrator.getTasks(exportCriteria, transition);
     }
+
+    @GetMapping("statistics")
+    public ResponseEntity<?> getStatistics(Transition transition){
+        return orchestrator.getStatistics(transition);
+    }
+
+    @GetMapping("/{id}/download")
+    public ResponseEntity<?> download(@PathVariable Long id, Transition transition) {
+        return orchestrator.downloadFile(id, transition);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id, Transition transition) {
+        return orchestrator.deleteFile(id, transition);
+    }
+
 
 }

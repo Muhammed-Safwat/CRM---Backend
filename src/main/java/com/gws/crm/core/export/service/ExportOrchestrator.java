@@ -2,9 +2,10 @@ package com.gws.crm.core.export.service;
 
 import com.gws.crm.authentication.entity.User;
 import com.gws.crm.authentication.repository.UserRepository;
+import com.gws.crm.common.dto.ExportStatisticsDto;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
-import com.gws.crm.core.export.dtos.ExportCritira;
+import com.gws.crm.core.export.dtos.ExportCriteria;
 import com.gws.crm.core.export.dtos.ExportRequestDto;
 import com.gws.crm.core.export.dtos.ExportResponseDto;
 import com.gws.crm.core.export.entity.ExportStatus;
@@ -14,10 +15,14 @@ import com.gws.crm.core.export.repository.ExportTaskRepository;
 import com.gws.crm.core.export.spcification.ExportSpecification;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.annotation.Async;
@@ -87,7 +92,7 @@ public class ExportOrchestrator {
         }
     }
 
-    @Scheduled(fixedRate = 900000)
+    @Scheduled(fixedRate = 180000)
     public void processQueuedTasks() {
         log.info("=== SCHEDULED TASK RUNNER STARTED ===");
 
@@ -129,7 +134,6 @@ public class ExportOrchestrator {
                                             .map(h -> h.getClass().getSimpleName())
                                             .toList())));
 
-
             byte[] fileBytes = handler.generateFile(task.getExportIds(), Map.of());
             if (fileBytes == null || fileBytes.length == 0) {
                 throw new RuntimeException("Generated file is empty or null");
@@ -141,15 +145,14 @@ public class ExportOrchestrator {
 
             Long adminId = task.getExportedBy().getId();
             String typeFolder = task.getType().toLowerCase();
-            String folderPath = "exports/" + adminId + "/" + typeFolder + "/";
+            String folderPath = adminId + "/" + typeFolder + "/";
 
             String fullPath = folderPath + filename;
 
             String filePath = storage.store(
                     fileBytes,
                     fullPath,
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            );
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
             if (filePath == null || filePath.isEmpty()) {
                 throw new RuntimeException("Storage service returned empty file path");
@@ -180,16 +183,62 @@ public class ExportOrchestrator {
         return success(responseDto);
     }
 
-    public ResponseEntity<?> getTasks(ExportCritira exportCritira, Transition transition) {
+    public ResponseEntity<?> getTasks(ExportCriteria exportCriteria, Transition transition) {
         Pageable page = PageRequest.of(
-                exportCritira.getPage(),
-                exportCritira.getSize(),
-                Sort.by(Sort.Direction.DESC, "createdAt")
-        );
+                exportCriteria.getPage(),
+                exportCriteria.getSize(),
+                Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        Page<ExportTask> tasks = taskRepo.findAll(exportSpecification.filter(exportCritira, transition), page);
+        Page<ExportTask> tasks = taskRepo.findAll(exportSpecification.filter(exportCriteria, transition), page);
 
         Page<ExportResponseDto> responseDtos = tasks.map(taskMapper::mapToDto);
         return success(responseDtos);
     }
+
+    public ResponseEntity<?> getStatistics(Transition transition) {
+        long createdById = transition.getUserId();
+        ExportStatisticsDto exportDto = taskRepo.countByStatus(createdById);
+        return success(exportDto);
+    }
+
+    public ResponseEntity<?> downloadFile(Long id, Transition transition) {
+        ExportTask task = taskRepo.findById(id)
+                .orElseThrow(NotFoundResourceException::new);
+
+        if (task.getFilePath() == null) {
+            return ResponseEntity.badRequest().body("File not generated yet");
+        }
+
+        byte[] fileBytes = storage.load(task.getFilePath());
+        if (fileBytes == null || fileBytes.length == 0) {
+            return ResponseEntity.internalServerError().body("File not found in storage");
+        }
+
+        Resource resource = new ByteArrayResource(fileBytes);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + task.getFilename() + "\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .contentLength(fileBytes.length)
+                .body(resource);
+    }
+
+    @Transactional
+    public ResponseEntity<?> deleteFile(Long id, Transition transition) {
+        ExportTask task = taskRepo.findById(id)
+                .orElseThrow(NotFoundResourceException::new);
+
+        if (task.getFilePath() != null) {
+            try {
+              //  storage.delete(task.getFilePath());
+            } catch (Exception e) {
+                log.warn("Failed to delete file from storage: {}", e.getMessage());
+            }
+        }
+
+         taskRepo.delete(task);
+
+        return ResponseEntity.noContent().build();
+    }
+
 }
