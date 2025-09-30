@@ -109,6 +109,8 @@ public class TeleSalesLeadMapper {
                 .project(projectDTO)
                 .deleted(lead.isDeleted())
                 .creator(creatorDTO)
+                .lastActionComment(lead.getLastActionComment())
+
                 .broker(brokerDTO)
                 .campaignId(lead.getCampaignId())
                 .lastStage(lead.getLastStage())
@@ -165,6 +167,7 @@ public class TeleSalesLeadMapper {
                 .deleted(lead.isDeleted())
                 .lastStage(lead.getLastStage())
                 .assignAt(lead.getAssignAt())
+                .lastActionComment(lead.getLastActionComment())
                 .delayed(lead.isDelay())
                 .archived(lead.isArchive())
                 .build();

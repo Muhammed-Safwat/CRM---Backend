@@ -1,6 +1,5 @@
 package com.gws.crm.core.actions.repository;
 
-
 import com.gws.crm.core.actions.entity.UserAction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,8 +26,6 @@ public interface UserActionRepository extends JpaRepository<UserAction, Long> {
             """)
     Page<UserAction> findActionsByLeadId(@Param("leadId") Long leadId, Pageable pageable);
 
-
     Page<UserAction> findAllByCreatorId(@Param("creatorId") Long creatorId, Pageable pageable);
-
 
 }

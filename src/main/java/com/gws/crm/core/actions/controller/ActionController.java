@@ -1,6 +1,7 @@
 package com.gws.crm.core.actions.controller;
 
 import com.gws.crm.common.entities.Transition;
+import com.gws.crm.core.actions.dtos.ActionCriteria;
 import com.gws.crm.core.actions.service.LeadActionService;
 import com.gws.crm.core.leads.entity.BaseLead;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,12 @@ public abstract class ActionController<T extends BaseLead> {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             Transition transition) {
-
         return leadActionService.getActions(leadId, page, size, transition);
     }
+
+    @PostMapping("simple-actions")
+    public ResponseEntity<?> getActions(@RequestBody ActionCriteria criteria, Transition transition) {
+        return leadActionService.getActions(criteria, transition);
+    }
+
 }

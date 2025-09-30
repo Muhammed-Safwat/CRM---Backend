@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,15 +19,57 @@ public class LocalFileStorageService implements FileStorageService {
     @Value("${app.file.upload.dir:uploads/exports}")
     private String uploadDir;
 
+    @PostConstruct
+    public void initializeUploadDirectory() {
+        try {
+            Path uploadPath = Paths.get(uploadDir);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+                log.info("Created upload directory: {}", uploadPath.toAbsolutePath());
+            } else {
+                log.info("Upload directory already exists: {}", uploadPath.toAbsolutePath());
+            }
+        } catch (IOException e) {
+            log.error("Failed to initialize upload directory: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to initialize upload directory", e);
+        }
+    }
+
     @Override
     public String store(byte[] data, String filename, String contentType) {
         try {
             log.info("Attempting to store file: {} with size: {} bytes", filename, data.length);
+            log.info("Upload directory: {}", uploadDir);
+
+            // Validate inputs
+            if (data == null || data.length == 0) {
+                throw new IllegalArgumentException("Data cannot be null or empty");
+            }
+            if (filename == null || filename.trim().isEmpty()) {
+                throw new IllegalArgumentException("Filename cannot be null or empty");
+            }
 
             Path uploadPath = Paths.get(uploadDir);
             Path filePath = uploadPath.resolve(filename);
 
-            Files.createDirectories(filePath.getParent());
+            log.info("Resolved file path: {}", filePath.toAbsolutePath());
+
+            // Ensure the parent directory exists
+            Path parentDir = filePath.getParent();
+            if (parentDir != null) {
+                log.info("Creating parent directory: {}", parentDir.toAbsolutePath());
+                Files.createDirectories(parentDir);
+            } else {
+                // If no parent directory, create the upload directory
+                log.info("Creating upload directory: {}", uploadPath.toAbsolutePath());
+                Files.createDirectories(uploadPath);
+            }
+
+            // Verify directory was created successfully
+            if (!Files.exists(filePath.getParent())) {
+                throw new IOException("Failed to create directory: " + filePath.getParent());
+            }
+
             Files.write(filePath, data, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
             log.info("File stored successfully at: {}", filePath.toAbsolutePath());
@@ -38,6 +81,9 @@ public class LocalFileStorageService implements FileStorageService {
 
         } catch (IOException e) {
             log.error("Failed to store file {}: {}", filename, e.getMessage(), e);
+            throw new RuntimeException("Failed to store file: " + e.getMessage(), e);
+        } catch (Exception e) {
+            log.error("Unexpected error storing file {}: {}", filename, e.getMessage(), e);
             throw new RuntimeException("Failed to store file: " + e.getMessage(), e);
         }
     }

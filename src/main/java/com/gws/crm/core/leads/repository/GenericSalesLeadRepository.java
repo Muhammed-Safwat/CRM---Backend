@@ -2,6 +2,8 @@ package com.gws.crm.core.leads.repository;
 
 import com.gws.crm.core.leads.dto.CountDTO;
 import com.gws.crm.core.leads.entity.SalesLead;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,4 +25,5 @@ public interface GenericSalesLeadRepository<T extends SalesLead> extends Generic
     @Query("UPDATE SalesLead l SET l.deleted = false WHERE l.id = :leadId")
     void restoreLead(Long leadId);
 
+    Page<T> findAllByAdminId(Pageable pageable, Long userId);
 }

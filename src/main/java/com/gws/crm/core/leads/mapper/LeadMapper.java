@@ -121,6 +121,7 @@ public class LeadMapper {
                 .assignAt(lead.getAssignAt())
                 .delayed(lead.isDelay())
                 .archived(lead.isArchive())
+                .lastActionComment(lead.getLastActionComment())
                 .build();
     }
 
@@ -167,6 +168,7 @@ public class LeadMapper {
                 .assignAt(lead.getAssignAt())
                 .delayed(lead.isDelay())
                 .archived(lead.isArchive())
+                .lastActionComment(lead.getLastActionComment())
                 .build();
     }
 

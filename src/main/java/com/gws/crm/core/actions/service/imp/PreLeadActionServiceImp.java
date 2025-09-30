@@ -4,16 +4,27 @@ import com.gws.crm.authentication.entity.User;
 import com.gws.crm.authentication.repository.UserRepository;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
+import com.gws.crm.core.actions.dtos.ActionCriteria;
+import com.gws.crm.core.actions.dtos.ActionResponse;
 import com.gws.crm.core.actions.entity.ActionType;
 import com.gws.crm.core.actions.entity.LeadActionDetails;
 import com.gws.crm.core.actions.entity.UserAction;
 import com.gws.crm.core.actions.mapper.ActionMapper;
+import com.gws.crm.core.actions.repository.ActionDetailsRepository;
 import com.gws.crm.core.actions.repository.UserActionRepository;
 import com.gws.crm.core.leads.entity.PreLead;
 import com.gws.crm.core.leads.repository.PreLeadRepository;
 import lombok.extern.java.Log;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.gws.crm.common.handler.ApiResponseHandler.success;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,15 +36,19 @@ public class PreLeadActionServiceImp extends GenericLeadActionServiceImp<PreLead
     protected final UserRepository userRepository;
     protected final PreLeadRepository leadRepository;
     protected final UserActionRepository userActionRepository;
-
+    protected final ActionMapper actionMapper;
+    protected final ActionDetailsRepository actionDetailsRepository;
     public PreLeadActionServiceImp(UserRepository userRepository,
                                    PreLeadRepository leadRepository,
                                    UserActionRepository userActionRepository,
-                                   ActionMapper actionMapper) {
+                                   ActionMapper actionMapper,
+                                   ActionDetailsRepository actionDetailsRepository) {
         super(userRepository, leadRepository, userActionRepository, actionMapper);
         this.userRepository = userRepository;
         this.leadRepository = leadRepository;
         this.userActionRepository = userActionRepository;
+        this.actionMapper = actionMapper;
+        this.actionDetailsRepository = actionDetailsRepository;
     }
 
     @Override
@@ -170,6 +185,14 @@ public class PreLeadActionServiceImp extends GenericLeadActionServiceImp<PreLead
             lead.getActions().add(importAction);
             leadRepository.save(lead);
         }
+    }
+
+    @Override
+    public ResponseEntity<?> getActions(ActionCriteria criteria, Transition transition) {
+        Pageable pageable = PageRequest.of(criteria.getPage(), criteria.getSize(), Sort.by("createdAt").descending());
+        Page<LeadActionDetails> actions = actionDetailsRepository.findActionByAdmin(transition.getUserId(), pageable);
+        Page<ActionResponse> responsePage = actionMapper.toDto(actions.map(LeadActionDetails::getUserAction));
+        return success(responsePage);
     }
 
 }

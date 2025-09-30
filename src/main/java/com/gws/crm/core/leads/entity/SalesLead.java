@@ -70,4 +70,5 @@ public abstract class SalesLead extends BaseLead {
     @JoinColumn
     private Stage stage;
 
+    private String lastActionComment;
 }

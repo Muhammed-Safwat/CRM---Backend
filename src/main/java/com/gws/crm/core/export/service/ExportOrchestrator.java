@@ -230,7 +230,7 @@ public class ExportOrchestrator {
 
         if (task.getFilePath() != null) {
             try {
-              //  storage.delete(task.getFilePath());
+               storage.delete(task.getFilePath());
             } catch (Exception e) {
                 log.warn("Failed to delete file from storage: {}", e.getMessage());
             }

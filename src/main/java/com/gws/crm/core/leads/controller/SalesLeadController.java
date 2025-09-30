@@ -24,40 +24,39 @@ public abstract class SalesLeadController<T extends SalesLead, D extends AddLead
         this.service = service;
     }
 
-
     @PostMapping("all")
     public ResponseEntity<?> getAllLeads(@Valid @RequestBody SalesLeadCriteria salesLeadCriteria,
-                                         Transition transition) {
+            Transition transition) {
         return service.getLeads(salesLeadCriteria, transition);
     }
 
     @GetMapping("/{leadId}")
     public ResponseEntity<?> getLeadDetails(@PathVariable("leadId") long leadId,
-                                            Transition transition) {
+            Transition transition) {
         return service.getLeadDetails(leadId, transition);
     }
 
     @PostMapping
     public ResponseEntity<?> addLead(@Valid @RequestBody D leadDTO,
-                                     Transition transition) {
+            Transition transition) {
         return service.addLead(leadDTO, transition);
     }
 
     @PutMapping
     public ResponseEntity<?> updateLead(@Valid @RequestBody D leadDTO,
-                                        Transition transition) {
+            Transition transition) {
         return service.updateLead(leadDTO, transition);
     }
 
     @DeleteMapping("/{leadId}")
     public ResponseEntity<?> deleteLead(@PathVariable Long leadId,
-                                        Transition transition) {
+            Transition transition) {
         return service.deleteLead(leadId, transition);
     }
 
     @DeleteMapping("restore/{leadId}")
     public ResponseEntity<?> restoreLead(@PathVariable Long leadId,
-                                         Transition transition) {
+            Transition transition) {
         return service.restoreLead(leadId, transition);
     }
 
@@ -68,7 +67,7 @@ public abstract class SalesLeadController<T extends SalesLead, D extends AddLead
 
     @PostMapping("import")
     public ResponseEntity<?> importLead(@Valid @RequestBody List<ImportLeadDTO> leads,
-                                        Transition transition) {
+            Transition transition) {
         return service.importLead(leads, transition);
     }
 
@@ -93,8 +92,13 @@ public abstract class SalesLeadController<T extends SalesLead, D extends AddLead
     }
 
     @GetMapping("count-by-status")
-    public ResponseEntity<?> countByStage(@Param("userId") Long userId , Transition transition){
-        return service.countByStage(userId,transition);
+    public ResponseEntity<?> countByStage(@Param("userId") Long userId, Transition transition) {
+        return service.countByStage(userId, transition);
+    }
+
+    @PostMapping("last-updated")
+    public ResponseEntity<?> lastUpdated(@RequestBody SalesLeadCriteria salesLeadCriteria ,Transition transition) {
+        return service.lastUpdated(salesLeadCriteria,transition);
     }
 
 }

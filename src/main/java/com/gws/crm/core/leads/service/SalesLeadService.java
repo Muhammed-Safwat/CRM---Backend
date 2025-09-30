@@ -37,4 +37,6 @@ public interface SalesLeadService<T extends SalesLead, D extends AddLeadDTO> {
     ResponseEntity<?> toggleArchive(long leadId, Transition transition);
 
     ResponseEntity<?> countByStage(Long userId, Transition transition);
+
+    ResponseEntity<?> lastUpdated(SalesLeadCriteria salesLeadCriteria, Transition transition);
 }

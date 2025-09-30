@@ -2,6 +2,7 @@ package com.gws.crm.core.actions.service.imp;
 
 import com.gws.crm.authentication.repository.UserRepository;
 import com.gws.crm.core.actions.mapper.ActionMapper;
+import com.gws.crm.core.actions.repository.ActionDetailsRepository;
 import com.gws.crm.core.actions.repository.UserActionRepository;
 import com.gws.crm.core.leads.entity.Lead;
 import com.gws.crm.core.leads.repository.LeadRepository;
@@ -17,8 +18,8 @@ public class SalesLeadActionServiceImp extends GenericSalesLeadActionServiceImp<
 
     protected SalesLeadActionServiceImp(UserRepository userRepository, LeadRepository leadRepository,
                                         UserActionRepository userActionRepository, ActionMapper actionMapper, CallOutcomeRepository callOutcomeRepository,
-                                        CancelReasonsRepository cancelReasonsRepository, StageRepository stageRepository) {
-        super(userRepository, leadRepository, userActionRepository, actionMapper, callOutcomeRepository, cancelReasonsRepository, stageRepository);
+                                        CancelReasonsRepository cancelReasonsRepository, StageRepository stageRepository, ActionDetailsRepository actionDetailsRepository) {
+        super(userRepository, leadRepository, userActionRepository, actionMapper, callOutcomeRepository, cancelReasonsRepository, stageRepository, actionDetailsRepository);
     }
 
 

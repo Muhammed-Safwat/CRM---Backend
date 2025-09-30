@@ -5,10 +5,13 @@ import com.gws.crm.authentication.repository.UserRepository;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.core.actions.dtos.ActionOnLeadDTO;
+import com.gws.crm.core.actions.dtos.ActionResponse;
+import com.gws.crm.core.actions.dtos.ActionCriteria;
 import com.gws.crm.core.actions.entity.ActionType;
 import com.gws.crm.core.actions.entity.LeadActionDetails;
 import com.gws.crm.core.actions.entity.UserAction;
 import com.gws.crm.core.actions.mapper.ActionMapper;
+import com.gws.crm.core.actions.repository.ActionDetailsRepository;
 import com.gws.crm.core.actions.repository.UserActionRepository;
 import com.gws.crm.core.leads.entity.SalesLead;
 import com.gws.crm.core.leads.repository.GenericSalesLeadRepository;
@@ -19,6 +22,11 @@ import com.gws.crm.core.lookups.repository.CallOutcomeRepository;
 import com.gws.crm.core.lookups.repository.CancelReasonsRepository;
 import com.gws.crm.core.lookups.repository.StageRepository;
 import lombok.extern.java.Log;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,12 +48,15 @@ public abstract class GenericSalesLeadActionServiceImp<T extends SalesLead>
     protected final CallOutcomeRepository callOutcomeRepository;
     protected final CancelReasonsRepository cancelReasonsRepository;
     protected final StageRepository stageRepository;
+    protected final ActionDetailsRepository actionDetailsRepository;
 
-    protected GenericSalesLeadActionServiceImp(UserRepository userRepository, GenericSalesLeadRepository<T> leadRepository,
-                                               UserActionRepository userActionRepository, ActionMapper actionMapper,
-                                               CallOutcomeRepository callOutcomeRepository,
-                                               CancelReasonsRepository cancelReasonsRepository,
-                                               StageRepository stageRepository) {
+    protected GenericSalesLeadActionServiceImp(UserRepository userRepository,
+            GenericSalesLeadRepository<T> leadRepository,
+            UserActionRepository userActionRepository, ActionMapper actionMapper,
+            CallOutcomeRepository callOutcomeRepository,
+            CancelReasonsRepository cancelReasonsRepository,
+            StageRepository stageRepository,
+            ActionDetailsRepository actionDetailsRepository) {
         super(userRepository, leadRepository, userActionRepository, actionMapper);
         this.userRepository = userRepository;
         this.leadRepository = leadRepository;
@@ -54,6 +65,7 @@ public abstract class GenericSalesLeadActionServiceImp<T extends SalesLead>
         this.callOutcomeRepository = callOutcomeRepository;
         this.cancelReasonsRepository = cancelReasonsRepository;
         this.stageRepository = stageRepository;
+        this.actionDetailsRepository = actionDetailsRepository;
     }
 
     @Override
@@ -200,7 +212,7 @@ public abstract class GenericSalesLeadActionServiceImp<T extends SalesLead>
 
         // Step 2: Determine Action Type
         if (actionDTO.isAnswer()) {
-            actionType =  ActionType.ANSWERED;
+            actionType = ActionType.ANSWERED;
         }
 
         // Step 3: Generate Description and Outcome
@@ -264,6 +276,14 @@ public abstract class GenericSalesLeadActionServiceImp<T extends SalesLead>
         leadRepository.save(lead);
 
         return success("Action added successfully.");
+    }
+
+    @Override
+    public ResponseEntity<?> getActions(ActionCriteria criteria, Transition transition) {
+        Pageable pageable = PageRequest.of(criteria.getPage(), criteria.getSize(), Sort.by("createdAt").descending());
+        Page<LeadActionDetails> actions = actionDetailsRepository.findActionByAdmin(transition.getUserId(), pageable);
+        Page<ActionResponse> responsePage = actionMapper.toDto(actions.map(LeadActionDetails::getUserAction));
+        return success(responsePage);
     }
 
 }

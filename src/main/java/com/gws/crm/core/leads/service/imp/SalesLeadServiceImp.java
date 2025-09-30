@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.*;
 import static com.gws.crm.core.leads.specification.SalesLeadSpecification.filter;
@@ -31,14 +29,13 @@ import static com.gws.crm.core.leads.specification.SalesLeadSpecification.filter
 @Slf4j
 @Service
 @Transactional
-public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLeadDTO> implements SalesLeadService<T,
-        D> {
+public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLeadDTO> implements SalesLeadService<T, D> {
 
     private final GenericSalesLeadRepository<T> repository;
     private final EmployeeRepository employeeRepository;
 
     protected SalesLeadServiceImp(GenericSalesLeadRepository<T> repository,
-                                  EmployeeRepository employeeRepository) {
+            EmployeeRepository employeeRepository) {
         this.repository = repository;
         this.employeeRepository = employeeRepository;
     }
@@ -100,14 +97,14 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
     @Override
     public ResponseEntity<?> getLeads(SalesLeadCriteria salesLeadCriteria, Transition transition) {
         if (transition.getRole().equals("USER")) {
-            Employee employee =
-                    employeeRepository.findByIdWithSubordinates(transition.getUserId())
-                            .orElseThrow(NotFoundResourceException::new);
+            Employee employee = employeeRepository.findByIdWithSubordinates(transition.getUserId())
+                    .orElseThrow(NotFoundResourceException::new);
             salesLeadCriteria.setSubordinates(employee.getSubordinates()
                     .stream().map(User::getId).toList());
         }
         Specification<T> leadSpecification = filter(salesLeadCriteria, transition);
-        Pageable pageable = PageRequest.of(salesLeadCriteria.getPage(), salesLeadCriteria.getSize());
+        Pageable pageable = PageRequest.of(salesLeadCriteria.getPage(), salesLeadCriteria.getSize(),
+                Sort.by("createdAt").descending());
         Page<T> leadPage = repository.findAll(leadSpecification, pageable);
         Page<LeadResponse> leadResponses = mapEntityToSimpleDto(leadPage);
         return success(leadResponses);
@@ -150,6 +147,17 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
         return success(response);
     }
 
+    @Override
+    public ResponseEntity<?> lastUpdated(SalesLeadCriteria salesLeadCriteria, Transition transition) {
+        Pageable pageable = PageRequest.of(salesLeadCriteria.getPage(), salesLeadCriteria.getSize(),
+                Sort.by("updatedAt").descending());
+        salesLeadCriteria.setArchived(false);
+        salesLeadCriteria.setDeleted(false);
+        Specification<T> leadSpecification = filter(salesLeadCriteria, transition);
+        Page<T> leadPage = repository.findAll(leadSpecification, pageable);
+        Page<LeadResponse> leadResponses = mapEntityToSimpleDto(leadPage);
+        return success(leadResponses);
+    }
 
     protected abstract T mapDtoToEntity(D dto, Transition transition);
 
@@ -183,6 +191,5 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
 
     public void publishDelayLeadEvent(T lead, Transition transition) {
     }
-
 
 }

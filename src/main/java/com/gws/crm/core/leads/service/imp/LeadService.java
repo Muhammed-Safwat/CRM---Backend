@@ -42,12 +42,11 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
     private final LeadNotificationEventPublisher leadNotificationEventPublisher;
     private final EmployeeRepository employeeRepository;
 
-
     protected LeadService(LeadRepository leadRepository, ExcelSheetService excelSheetService,
-                          LeadFactory leadFactory,
-                          PhoneValidationService phoneValidationService, LeadMapper leadMapper,
-                          ApplicationEventPublisher eventPublisher,
-                          LeadNotificationEventPublisher leadNotificationEventPublisher, EmployeeRepository employeeRepository) {
+            LeadFactory leadFactory,
+            PhoneValidationService phoneValidationService, LeadMapper leadMapper,
+            ApplicationEventPublisher eventPublisher,
+            LeadNotificationEventPublisher leadNotificationEventPublisher, EmployeeRepository employeeRepository) {
         super(leadRepository, employeeRepository);
         this.leadRepository = leadRepository;
         this.excelSheetService = excelSheetService;
@@ -84,7 +83,6 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
     public ResponseEntity<?> isPhoneExist(String phone, Transition transition) {
         return phoneValidationService.isPhoneExist(phone, transition);
     }
-
 
     private List<Lead> createLeadsList(List<ImportLeadDTO> importLeadDTOS, Transition transition) {
         return leadFactory.createLeadsList(importLeadDTOS, transition);
@@ -174,11 +172,13 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
 
         if ("ADMIN".equalsIgnoreCase(transition.getRole())) {
             result = leadRepository.countAllStagesWithLeadCountForAdmin(transition.getUserId());
-        } else if(userId != null) {
+        } else if (userId != null) {
             Set<Long> userIds = employeeRepository.findSubordinateIds(userId);
             userIds.add(userId);
             result = leadRepository.countAllStagesWithLeadCountForTeam(userIds);
         }
         return success(result);
     }
+
+
 }
