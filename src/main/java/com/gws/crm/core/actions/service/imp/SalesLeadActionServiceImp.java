@@ -17,10 +17,12 @@ import org.springframework.stereotype.Service;
 public class SalesLeadActionServiceImp extends GenericSalesLeadActionServiceImp<Lead> {
 
     protected SalesLeadActionServiceImp(UserRepository userRepository, LeadRepository leadRepository,
-                                        UserActionRepository userActionRepository, ActionMapper actionMapper, CallOutcomeRepository callOutcomeRepository,
-                                        CancelReasonsRepository cancelReasonsRepository, StageRepository stageRepository, ActionDetailsRepository actionDetailsRepository) {
-        super(userRepository, leadRepository, userActionRepository, actionMapper, callOutcomeRepository, cancelReasonsRepository, stageRepository, actionDetailsRepository);
+            UserActionRepository userActionRepository, ActionMapper actionMapper,
+            CallOutcomeRepository callOutcomeRepository,
+            CancelReasonsRepository cancelReasonsRepository, StageRepository stageRepository,
+            ActionDetailsRepository actionDetailsRepository) {
+        super(userRepository, leadRepository, userActionRepository, actionMapper, callOutcomeRepository,
+                cancelReasonsRepository, stageRepository, actionDetailsRepository);
     }
-
 
 }

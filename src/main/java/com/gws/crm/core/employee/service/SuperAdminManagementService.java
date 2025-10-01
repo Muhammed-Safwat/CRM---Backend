@@ -4,7 +4,9 @@ import com.gws.crm.authentication.dto.AdminRegistrationDto;
 import com.gws.crm.common.entities.Transition;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
+@Service
 public interface SuperAdminManagementService {
 
     ResponseEntity<?> createAdmin(AdminRegistrationDto adminRegistrationDto, Transition transition);

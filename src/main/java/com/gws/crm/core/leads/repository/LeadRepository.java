@@ -1,6 +1,7 @@
 package com.gws.crm.core.leads.repository;
 
 import com.gws.crm.core.leads.dto.CountDTO;
+import com.gws.crm.core.leads.dto.SalesRepCountDTO;
 import com.gws.crm.core.leads.entity.Lead;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -53,7 +54,7 @@ public interface LeadRepository extends GenericSalesLeadRepository<Lead> {
                         "LEFT JOIN FETCH l.channel " +
                         "LEFT JOIN FETCH l.creator " +
                         "LEFT JOIN FETCH l.admin " +
-                        //"LEFT JOIN FETCH l.phoneNumbers " +
+                        // "LEFT JOIN FETCH l.phoneNumbers " +
                         "LEFT JOIN FETCH l.actions " +
                         "LEFT JOIN FETCH l.investmentGoal " +
                         "LEFT JOIN FETCH l.communicateWay " +
@@ -64,5 +65,21 @@ public interface LeadRepository extends GenericSalesLeadRepository<Lead> {
                         "LEFT JOIN FETCH l.stage " +
                         "WHERE l.id IN :ids")
         List<Lead> findAllWithAllRelations(@Param("ids") List<Long> ids);
+
+        @Query("SELECT new com.gws.crm.core.leads.dto.SalesRepCountDTO(e.id, e.name, e.image, COUNT(s)) " +
+                        "FROM Employee e " +
+                        "LEFT JOIN Lead s ON s.salesRep = e AND s.admin.id = :userId AND s.deleted = false " +
+                        "WHERE e.admin.id = :userId " +
+                        "GROUP BY e.id, e.name, e.image " +
+                        "ORDER BY COUNT(s) DESC")
+        List<SalesRepCountDTO> countAllSalesRepsWithLeadCountForAdmin(@Param("userId") Long userId);
+
+        @Query("SELECT new com.gws.crm.core.leads.dto.SalesRepCountDTO(e.id, e.name, e.image, COUNT(s)) " +
+                        "FROM Employee e " +
+                        "LEFT JOIN Lead s ON s.salesRep = e AND s.salesRep.id IN :userIds AND s.deleted = false " +
+                        "WHERE e.id IN :userIds " +
+                        "GROUP BY e.id, e.name, e.image " +
+                        "ORDER BY COUNT(s) DESC")
+        List<SalesRepCountDTO> countAllSalesRepsWithLeadCountForTeam(@Param("userIds") Set<Long> userIds);
 
 }

@@ -5,7 +5,6 @@ import com.gws.crm.core.actions.service.ExcelReportService;
 import com.gws.crm.core.actions.service.HtmlReportService;
 import com.gws.crm.core.actions.service.UserActivityReportGenerator;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,30 +23,30 @@ import java.util.Map;
 public class UserActivityReportController {
 
     private final Map<String, UserActivityReportGenerator> generatorMap;
-    @Autowired
-    private ExcelReportService excelReportService;
-    @Autowired
-    private HtmlReportService reportService;
+    private final ExcelReportService excelReportService;
+    private final HtmlReportService reportService;
 
     public UserActivityReportController(
             @Qualifier("pdfbox") UserActivityReportGenerator pdfBoxService,
-            @Qualifier("openpdf") UserActivityReportGenerator openPdfService) {
+            @Qualifier("openpdf") UserActivityReportGenerator openPdfService,
+            ExcelReportService excelReportService,
+            HtmlReportService reportService) {
         this.generatorMap = Map.of(
                 "pdfbox", pdfBoxService,
-                "openpdf", openPdfService
-        );
+                "openpdf", openPdfService);
+        this.excelReportService = excelReportService;
+        this.reportService = reportService;
     }
 
     @GetMapping("/user-activity")
     public void downloadUserActivityReport(@RequestParam(defaultValue = "pdfbox") String format,
-                                           HttpServletResponse response) {
+            HttpServletResponse response) {
         try {
             List<UserActivityDTO> timeline = Arrays.asList(
                     new UserActivityDTO("LOGIN", "User logged in", "2025-07-25 08:00"),
                     new UserActivityDTO("CREATE", "Created new lead", "2025-07-25 08:30"),
                     new UserActivityDTO("EDIT", "Updated notes", "2025-07-25 09:00"),
-                    new UserActivityDTO("ASSIGN", "Assigned lead to John", "2025-07-25 09:30")
-            );
+                    new UserActivityDTO("ASSIGN", "Assigned lead to John", "2025-07-25 09:30"));
 
             UserActivityReportGenerator generator = generatorMap.getOrDefault(format, generatorMap.get("pdfbox"));
 

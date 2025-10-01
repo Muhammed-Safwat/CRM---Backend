@@ -96,6 +96,11 @@ public abstract class SalesLeadController<T extends SalesLead, D extends AddLead
         return service.countByStage(userId, transition);
     }
 
+    @GetMapping("count-by-salesRep")
+    public ResponseEntity<?> countBySalesRep(@Param("userId") Long userId, Transition transition) {
+        return service.countBySalesRep(userId, transition);
+    }
+
     @PostMapping("last-updated")
     public ResponseEntity<?> lastUpdated(@RequestBody SalesLeadCriteria salesLeadCriteria ,Transition transition) {
         return service.lastUpdated(salesLeadCriteria,transition);

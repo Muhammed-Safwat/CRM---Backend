@@ -10,9 +10,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -24,26 +22,21 @@ import java.util.Set;
 @SuperBuilder
 public class Employee extends User {
 
-    private String jobName;
+        private String jobName;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH,
-            CascadeType.MERGE, CascadeType.REFRESH},
-            fetch = FetchType.LAZY)
-    @JoinColumn(name = "privilege_group_id")
-    private PrivilegeGroup privilegeGroup;
+        @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.DETACH,
+                        CascadeType.MERGE, CascadeType.REFRESH }, fetch = FetchType.LAZY)
+        @JoinColumn(name = "privilege_group_id")
+        private PrivilegeGroup privilegeGroup;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH,
-            CascadeType.MERGE, CascadeType.REFRESH},
-            fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id")
-    private Admin admin;
+        @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.DETACH,
+                        CascadeType.MERGE, CascadeType.REFRESH }, fetch = FetchType.LAZY)
+        @JoinColumn(name = "admin_id")
+        private Admin admin;
 
-    @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.DETACH, CascadeType.MERGE,
-                    CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinTable(name = "employee_subordinates",
-            joinColumns = @JoinColumn(name = "manager_id"),
-            inverseJoinColumns = @JoinColumn(name = "subordinate_id"))
-    private Set<Employee> subordinates = new HashSet<>();
+        @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.DETACH, CascadeType.MERGE,
+                        CascadeType.PERSIST, CascadeType.REFRESH })
+        @JoinTable(name = "employee_subordinates", joinColumns = @JoinColumn(name = "manager_id"), inverseJoinColumns = @JoinColumn(name = "subordinate_id"))
+        private Set<Employee> subordinates = new HashSet<>();
 
 }

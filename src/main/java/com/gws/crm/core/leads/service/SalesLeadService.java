@@ -39,4 +39,6 @@ public interface SalesLeadService<T extends SalesLead, D extends AddLeadDTO> {
     ResponseEntity<?> countByStage(Long userId, Transition transition);
 
     ResponseEntity<?> lastUpdated(SalesLeadCriteria salesLeadCriteria, Transition transition);
+
+    ResponseEntity<?> countBySalesRep(Long userId, Transition transition);
 }

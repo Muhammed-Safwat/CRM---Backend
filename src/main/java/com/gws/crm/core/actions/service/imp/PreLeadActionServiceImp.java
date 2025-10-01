@@ -4,8 +4,6 @@ import com.gws.crm.authentication.entity.User;
 import com.gws.crm.authentication.repository.UserRepository;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
-import com.gws.crm.core.actions.dtos.ActionCriteria;
-import com.gws.crm.core.actions.dtos.ActionResponse;
 import com.gws.crm.core.actions.entity.ActionType;
 import com.gws.crm.core.actions.entity.LeadActionDetails;
 import com.gws.crm.core.actions.entity.UserAction;
@@ -16,15 +14,8 @@ import com.gws.crm.core.leads.entity.PreLead;
 import com.gws.crm.core.leads.repository.PreLeadRepository;
 import lombok.extern.java.Log;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.gws.crm.common.handler.ApiResponseHandler.success;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,166 +24,156 @@ import java.util.List;
 @Log
 public class PreLeadActionServiceImp extends GenericLeadActionServiceImp<PreLead> {
 
-    protected final UserRepository userRepository;
-    protected final PreLeadRepository leadRepository;
-    protected final UserActionRepository userActionRepository;
-    protected final ActionMapper actionMapper;
-    protected final ActionDetailsRepository actionDetailsRepository;
-    public PreLeadActionServiceImp(UserRepository userRepository,
-                                   PreLeadRepository leadRepository,
-                                   UserActionRepository userActionRepository,
-                                   ActionMapper actionMapper,
-                                   ActionDetailsRepository actionDetailsRepository) {
-        super(userRepository, leadRepository, userActionRepository, actionMapper);
-        this.userRepository = userRepository;
-        this.leadRepository = leadRepository;
-        this.userActionRepository = userActionRepository;
-        this.actionMapper = actionMapper;
-        this.actionDetailsRepository = actionDetailsRepository;
-    }
+        protected final UserRepository userRepository;
+        protected final PreLeadRepository leadRepository;
+        protected final UserActionRepository userActionRepository;
+        protected final ActionMapper actionMapper;
+        protected final ActionDetailsRepository actionDetailsRepository;
 
-    @Override
-    @Transactional
-    public void setLeadCreationAction(PreLead lead, Transition transition) {
-        log.info("Worked yaaaaaaaaaaaaaaaaaaaa !!!!!!!!!!!!!!!!!!");
-        User creator = userRepository.findById(transition.getUserId())
-                .orElseThrow(NotFoundResourceException::new);
-
-        UserAction createAction = UserAction.builder()
-                .creator(creator)
-                .type(ActionType.CREATE)
-                .description("Created PreLead")
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        LeadActionDetails createDetails = LeadActionDetails.builder()
-                .userAction(createAction)
-                .lead(lead)
-                .comment("Initial creation")
-                .build();
-
-        createAction.setLeadDetails(createDetails);
-        userActionRepository.save(createAction);
-
-        lead.setLastActionDate(LocalDateTime.now());
-        lead.setUpdatedAt(LocalDateTime.now());
-        lead.getActions().add(createAction);
-        leadRepository.save(lead);
-    }
-
-    @Transactional
-    @Override
-    public void setLeadCreationAction(List<PreLead> leads, Transition transition) {
-        for (PreLead lead : leads) {
-            this.setLeadCreationAction(lead, transition);
+        public PreLeadActionServiceImp(UserRepository userRepository,
+                        PreLeadRepository leadRepository,
+                        UserActionRepository userActionRepository,
+                        ActionMapper actionMapper,
+                        ActionDetailsRepository actionDetailsRepository) {
+                super(userRepository, leadRepository, userActionRepository, actionMapper);
+                this.userRepository = userRepository;
+                this.leadRepository = leadRepository;
+                this.userActionRepository = userActionRepository;
+                this.actionMapper = actionMapper;
+                this.actionDetailsRepository = actionDetailsRepository;
         }
-    }
 
+        @Override
+        @Transactional
+        public void setLeadCreationAction(PreLead lead, Transition transition) {
+                log.info("Worked yaaaaaaaaaaaaaaaaaaaa !!!!!!!!!!!!!!!!!!");
+                User creator = userRepository.findById(transition.getUserId())
+                                .orElseThrow(NotFoundResourceException::new);
 
-    @Transactional
-    public void setAssignAction(List<PreLead> leads, Transition transition) {
-        for (PreLead lead : leads) {
-            setAssignAction(lead, transition);
+                UserAction createAction = UserAction.builder()
+                                .creator(creator)
+                                .type(ActionType.CREATE)
+                                .description("Created PreLead")
+                                .createdAt(LocalDateTime.now())
+                                .build();
+
+                LeadActionDetails createDetails = LeadActionDetails.builder()
+                                .userAction(createAction)
+                                .lead(lead)
+                                .comment("Initial creation")
+                                .build();
+
+                createAction.setLeadDetails(createDetails);
+                userActionRepository.save(createAction);
+
+                lead.setLastActionDate(LocalDateTime.now());
+                lead.setUpdatedAt(LocalDateTime.now());
+                lead.getActions().add(createAction);
+                leadRepository.save(lead);
         }
-    }
 
-
-    @Override
-    @Transactional
-    public void setAssignAction(PreLead lead, Transition transition) {
-        User creator = userRepository.findById(transition.getUserId())
-                .orElseThrow(NotFoundResourceException::new);
-
-        UserAction assignAction = UserAction.builder()
-                .creator(creator)
-                .type(ActionType.ASSIGN)
-                .description("Assigned PreLead to " + lead.getAssignedTo())
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        LeadActionDetails assignDetails = LeadActionDetails.builder()
-                .userAction(assignAction)
-                .lead(lead)
-                .comment("Assignment recorded")
-                .build();
-
-        assignAction.setLeadDetails(assignDetails);
-        userActionRepository.save(assignAction);
-
-        lead.setLastActionDate(LocalDateTime.now());
-        lead.setUpdatedAt(LocalDateTime.now());
-        lead.getActions().add(assignAction);
-        leadRepository.save(lead);
-    }
-
-    @Override
-    @Transactional
-    public void setViewLeadAction(PreLead lead, Transition transition) {
-        User creator = userRepository.findById(transition.getUserId())
-                .orElseThrow(NotFoundResourceException::new);
-
-        UserAction viewAction = UserAction.builder()
-                .creator(creator)
-                .type(ActionType.VIEW)
-                .description("Viewed PreLead")
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        LeadActionDetails viewDetails = LeadActionDetails.builder()
-                .userAction(viewAction)
-                .lead(lead)
-                .comment("Viewed by " + creator.getName())
-                .build();
-
-        viewAction.setLeadDetails(viewDetails);
-        UserAction userActions = userActionRepository.save(viewAction);
-
-        lead.setLastActionDate(LocalDateTime.now());
-        lead.setUpdatedAt(LocalDateTime.now());
-        lead.getActions().add(userActions);
-        leadRepository.save(lead);
-    }
-
-
-    @Transactional
-    public void setImportLeads(List<PreLead> savedLeads, Transition transition) {
-        User creator = userRepository.findById(transition.getUserId())
-                .orElseThrow(NotFoundResourceException::new);
-
-        for (PreLead lead : savedLeads) {
-            UserAction importAction = UserAction.builder()
-                    .creator(creator)
-                    .type(ActionType.IMPORT_DATA)
-                    .description("Imported lead")
-                    .createdAt(LocalDateTime.now())
-                    .build();
-
-            LeadActionDetails importDetails = LeadActionDetails.builder()
-                    .userAction(importAction)
-                    .lead(lead)
-                    .comment("Imported via file upload")
-                    .build();
-
-            importAction.setLeadDetails(importDetails);
-
-            userActionRepository.save(importAction);
-
-            lead.setLastActionDate(LocalDateTime.now());
-            lead.setImportedAt(LocalDateTime.now());
-            lead.setImportedBy(creator.getName());
-            // lead.setAssignedTo();
-            lead.setImported(true);
-            lead.getActions().add(importAction);
-            leadRepository.save(lead);
+        @Transactional
+        @Override
+        public void setLeadCreationAction(List<PreLead> leads, Transition transition) {
+                for (PreLead lead : leads) {
+                        this.setLeadCreationAction(lead, transition);
+                }
         }
-    }
 
-    @Override
-    public ResponseEntity<?> getActions(ActionCriteria criteria, Transition transition) {
-        Pageable pageable = PageRequest.of(criteria.getPage(), criteria.getSize(), Sort.by("createdAt").descending());
-        Page<LeadActionDetails> actions = actionDetailsRepository.findActionByAdmin(transition.getUserId(), pageable);
-        Page<ActionResponse> responsePage = actionMapper.toDto(actions.map(LeadActionDetails::getUserAction));
-        return success(responsePage);
-    }
+        @Transactional
+        public void setAssignAction(List<PreLead> leads, Transition transition) {
+                for (PreLead lead : leads) {
+                        setAssignAction(lead, transition);
+                }
+        }
+
+        @Override
+        @Transactional
+        public void setAssignAction(PreLead lead, Transition transition) {
+                User creator = userRepository.findById(transition.getUserId())
+                                .orElseThrow(NotFoundResourceException::new);
+
+                UserAction assignAction = UserAction.builder()
+                                .creator(creator)
+                                .type(ActionType.ASSIGN)
+                                .description("Assigned PreLead to " + lead.getAssignedTo())
+                                .createdAt(LocalDateTime.now())
+                                .build();
+
+                LeadActionDetails assignDetails = LeadActionDetails.builder()
+                                .userAction(assignAction)
+                                .lead(lead)
+                                .comment("Assignment recorded")
+                                .build();
+
+                assignAction.setLeadDetails(assignDetails);
+                userActionRepository.save(assignAction);
+
+                lead.setLastActionDate(LocalDateTime.now());
+                lead.setUpdatedAt(LocalDateTime.now());
+                lead.getActions().add(assignAction);
+                leadRepository.save(lead);
+        }
+
+        @Override
+        @Transactional
+        public void setViewLeadAction(PreLead lead, Transition transition) {
+                User creator = userRepository.findById(transition.getUserId())
+                                .orElseThrow(NotFoundResourceException::new);
+
+                UserAction viewAction = UserAction.builder()
+                                .creator(creator)
+                                .type(ActionType.VIEW)
+                                .description("Viewed PreLead")
+                                .createdAt(LocalDateTime.now())
+                                .build();
+
+                LeadActionDetails viewDetails = LeadActionDetails.builder()
+                                .userAction(viewAction)
+                                .lead(lead)
+                                .comment("Viewed by " + creator.getName())
+                                .build();
+
+                viewAction.setLeadDetails(viewDetails);
+                UserAction userActions = userActionRepository.save(viewAction);
+
+                lead.setLastActionDate(LocalDateTime.now());
+                lead.setUpdatedAt(LocalDateTime.now());
+                lead.getActions().add(userActions);
+                leadRepository.save(lead);
+        }
+
+        @Transactional
+        public void setImportLeads(List<PreLead> savedLeads, Transition transition) {
+                User creator = userRepository.findById(transition.getUserId())
+                                .orElseThrow(NotFoundResourceException::new);
+
+                for (PreLead lead : savedLeads) {
+                        UserAction importAction = UserAction.builder()
+                                        .creator(creator)
+                                        .type(ActionType.IMPORT_DATA)
+                                        .description("Imported lead")
+                                        .createdAt(LocalDateTime.now())
+                                        .build();
+
+                        LeadActionDetails importDetails = LeadActionDetails.builder()
+                                        .userAction(importAction)
+                                        .lead(lead)
+                                        .comment("Imported via file upload")
+                                        .build();
+
+                        importAction.setLeadDetails(importDetails);
+
+                        userActionRepository.save(importAction);
+
+                        lead.setLastActionDate(LocalDateTime.now());
+                        lead.setImportedAt(LocalDateTime.now());
+                        lead.setImportedBy(creator.getName());
+                        // lead.setAssignedTo();
+                        lead.setImported(true);
+                        lead.getActions().add(importAction);
+                        leadRepository.save(lead);
+                }
+        }
 
 }

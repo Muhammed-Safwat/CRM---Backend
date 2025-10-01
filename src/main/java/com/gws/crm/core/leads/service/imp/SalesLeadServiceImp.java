@@ -21,7 +21,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.*;
 import static com.gws.crm.core.leads.specification.SalesLeadSpecification.filter;
@@ -157,6 +160,29 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
         Page<T> leadPage = repository.findAll(leadSpecification, pageable);
         Page<LeadResponse> leadResponses = mapEntityToSimpleDto(leadPage);
         return success(leadResponses);
+    }
+
+    @Override
+    public ResponseEntity<?> countByStage(Long userId, Transition transition) {
+        List<CountDTO> result = new ArrayList<>();
+
+        if ("ADMIN".equalsIgnoreCase(transition.getRole())) {
+            result = repository.countAllStagesWithLeadCountForAdmin(transition.getUserId());
+        } else if (userId != null) {
+            Set<Long> userIds = employeeRepository.findSubordinateIds(userId);
+            userIds.add(userId);
+            result = repository.countAllStagesWithLeadCountForTeam(userIds);
+        }
+        return success(result);
+    }
+
+    @Override
+    public ResponseEntity<?> countBySalesRep(Long userId, Transition transition) {
+        List<SalesRepCountDTO> result = new ArrayList<>();
+
+         result = repository.countAllSalesRepsWithLeadCountForAdmin(transition.getUserId());
+
+        return success(result);
     }
 
     protected abstract T mapDtoToEntity(D dto, Transition transition);

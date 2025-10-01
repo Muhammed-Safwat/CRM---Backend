@@ -7,12 +7,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.gws.crm.core.actions.entity.LeadActionDetails;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface ActionDetailsRepository extends JpaRepository<LeadActionDetails, Long> {
 
   @Query("""
           SELECT ua FROM LeadActionDetails ua
-          WHERE ua.lead.admin.id = :adminId
+          WHERE ua.userAction.admin.id = :adminId
       """)
   Page<LeadActionDetails> findActionByAdmin(@Param("adminId") Long adminId, Pageable pageable);
 

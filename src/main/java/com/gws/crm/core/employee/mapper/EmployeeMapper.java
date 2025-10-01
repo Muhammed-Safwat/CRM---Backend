@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface EmployeeMapper {
 
     // Mapping Employee to EmployeeInfoResponse with mapping of subordinates
@@ -33,7 +33,6 @@ public interface EmployeeMapper {
     List<EmployeeInfoResponse> toListDto(List<Employee> employees);
 
     List<EmployeeSimpleDTO> toListSimpleDto(Set<Employee> employees);
-
 
     default EmployeeSimpleDTO toSimpleDto(Employee employee) {
         if (employee == null) {
@@ -69,13 +68,13 @@ public interface EmployeeMapper {
     }
 
     default List<EmployeeResponse> toEmployeeResponseList(List<Employee> employees) {
-        if ( employees == null ) {
+        if (employees == null) {
             return null;
         }
 
-        List<EmployeeResponse> list = new ArrayList<>( employees.size() );
-        for ( Employee employee : employees ) {
-            list.add( toEmployeeResponseDto( employee ) );
+        List<EmployeeResponse> list = new ArrayList<>(employees.size());
+        for (Employee employee : employees) {
+            list.add(toEmployeeResponseDto(employee));
         }
 
         return list;
