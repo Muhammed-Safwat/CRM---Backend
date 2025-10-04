@@ -23,6 +23,7 @@ public class ExportTask {
     private Long id;
 
     private String filename;
+    
     private String type;
 
     @Enumerated(EnumType.STRING)

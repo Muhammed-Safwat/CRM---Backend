@@ -18,7 +18,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class UserEmployeeExportHandler implements ExportHandler {
+public class UserExportHandler implements ExportHandler {
 
     private final UserRepository userRepository;
     private final EmployeeRepository employeeRepository;
@@ -26,23 +26,19 @@ public class UserEmployeeExportHandler implements ExportHandler {
 
     @Override
     public boolean supports(String referenceType) {
-        return "USER_EMPLOYEE".equalsIgnoreCase(referenceType);
+        return "USER".equalsIgnoreCase(referenceType);
     }
 
     @Override
-    public byte[] generateFile(List<Long> ids, Map<String, Object> params) throws Exception {
-        // Fetch users and employees
+    public byte[] generateFile(List<Long> ids, Map<String, Object> params) throws Exception { 
         List<User> users = userRepository.findAllById(ids);
         List<Employee> employees = employeeRepository.findAllById(ids);
 
-        try (Workbook workbook = new XSSFWorkbook()) {
-            // Create styles
+        try (Workbook workbook = new XSSFWorkbook()) { 
             Map<String, CellStyle> styles = createStyles(workbook);
-
-            // Create Users Sheet
+ 
             createUsersSheet(workbook, users, styles);
-
-            // Create Employees Sheet
+ 
             createEmployeesSheet(workbook, employees, styles);
 
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -169,7 +165,7 @@ public class UserEmployeeExportHandler implements ExportHandler {
         Cell titleCell = titleRow.createCell(0);
         titleCell.setCellValue("👨‍💼 Employees Export Report");
         titleCell.setCellStyle(styles.get("title"));
-        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 8));
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 6));
 
         // Summary Row
         Row summaryRow = sheet.createRow(1);
@@ -177,14 +173,14 @@ public class UserEmployeeExportHandler implements ExportHandler {
         summaryCell.setCellValue(
                 "📊 Total Employees: " + employees.size() + " | Generated: " + java.time.LocalDateTime.now().format(DATE_FORMATTER));
         summaryCell.setCellStyle(styles.get("data"));
-        sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 8));
+        sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 6));
 
         // Empty row
         sheet.createRow(2);
 
         // Headers
         Row headerRow = sheet.createRow(3);
-        String[] columns = {"🆔 ID", "👤 Name", "📧 Username", "💼 Job Name", "📞 Phone", "📅 Created At", "🔒 Enabled", "👥 Privilege Group", "👨‍💼 Admin"};
+        String[] columns = {"🆔 ID", "👤 Name", "📧 Username", "💼 Job Name", "📞 Phone", "📅 Created At", "🔒 Enabled"};
 
         for (int i = 0; i < columns.length; i++) {
             Cell cell = headerRow.createCell(i);
@@ -204,11 +200,9 @@ public class UserEmployeeExportHandler implements ExportHandler {
             row.createCell(4).setCellValue(employee.getPhone() != null ? employee.getPhone() : "N/A");
             row.createCell(5).setCellValue(employee.getCreatedAt() != null ? employee.getCreatedAt().format(DATE_FORMATTER) : "N/A");
             row.createCell(6).setCellValue(employee.isEnabled() ? "Yes" : "No");
-            row.createCell(7).setCellValue(employee.getPrivilegeGroup() != null ? employee.getPrivilegeGroup().getJobName() : "N/A");
-            row.createCell(8).setCellValue(employee.getAdmin() != null ? employee.getAdmin().getName() : "N/A");
 
             // Apply data style to all cells
-            for (int i = 0; i < 9; i++) {
+            for (int i = 0; i < 7; i++) {
                 row.getCell(i).setCellStyle(styles.get("data"));
             }
         }
