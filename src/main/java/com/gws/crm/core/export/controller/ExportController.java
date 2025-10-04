@@ -31,8 +31,8 @@ public class ExportController {
     }
 
     @GetMapping("statistics")
-    public ResponseEntity<?> getStatistics(Transition transition){
-        return orchestrator.getStatistics(transition);
+    public ResponseEntity<?> getStatistics(@RequestParam("referenceType") String referenceType,Transition transition){
+        return orchestrator.getStatistics(referenceType,transition);
     }
 
     @GetMapping("/{id}/download")

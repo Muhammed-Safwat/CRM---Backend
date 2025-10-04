@@ -195,9 +195,9 @@ public class ExportOrchestrator {
         return success(responseDtos);
     }
 
-    public ResponseEntity<?> getStatistics(Transition transition) {
+    public ResponseEntity<?> getStatistics(String referenceType, Transition transition) {
         long createdById = transition.getUserId();
-        ExportStatisticsDto exportDto = taskRepo.countByStatus(createdById);
+        ExportStatisticsDto exportDto = taskRepo.countByStatus(referenceType, createdById);
         return success(exportDto);
     }
 

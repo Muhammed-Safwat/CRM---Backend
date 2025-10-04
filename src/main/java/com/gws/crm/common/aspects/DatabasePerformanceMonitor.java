@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Aspect
 @Component
 public class DatabasePerformanceMonitor {
-/*
+
     private static final ConcurrentHashMap<String, AtomicLong> methodStats = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String, AtomicLong> methodCounts = new ConcurrentHashMap<>();
 
@@ -83,5 +83,4 @@ public class DatabasePerformanceMonitor {
         return "💀 CRITICAL";
     }
 
- */
 }

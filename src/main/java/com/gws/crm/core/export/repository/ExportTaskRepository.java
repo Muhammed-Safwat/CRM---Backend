@@ -22,8 +22,8 @@ public interface ExportTaskRepository extends JpaRepository<ExportTask , Long> ,
            SUM(CASE WHEN t.status = 'FAILED' THEN 1 ELSE 0 END)
        )
        FROM ExportTask t
-       WHERE t.exportedBy.id = :exportedById
+       WHERE t.exportedBy.id = :exportedById and t.referenceType = :referenceType
        """)
-    ExportStatisticsDto countByStatus(long exportedById);
+    ExportStatisticsDto countByStatus(String referenceType,long exportedById);
 
 }
