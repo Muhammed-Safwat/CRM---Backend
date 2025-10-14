@@ -94,7 +94,7 @@ public class EmailPlaceholdersFactoryImp implements EmailPlaceholdersFactory {
         baseTemplateData.setLeadName(lead.getName());
         baseTemplateData.setLeadEmail(lead.getEmail());
         baseTemplateData.setLeadPhone(lead.getPhoneNumbers() == null ? "" :
-                lead.getPhoneNumbers().stream().map(PhoneNumber::getNumber).collect(Collectors.joining(", ")));
+                lead.getPhoneNumbers().stream().map(PhoneNumber::getPhone).collect(Collectors.joining(", ")));
         baseTemplateData.setLeadProject(lead.getProject().getName());
         baseTemplateData.setRecipientName(notification.getRecipientName());
         baseTemplateData.setCompanyName("");

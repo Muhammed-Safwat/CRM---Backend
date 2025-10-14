@@ -326,7 +326,7 @@ public class PreLeadServiceImp implements PreLeadService {
                 .salesRep(employee)
                 .build();
         List<PhoneNumber> phoneNumbers = preLeads.getPhoneNumbers().stream().map(num -> {
-            return PhoneNumber.builder().phone(num.getPhone()).code(num.getCode()).lead(lead).build();
+            return PhoneNumber.builder().phone(num.getPhone()).lead(lead).build();
         }).toList();
         lead.setPhoneNumbers(phoneNumbers);
 
