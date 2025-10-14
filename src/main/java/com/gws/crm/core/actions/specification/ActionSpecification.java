@@ -3,6 +3,7 @@ package com.gws.crm.core.actions.specification;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.actions.dtos.ActionCriteria;
 import com.gws.crm.core.actions.entity.UserAction;
+import com.gws.crm.core.leads.entity.SalesLead;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +56,8 @@ public class ActionSpecification {
 
       specs.add(filterByCancellationReason(criteria.getCancellationReason()));
       specs.add(filterByCancellationReasons(criteria.getCancellationReasons()));
+
+      specs.add(filtersByAdmin(transition));
     }
 
     return Specification.allOf(specs);
@@ -69,6 +72,23 @@ public class ActionSpecification {
         leadDetailsFetch.fetch("callOutcome", JoinType.LEFT);
       }
       return null;
+    };
+  }
+
+
+  public static   Specification<UserAction> filtersByAdmin(Transition transition) {
+    return (root, query, criteriaBuilder) -> {
+      Predicate predicate = criteriaBuilder.conjunction();
+      if (transition.getRole().equals("USER")) {
+        predicate = criteriaBuilder.and(predicate,
+                criteriaBuilder.equal(root.get("creator").get("id"), transition.getUserId())
+        );
+      } else if (transition.getRole().equals("ADMIN")) {
+        predicate = criteriaBuilder.and(predicate,
+                criteriaBuilder.equal(root.get("admin").get("id"), transition.getUserId())
+        );
+      }
+      return predicate;
     };
   }
 

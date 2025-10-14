@@ -26,17 +26,9 @@ public class PhoneNumberMapper {
         if (phoneNumberDTO == null || lead == null) {
             return null;
         }
-        Phonenumber.PhoneNumber phoneNumber = phoneNumberUtil.parse(phoneNumberDTO.getPhone(),
-                getRegionCode(phoneNumberDTO.getCode()));
-/*
-        if (!phoneNumberUtil.isValidNumber(phoneNumber)) {
-            throw new InvalidPhoneNumberException();
-        }
 
-*/
         return PhoneNumber.builder()
-                .phone(String.valueOf(phoneNumber.getNationalNumber()))
-                .code(phoneNumberDTO.getCode())
+                .phone(String.valueOf(phoneNumberDTO.getPhone()))
                 .lead(lead)
                 .build();
     }
@@ -62,7 +54,6 @@ public class PhoneNumberMapper {
         }
         return PhoneNumberDTO.builder()
                 .phone(phoneNumber.getPhone())
-                .code(phoneNumber.getCode())
                 .build();
     }
 

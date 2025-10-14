@@ -12,9 +12,5 @@ import lombok.Setter;
 public class PhoneNumberDTO {
     @NotEmpty
     @NotNull
-    private String code;
-
-    @NotEmpty
-    @NotNull
     private String phone;
 }
