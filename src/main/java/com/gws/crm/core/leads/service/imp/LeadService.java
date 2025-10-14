@@ -21,6 +21,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
@@ -120,7 +122,7 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
         leadFactory.updateEntityFromDto(existingLead, leadDTO, transition);
     }
 
-    @Override
+    @Override 
     public void publishCreateLeadEvent(Lead lead, Transition transition) {
         eventPublisher.publishEvent(new LeadCreatedEvent(lead, transition));
         // create lead but not admin
