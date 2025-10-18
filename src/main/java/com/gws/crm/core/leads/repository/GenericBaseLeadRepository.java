@@ -9,6 +9,8 @@ import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @NoRepositoryBean
 public interface GenericBaseLeadRepository<T extends BaseLead> extends JpaRepository<T, Long>,
         JpaSpecificationExecutor<T> {
@@ -26,4 +28,10 @@ public interface GenericBaseLeadRepository<T extends BaseLead> extends JpaReposi
     @Modifying
     @Query("UPDATE BaseLead l SET l.archive = :archived WHERE l.id = :leadId")
     void toggleArchive(long leadId, boolean archived);
+
+    @Modifying
+    @Transactional
+    @Query("update Lead l set l.deleted = true where l.id in :ids and l.admin.id = :adminId")
+    int softDeleteByIds(@Param("ids") List<Long> ids, Long adminId);
+
 }

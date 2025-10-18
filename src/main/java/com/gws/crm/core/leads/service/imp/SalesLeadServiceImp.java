@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.*;
@@ -149,6 +150,50 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
         return success(response);
     }
 
+    @Transactional
+    @Override
+    public ResponseEntity<?> softDeleteLeads(List<Long> ids, Transition transition) {
+        if (ids == null || ids.isEmpty()) return badRequest();
+        repository.softDeleteByIds(ids,transition.getUserId());
+        return success("Leads Deleated");
+    }
+
+    @Override
+    public ResponseEntity<?> assignSalesToAllLeads(AssignAllDTO assignAllDTO, Transition transition) {
+        List<T> leads = repository.findAllById(assignAllDTO.getLeadIds()) ;
+
+        Employee lastSalesRep = null;
+
+        Employee employee = employeeRepository.findById(assignAllDTO.getSalesId())
+                .orElseThrow(NotFoundResourceException::new);
+        for(T lead : leads){
+            lead.setSalesRep(employee);
+            lead.setAssignAt(LocalDateTime.now());
+            publishAssignLeadEvent(lead, lastSalesRep, transition);
+        }
+        // actionServiceImp.setAssignAction(lead, transition);
+        AssignResponse response = AssignResponse.builder()
+                .salesName(employee.getName())
+                .jobTitle(employee.getJobName())
+                .assignAt(LocalDateTime.now())
+                .build();
+        return success(response);
+    }
+
+    @Override
+    public ResponseEntity<?> countBySalesRep(Long userId, Transition transition) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<?> lastUpdated(SalesLeadCriteria salesLeadCriteria, Transition transition) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<?> countByStage(Long userId, Transition transition) {
+        return null;
+    }
 
     protected abstract T mapDtoToEntity(D dto, Transition transition);
 

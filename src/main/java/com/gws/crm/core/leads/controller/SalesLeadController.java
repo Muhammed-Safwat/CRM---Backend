@@ -1,13 +1,11 @@
 package com.gws.crm.core.leads.controller;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.leads.dto.AddLeadDTO;
-import com.gws.crm.core.leads.dto.AssignDTO;
-import com.gws.crm.core.leads.dto.ImportLeadDTO;
-import com.gws.crm.core.leads.dto.SalesLeadCriteria;
+import com.gws.crm.core.leads.dto.*;
 import com.gws.crm.core.leads.entity.SalesLead;
 import com.gws.crm.core.leads.service.SalesLeadService;
 import jakarta.validation.Valid;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -76,6 +74,12 @@ public abstract class SalesLeadController<T extends SalesLead, D extends AddLead
         return service.assignSalesToLead(assignDTO, transition);
     }
 
+    @PutMapping("/assign/all")
+    public ResponseEntity<?> assignSalesToAllLeads(@RequestBody AssignAllDTO assignAllDTO, Transition transition) {
+        return service.assignSalesToAllLeads(assignAllDTO, transition);
+    }
+
+
     @GetMapping("/is-phone-exist/{phone}")
     public ResponseEntity<?> isPhoneExist(@PathVariable String phone, Transition transition) {
         return service.isPhoneExist(phone, transition);
@@ -90,4 +94,25 @@ public abstract class SalesLeadController<T extends SalesLead, D extends AddLead
     public ResponseEntity<?> toggleArchive(@PathVariable long leadId, Transition transition) {
         return service.toggleArchive(leadId, transition);
     }
+
+    @PostMapping("delete/all")
+    public ResponseEntity<?> deleteLeads(@RequestBody List<Long> ids, Transition transition) {
+        return service.softDeleteLeads(ids,transition);
+    }
+
+    @GetMapping("count-by-status")
+    public ResponseEntity<?> countByStage(@Param("userId") Long userId, Transition transition) {
+        return service.countByStage(userId, transition);
+    }
+
+    @GetMapping("count-by-salesRep")
+    public ResponseEntity<?> countBySalesRep(@Param("userId") Long userId, Transition transition) {
+        return service.countBySalesRep(userId, transition);
+    }
+
+    @PostMapping("last-updated")
+    public ResponseEntity<?> lastUpdated(@RequestBody SalesLeadCriteria salesLeadCriteria ,Transition transition) {
+        return service.lastUpdated(salesLeadCriteria,transition);
+    }
+
 }
