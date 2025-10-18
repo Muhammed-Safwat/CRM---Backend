@@ -37,4 +37,6 @@ public interface ResaleService {
     ResponseEntity<?> assignSalesToLead(AssignDTO assignDTO, Transition transition);
 
     ResponseEntity<?> toggleArchive(long leadId, Transition transition);
+
+    ResponseEntity<?> countByStatus(Long userId, Transition transition);
 }

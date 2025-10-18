@@ -82,4 +82,5 @@ public class DatabasePerformanceMonitor {
         if (duration < 2000) return "🔴 SLOW";
         return "💀 CRITICAL";
     }
+
 }

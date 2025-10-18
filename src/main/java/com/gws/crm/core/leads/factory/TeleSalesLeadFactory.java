@@ -209,18 +209,19 @@ public class TeleSalesLeadFactory {
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now())
                     .actions(new ArrayList<>())
-                    .status(leadStatusRepository.findByName(leadDTO.getStatus()));
+                    .status(leadStatusRepository.findByName(leadDTO.getStatus()).orElseThrow(NotFoundResourceException::new));
 
             if (leadDTO.getInvestmentGoal() != null) {
-                leadBuilder.investmentGoal(investmentGoalRepository.findByNameAndAdminId(leadDTO.getInvestmentGoal(), finalAdmin.getId()));
+                leadBuilder.investmentGoal(investmentGoalRepository.findByNameAndAdminId(leadDTO.getInvestmentGoal(), finalAdmin.getId()).orElseThrow(NotFoundResourceException::new));
             }
 
             if (leadDTO.getCommunicateWay() != null) {
-                leadBuilder.communicateWay(communicateWayRepository.findByNameAndAdminId(leadDTO.getCommunicateWay(), finalAdmin.getId()));
+                leadBuilder.communicateWay(communicateWayRepository.findByNameAndAdminId(leadDTO.getCommunicateWay(), finalAdmin.getId()).orElseThrow(NotFoundResourceException::new));
             }
 
             if (leadDTO.getCancelReason() != null) {
-                leadBuilder.cancelReasons(cancelReasonsRepository.findByNameAndAdminId(leadDTO.getCancelReason(), finalAdmin.getId()));
+                leadBuilder.cancelReasons(cancelReasonsRepository.findByNameAndAdminId(leadDTO.getCancelReason(),
+                        finalAdmin.getId()).orElseThrow(NotFoundResourceException::new));
             }
 
             if (isAdmin && leadDTO.getSalesRep() != null) {
@@ -231,7 +232,7 @@ public class TeleSalesLeadFactory {
             }
 
             if (leadDTO.getChannel() != null) {
-                leadBuilder.channel(channelRepository.findByNameAndAdminId(leadDTO.getChannel(), finalAdmin.getId()));
+                leadBuilder.channel(channelRepository.findByNameAndAdminId(leadDTO.getChannel(), finalAdmin.getId()).orElseThrow(NotFoundResourceException::new));
             }
 
             if (leadDTO.getProject() != null) {

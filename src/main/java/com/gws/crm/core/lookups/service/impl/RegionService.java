@@ -24,6 +24,7 @@ public class RegionService extends BaseLookupServiceImpl<Region, LookupDTO> {
     @Override
     protected LookupDTO mapEntityToDto(Region entity) {
         return LookupDTO.builder()
+                .id(entity.getId())
                 .name(entity.getName())
                 .build();
     }

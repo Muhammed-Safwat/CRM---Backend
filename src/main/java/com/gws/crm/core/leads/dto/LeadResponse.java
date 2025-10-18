@@ -68,4 +68,6 @@ public class LeadResponse {
     private EmployeeSimpleDTO creator;
 
     private boolean delayed;
+
+    private String lastActionComment;
 }

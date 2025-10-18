@@ -46,4 +46,6 @@ public class LeadActionDetails {
 
     @Column(columnDefinition = "TEXT")
     private String comment;
+
+    private LocalDateTime createdAt;
 }

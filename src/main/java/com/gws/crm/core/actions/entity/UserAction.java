@@ -1,6 +1,7 @@
 package com.gws.crm.core.actions.entity;
 
 import com.gws.crm.authentication.entity.User;
+import com.gws.crm.core.employee.entity.Admin;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
@@ -37,4 +38,6 @@ public class UserAction {
     @OneToOne(mappedBy = "userAction", cascade = CascadeType.ALL, orphanRemoval = true)
     private LeadActionDetails leadDetails;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Admin admin;
 }

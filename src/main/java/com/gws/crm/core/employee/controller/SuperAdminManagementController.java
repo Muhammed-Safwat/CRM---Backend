@@ -26,7 +26,8 @@ public class SuperAdminManagementController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createAdmin(@Valid @RequestBody AdminRegistrationDto adminRegistrationDto, Transition transition) {
+    public ResponseEntity<?> createAdmin(@Valid @RequestBody AdminRegistrationDto adminRegistrationDto,
+            Transition transition) {
         return superAdminManagementService.createAdmin(adminRegistrationDto, transition);
     }
 
@@ -42,7 +43,7 @@ public class SuperAdminManagementController {
 
     @PutMapping
     public ResponseEntity<?> editAdmin(@Valid @RequestBody AdminRegistrationDto adminRegistrationDto,
-                                       Transition transition) throws Exception {
+            Transition transition) throws Exception {
 
         return superAdminManagementService.editAdmin(adminRegistrationDto, transition);
     }
@@ -51,6 +52,5 @@ public class SuperAdminManagementController {
     public ResponseEntity<?> toggleAdminLockStatus(@PathVariable long adminId, Transition transition) {
         return superAdminManagementService.toggleAdminLockStatus(adminId, transition);
     }
-
 
 }

@@ -2,6 +2,7 @@ package com.gws.crm.core.actions.controller;
 
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.actions.dtos.ActionOnLeadDTO;
+import com.gws.crm.core.actions.service.LeadActionService;
 import com.gws.crm.core.actions.service.imp.TeleSalesLeadActionServiceImp;
 import com.gws.crm.core.leads.entity.TeleSalesLead;
 import jakarta.validation.Valid;
@@ -17,13 +18,15 @@ public class TeleSalesLeadActionController extends ActionController<TeleSalesLea
 
     private final TeleSalesLeadActionServiceImp leadActionService;
 
-    public TeleSalesLeadActionController(TeleSalesLeadActionServiceImp leadActionService) {
+    public TeleSalesLeadActionController(LeadActionService<TeleSalesLead> leadActionService,
+            TeleSalesLeadActionServiceImp teleSalesLeadActionServiceImp) {
         super(leadActionService);
-        this.leadActionService = leadActionService;
+        this.leadActionService = teleSalesLeadActionServiceImp;
     }
 
     @PostMapping("/lead")
     public ResponseEntity<?> setActionOnLead(@Valid @RequestBody ActionOnLeadDTO action, Transition transition) {
         return leadActionService.setActionOnSalesLead(action, transition);
     }
+
 }

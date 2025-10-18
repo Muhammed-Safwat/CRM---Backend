@@ -60,6 +60,7 @@ public class CommonAuthController {
         return commonAuthService.refreshAccessToken(refreshTokenRequest);
     }
 
+    /*
     @PostMapping("/validate-phone")
     public ResponseEntity<String> validatePhoneNumber(@RequestBody PhoneNumberDTO phoneNumberDto) {
         try {
@@ -78,6 +79,7 @@ public class CommonAuthController {
             throw new RuntimeException(e);
         }
     }
+    */
 
 
 }

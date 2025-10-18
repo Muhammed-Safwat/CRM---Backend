@@ -24,6 +24,7 @@ public class ResaleCriteria {
     private List<Long> status;
     private Long type;
     private List<Long> category;
+    private List<Long> channel;
     private List<Long> property;
     private String note;
     private LocalDate createdAt;

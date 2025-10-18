@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
 
@@ -34,6 +36,8 @@ public class BaseLookup {
     @JoinColumn(name = "admin_id")
     @JsonIgnore
     private Admin admin;
+
+    private boolean deleted = false;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

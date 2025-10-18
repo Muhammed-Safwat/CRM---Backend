@@ -43,6 +43,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
 import static com.gws.crm.common.utils.ExcelFileUtils.generateHeader;
@@ -181,7 +182,7 @@ public class PreLeadServiceImp implements PreLeadService {
                     .updatedAt(LocalDateTime.now());
 
             if (leadDTO.getChannel() != null) {
-                leadBuilder.channel(channelRepository.findByNameAndAdminId(leadDTO.getChannel(), finalAdmin.getId()));
+                leadBuilder.channel(channelRepository.findByNameAndAdminId(leadDTO.getChannel(), finalAdmin.getId()).orElseThrow(NotFoundResourceException::new));
             }
 
             if (leadDTO.getProject() != null) {
@@ -294,6 +295,20 @@ public class PreLeadServiceImp implements PreLeadService {
         return success(message);
     }
 
+    @Override
+    public ResponseEntity<?> countByChannel(Long userId, Transition transition) {
+        List<CountDTO> result = new ArrayList<>();
+
+        if ("ADMIN".equalsIgnoreCase(transition.getRole())) {
+            result = preLeadRepository.countAllChannelsWithLeadCountForAdmin(transition.getUserId());
+        } else if(userId != null) {
+            Set<Long> userIds = employeeRepository.findSubordinateIds(userId);
+            userIds.add(userId);
+            result = preLeadRepository.countAllChannelsWithLeadCountForTeam(userIds);
+        }
+        return success(result);
+    }
+
     public Lead toSalesLead(PreLead preLeads, Admin admin, Employee employee, Transition transition) {
         Lead lead = Lead.builder()
                 .name(preLeads.getName())
@@ -307,11 +322,11 @@ public class PreLeadServiceImp implements PreLeadService {
                 .email(preLeads.getEmail())
                 .deleted(false)
                 .actions(new ArrayList<>())
-                .status(leadStatusRepository.findByName("Fresh"))
+                .status(leadStatusRepository.findByName("Fresh").orElseThrow(NotFoundResourceException::new))
                 .salesRep(employee)
                 .build();
         List<PhoneNumber> phoneNumbers = preLeads.getPhoneNumbers().stream().map(num -> {
-            return PhoneNumber.builder().phone(num.getPhone()).code(num.getCode()).lead(lead).build();
+            return PhoneNumber.builder().phone(num.getPhone()).lead(lead).build();
         }).toList();
         lead.setPhoneNumbers(phoneNumbers);
 

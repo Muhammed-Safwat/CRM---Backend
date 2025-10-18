@@ -1,6 +1,7 @@
 package com.gws.crm.core.leads.repository;
 
 
+import com.gws.crm.core.leads.dto.CountDTO;
 import com.gws.crm.core.leads.entity.BaseLead;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface BaseLeadRepository extends JpaRepository<BaseLead, Long>, JpaSpecificationExecutor<BaseLead> {

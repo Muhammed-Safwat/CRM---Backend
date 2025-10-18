@@ -2,6 +2,7 @@ package com.gws.crm.core.actions.controller;
 
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.core.actions.dtos.ActionOnLeadDTO;
+import com.gws.crm.core.actions.service.LeadActionService;
 import com.gws.crm.core.actions.service.imp.SalesLeadActionServiceImp;
 import com.gws.crm.core.leads.entity.Lead;
 import jakarta.validation.Valid;
@@ -17,9 +18,10 @@ public class SalesLeadActionController extends ActionController<Lead> {
 
     private final SalesLeadActionServiceImp leadActionService;
 
-    public SalesLeadActionController(SalesLeadActionServiceImp leadActionService) {
+    public SalesLeadActionController(LeadActionService<Lead> leadActionService,
+            SalesLeadActionServiceImp salesLeadActionServiceImp) {
         super(leadActionService);
-        this.leadActionService = leadActionService;
+        this.leadActionService = salesLeadActionServiceImp;
     }
 
     @PostMapping("/lead")

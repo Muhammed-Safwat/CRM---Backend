@@ -1,10 +1,10 @@
 package com.gws.crm.core.actions.repository;
 
-
 import com.gws.crm.core.actions.entity.UserAction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface UserActionRepository extends JpaRepository<UserAction, Long> {
+public interface UserActionRepository extends JpaRepository<UserAction, Long>, JpaSpecificationExecutor<UserAction> {
 
     @Query("""
                 SELECT ua FROM UserAction ua
@@ -27,8 +27,6 @@ public interface UserActionRepository extends JpaRepository<UserAction, Long> {
             """)
     Page<UserAction> findActionsByLeadId(@Param("leadId") Long leadId, Pageable pageable);
 
-
     Page<UserAction> findAllByCreatorId(@Param("creatorId") Long creatorId, Pageable pageable);
-
 
 }

@@ -1,6 +1,6 @@
 package com.gws.crm.core.actions.service;
 
-import com.gws.crm.common.entities.Transition;
+import com.gws.crm.common.entities.Transition; 
 import com.gws.crm.core.leads.entity.BaseLead;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,4 +27,5 @@ public interface LeadActionService<T extends BaseLead> {
     void setViewLeadAction(T salesLead, Transition transition);
 
     void setDelayedAction(T lead, Transition transition);
+
 }

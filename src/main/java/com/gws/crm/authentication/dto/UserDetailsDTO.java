@@ -19,7 +19,7 @@ import java.util.Set;
 @Setter
 @ToString
 public class UserDetailsDTO implements UserDetails {
-    private long id;
+    private Long id;
     private String name;
     private String username;
     private String password;
@@ -28,13 +28,20 @@ public class UserDetailsDTO implements UserDetails {
     private boolean deleted;
     private LocalDateTime accountNonExpired;
     private LocalDateTime credentialsNonExpired;
-    private Set<Role> roles = new HashSet<>();
-    private Set<Privilege> privileges = new HashSet<>();
+    private Set<Role> roles;
+    private Set<Privilege> privileges;
 
-    public UserDetailsDTO(long id, String name, String username, String password, boolean locked, boolean enabled,
+    public UserDetailsDTO(Long id,
+                          String name,
+                          String username,
+                          String password,
+                          boolean locked,
+                          boolean enabled,
                           boolean deleted,
-                          LocalDateTime accountNonExpired, LocalDateTime credentialsNonExpired,
-                          Role role, Privilege privilege) {
+                          LocalDateTime accountNonExpired,
+                          LocalDateTime credentialsNonExpired,
+                          Set<Role> roles,
+                          Set<Privilege> privileges) {
         this.id = id;
         this.name = name;
         this.username = username;
@@ -44,9 +51,10 @@ public class UserDetailsDTO implements UserDetails {
         this.deleted = deleted;
         this.accountNonExpired = accountNonExpired;
         this.credentialsNonExpired = credentialsNonExpired;
-        if (role != null) this.roles.add(role);
-        if (privilege != null) this.privileges.add(privilege);
+        this.roles = roles;
+        this.privileges = privileges;
     }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

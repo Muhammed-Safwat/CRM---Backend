@@ -11,6 +11,7 @@ import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.leads.dto.AssignDTO;
 import com.gws.crm.core.leads.dto.AssignResponse;
+import com.gws.crm.core.leads.dto.CountDTO;
 import com.gws.crm.core.lookups.repository.CategoryRepository;
 import com.gws.crm.core.lookups.repository.ProjectRepository;
 import com.gws.crm.core.lookups.repository.PropertyTypeRepository;
@@ -36,10 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.badRequest;
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
@@ -71,7 +69,8 @@ public class ResaleServiceImp implements ResaleService {
                             .orElseThrow(NotFoundResourceException::new);
             resaleCriteria.setSubordinates(employee.getSubordinates()
                     .stream()
-                    .map(User::getId).toList());
+                    .map(User::getId)
+                    .toList());
         }
         Specification<Resale> leadSpecification = filter(resaleCriteria, transition);
         Pageable pageable = PageRequest.of(resaleCriteria.getPage(), resaleCriteria.getSize());
@@ -279,6 +278,21 @@ public class ResaleServiceImp implements ResaleService {
         return success(message);
     }
 
+    @Override
+    public ResponseEntity<?> countByStatus(Long userId, Transition transition) {
+            List<CountDTO> result = new ArrayList<>();
+
+            if ("ADMIN".equalsIgnoreCase(transition.getRole())) {
+                result = resaleRepository.countAllResaleByStatusForAdmin(transition.getUserId());
+            } else if(userId != null) {
+                Set<Long> userIds = employeeRepository.findSubordinateIds(userId);
+                userIds.add(userId);
+                result = resaleRepository.countAllResaleByStatusForTeam(userIds);
+            }
+            return success(result);
+
+    }
+
     private List<Resale> createResaleList(List<ImportResaleDTO> importResaleDTOS, Transition transition) {
         List<Resale> resales = new ArrayList<>();
         User creator = userRepository.findById(transition.getUserId())
@@ -324,7 +338,8 @@ public class ResaleServiceImp implements ResaleService {
             }
 
             if (resaleDTO.getCategory() != null) {
-                resaleBuilder.category(categoryRepository.findByNameAndAdminId(resaleDTO.getCategory(), finalAdmin.getId()));
+                resaleBuilder.category(categoryRepository.findByNameAndAdminId(resaleDTO.getCategory(),
+                        finalAdmin.getId()).orElseThrow(NotFoundResourceException::new));
             }
             Resale resale = resaleBuilder.build();
 

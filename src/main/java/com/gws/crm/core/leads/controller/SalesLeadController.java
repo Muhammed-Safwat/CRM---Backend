@@ -1,7 +1,10 @@
 package com.gws.crm.core.leads.controller;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.leads.dto.*;
+import com.gws.crm.core.leads.dto.AddLeadDTO;
+import com.gws.crm.core.leads.dto.AssignDTO;
+import com.gws.crm.core.leads.dto.ImportLeadDTO;
+import com.gws.crm.core.leads.dto.SalesLeadCriteria;
 import com.gws.crm.core.leads.entity.SalesLead;
 import com.gws.crm.core.leads.service.SalesLeadService;
 import jakarta.validation.Valid;
@@ -21,40 +24,39 @@ public abstract class SalesLeadController<T extends SalesLead, D extends AddLead
         this.service = service;
     }
 
-
     @PostMapping("all")
     public ResponseEntity<?> getAllLeads(@Valid @RequestBody SalesLeadCriteria salesLeadCriteria,
-                                         Transition transition) {
+            Transition transition) {
         return service.getLeads(salesLeadCriteria, transition);
     }
 
     @GetMapping("/{leadId}")
     public ResponseEntity<?> getLeadDetails(@PathVariable("leadId") long leadId,
-                                            Transition transition) {
+            Transition transition) {
         return service.getLeadDetails(leadId, transition);
     }
 
     @PostMapping
     public ResponseEntity<?> addLead(@Valid @RequestBody D leadDTO,
-                                     Transition transition) {
+            Transition transition) {
         return service.addLead(leadDTO, transition);
     }
 
     @PutMapping
     public ResponseEntity<?> updateLead(@Valid @RequestBody D leadDTO,
-                                        Transition transition) {
+            Transition transition) {
         return service.updateLead(leadDTO, transition);
     }
 
     @DeleteMapping("/{leadId}")
     public ResponseEntity<?> deleteLead(@PathVariable Long leadId,
-                                        Transition transition) {
+            Transition transition) {
         return service.deleteLead(leadId, transition);
     }
 
     @DeleteMapping("restore/{leadId}")
     public ResponseEntity<?> restoreLead(@PathVariable Long leadId,
-                                         Transition transition) {
+            Transition transition) {
         return service.restoreLead(leadId, transition);
     }
 
@@ -65,7 +67,7 @@ public abstract class SalesLeadController<T extends SalesLead, D extends AddLead
 
     @PostMapping("import")
     public ResponseEntity<?> importLead(@Valid @RequestBody List<ImportLeadDTO> leads,
-                                        Transition transition) {
+            Transition transition) {
         return service.importLead(leads, transition);
     }
 
@@ -73,12 +75,6 @@ public abstract class SalesLeadController<T extends SalesLead, D extends AddLead
     public ResponseEntity<?> assignSalesToLead(@RequestBody AssignDTO assignDTO, Transition transition) {
         return service.assignSalesToLead(assignDTO, transition);
     }
-
-    @PutMapping("/assign/all")
-    public ResponseEntity<?> assignSalesToAllLeads(@RequestBody AssignAllDTO assignAllDTO, Transition transition) {
-        return service.assignSalesToAllLeads(assignAllDTO, transition);
-    }
-
 
     @GetMapping("/is-phone-exist/{phone}")
     public ResponseEntity<?> isPhoneExist(@PathVariable String phone, Transition transition) {
@@ -93,11 +89,6 @@ public abstract class SalesLeadController<T extends SalesLead, D extends AddLead
     @PutMapping("archive/{leadId}")
     public ResponseEntity<?> toggleArchive(@PathVariable long leadId, Transition transition) {
         return service.toggleArchive(leadId, transition);
-    }
-
-    @PostMapping("delete/all")
-    public ResponseEntity<?> deleteLeads(@RequestBody List<Long> ids, Transition transition) {
-        return service.softDeleteLeads(ids,transition);
     }
 
     @GetMapping("count-by-status")

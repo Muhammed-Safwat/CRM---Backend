@@ -1,12 +1,9 @@
 package com.gws.crm.core.resale.specification;
 
-
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.leads.entity.PreLead;
 import com.gws.crm.core.resale.dto.ResaleCriteria;
 import com.gws.crm.core.resale.entities.Resale;
 import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
@@ -24,181 +21,126 @@ public class ResaleSpecification {
         }
         specs.add(fetchData());
         ids.add(transition.getUserId());
+
         if (resaleCriteria != null) {
+            specs.add(filterByChannel(resaleCriteria.getChannel()));
             specs.add(fullTextSearch(resaleCriteria.getKeyword()));
             specs.add(filterByDeleted(resaleCriteria.isDeleted()));
             specs.add(filterByCreatedAt(resaleCriteria.getCreatedAt()));
             specs.add(filterByUser(ids, resaleCriteria.isMyLead(), transition));
-            specs.add(filterBySalesReps(resaleCriteria.getSalesRep(), transition));
-            specs.add(filterByCreators(resaleCriteria.getCreator(), transition));
+            specs.add(filterBySalesReps(resaleCriteria.getSalesRep()));
+            specs.add(filterByCreators(resaleCriteria.getCreator()));
             specs.add(filterByCategory(resaleCriteria.getCategory()));
             specs.add(filterByProject(resaleCriteria.getProject()));
-            specs.add(filterByProperty(resaleCriteria.getProject()));
+            specs.add(filterByProperty(resaleCriteria.getProperty()));
             specs.add(filterByStatus(resaleCriteria.getStatus()));
             specs.add(filterByType(resaleCriteria.getType()));
             specs.add(filterByDelayed(resaleCriteria.getDelayed()));
         }
+
         return Specification.allOf(specs);
     }
 
-    public static  Specification<Resale> fetchData() {
+    public static Specification<Resale> fetchData() {
         return (root, query, cb) -> {
             if (query.getResultType() != Long.class && query.getResultType() != long.class) {
-                root.fetch("project",JoinType.LEFT);
-                root.fetch("salesRep",JoinType.LEFT);
-                root.fetch("type",JoinType.LEFT);
-                root.fetch("status",JoinType.LEFT);
+                root.fetch("project", JoinType.LEFT);
+                root.fetch("salesRep", JoinType.LEFT);
+                root.fetch("type", JoinType.LEFT);
+                root.fetch("status", JoinType.LEFT);
             }
             query.distinct(true);
-            return cb.conjunction();
-        };
-    }
-
-    private static Specification<Resale> filterByDelayed(Boolean delayed) {
-        return (root, query, criteriaBuilder) -> {
-            if (delayed == null) {
-                return null;
-            }
-
-            return criteriaBuilder.equal(root.get("delay"), delayed);
+            return null;
         };
     }
 
     private static Specification<Resale> filterByUser(List<Long> ids, boolean isMyLead, Transition transition) {
-
-        return (root, query, criteriaBuilder) -> {
-            Predicate predicate = criteriaBuilder.conjunction();
-            if (!isMyLead && transition.getRole().equals("USER")) {
-                predicate = criteriaBuilder.and(predicate, root.join("salesRep", JoinType.INNER).get("id").in(ids));
-            } else if (isMyLead && transition.getRole().equals("ADMIN")) {
-                predicate = criteriaBuilder.and(predicate,
-                        criteriaBuilder.isNull(root.get("salesRep"))
-                );
-            } else if (isMyLead && transition.getRole().equals("USER")) {
-                predicate = criteriaBuilder.and(predicate,
-                        criteriaBuilder.equal(root.get("salesRep").get("id"), transition.getUserId())
-                );
+        return (root, query, cb) -> {
+            if(!isMyLead && "ADMIN".equals(transition.getRole())){
+                return cb.equal(root.get("admin").get("id"),transition.getUserId());
+            }else
+            if (!isMyLead && "USER".equals(transition.getRole()) && !ids.isEmpty()) {
+                return root.join("salesRep", JoinType.INNER).get("id").in(ids);
+            } else if (isMyLead && "ADMIN".equals(transition.getRole())) {
+                return cb.equal(root.get("salesRep"),transition.getUserId());
+            } else if (isMyLead && "USER".equals(transition.getRole())) {
+                return cb.equal(root.get("salesRep").get("id"), transition.getUserId());
             }
-            return predicate;
+            return null;
         };
     }
 
-    private static Specification<Resale> filterBySalesReps(List<Long> salesReps, Transition transition) {
-        return (root, query, criteriaBuilder) -> {
-            if (salesReps == null || salesReps.isEmpty()) {
-                return null;
-            }
-
-            return root.join("salesRep", JoinType.INNER).get("id").in(salesReps);
-        };
+    private static Specification<Resale> filterBySalesReps(List<Long> salesReps) {
+        return (root, query, cb) -> (salesReps == null || salesReps.isEmpty()) ? null :
+                root.join("salesRep", JoinType.INNER).get("id").in(salesReps);
     }
 
     private static Specification<Resale> fullTextSearch(String keyword) {
-        return (root, query, criteriaBuilder) -> {
-            if (!StringUtils.hasText(keyword)) {
-                return criteriaBuilder.conjunction();
-            }
-
+        return (root, query, cb) -> {
+            if (!StringUtils.hasText(keyword)) return null;
             String lowerKeyword = "%" + keyword.toLowerCase() + "%";
-
-            return criteriaBuilder.or(
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), lowerKeyword),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("BUA")), lowerKeyword),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("phase")), lowerKeyword),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("code")), lowerKeyword),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("country")), lowerKeyword),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("phone")), lowerKeyword)
-
+            return cb.or(
+                    cb.like(cb.lower(root.get("name")), lowerKeyword),
+                    cb.like(cb.lower(root.get("BUA")), lowerKeyword),
+                    cb.like(cb.lower(root.get("phase")), lowerKeyword),
+                    cb.like(cb.lower(root.get("code")), lowerKeyword),
+                    cb.like(cb.lower(root.get("country")), lowerKeyword),
+                    cb.like(cb.lower(root.get("phone")), lowerKeyword)
             );
         };
     }
 
-    private static Specification<Resale> filterByCreators(List<Long> creatorId, Transition transition) {
-        return (root, query, criteriaBuilder) -> {
-            if (creatorId == null || creatorId.isEmpty()) {
-                return null;
-            }
-            return root.join("creator", JoinType.INNER).get("id").in(creatorId);
-        };
+    private static Specification<Resale> filterByCreators(List<Long> creatorIds) {
+        return (root, query, cb) -> (creatorIds == null || creatorIds.isEmpty()) ? null :
+                root.join("creator", JoinType.LEFT).get("id").in(creatorIds);
     }
 
-
-    private static Specification<Resale> filterByCreator(List<Long> creatorId) {
-        return (root, query, criteriaBuilder) -> {
-            if (creatorId == null || creatorId.isEmpty()) {
-                return criteriaBuilder.conjunction();
-            }
-            return root.join("creator", JoinType.INNER).get("id").in(creatorId);
-        };
+    private static Specification<Resale> filterByProject(List<Long> projectIds) {
+        return (root, query, cb) -> (projectIds == null || projectIds.isEmpty()) ? null :
+                root.join("project", JoinType.LEFT).get("id").in(projectIds);
     }
 
-    private static Specification<Resale> filterByStatus(List<Long> statusesIds) {
-        return (root, query, criteriaBuilder) -> {
-            if (statusesIds == null || statusesIds.isEmpty()) {
-                return criteriaBuilder.conjunction();
-            }
-            return root.join("status", JoinType.INNER).get("id").in(statusesIds);
-        };
+    private static Specification<Resale> filterByChannel(List<Long> channelIds) {
+        return (root, query, cb) -> (channelIds == null || channelIds.isEmpty()) ? null :
+                root.join("channel", JoinType.LEFT).get("id").in(channelIds);
+    }
+    private static Specification<Resale> filterByProperty(List<Long> propertyIds) {
+        return (root, query, cb) -> (propertyIds == null || propertyIds.isEmpty()) ? null :
+                root.join("property", JoinType.LEFT).get("id").in(propertyIds);
+    }
+
+    private static Specification<Resale> filterByCategory(List<Long> categoryIds) {
+        return (root, query, cb) -> (categoryIds == null || categoryIds.isEmpty()) ? null :
+                root.join("category", JoinType.LEFT).get("id").in(categoryIds);
+    }
+
+    private static Specification<Resale> filterByStatus(List<Long> statusIds) {
+        return (root, query, cb) -> (statusIds == null || statusIds.isEmpty()) ? null :
+                root.join("status", JoinType.LEFT).get("id").in(statusIds);
     }
 
     private static Specification<Resale> filterByType(Long typeId) {
-        return (root, query, criteriaBuilder) -> {
-            if (typeId == null || typeId == 0) {
-                return null;
-            }
-            return criteriaBuilder.equal(root.get("type").get("id"), typeId);
-        };
-    }
-
-    private static Specification<Resale> filterByCategory(List<Long> creatorId) {
-        return (root, query, criteriaBuilder) -> {
-            if (creatorId == null || creatorId.isEmpty()) {
-                return criteriaBuilder.conjunction();
-            }
-            return root.join("category", JoinType.INNER).get("id").in(creatorId);
-        };
-    }
-
-    private static Specification<Resale> filterByProperty(List<Long> creatorId) {
-        return (root, query, criteriaBuilder) -> {
-            if (creatorId == null || creatorId.isEmpty()) {
-                return criteriaBuilder.conjunction();
-            }
-            return root.join("property", JoinType.INNER).get("id").in(creatorId);
-        };
-    }
-
-    private static Specification<Resale> filterByProject(List<Long> creatorId) {
-        return (root, query, criteriaBuilder) -> {
-            if (creatorId == null || creatorId.isEmpty()) {
-                return criteriaBuilder.conjunction();
-            }
-            return root.join("project", JoinType.INNER).get("id").in(creatorId);
-        };
-    }
-
-
-    private static Specification<Resale> filterByDeleted(Boolean deleted) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("deleted"), deleted);
+        return (root, query, cb) -> (typeId == null || typeId == 0) ? null :
+                cb.equal(root.get("type").get("id"), typeId);
     }
 
     private static Specification<Resale> filterByCreatedAt(LocalDate createdAt) {
-        return (root, query, criteriaBuilder) -> {
-            if (createdAt == null) {
-                return null;
-            }
-            return criteriaBuilder.equal(root.get("createdAt"), createdAt);
-        };
+        return (root, query, cb) -> (createdAt == null) ? null :
+                cb.equal(root.get("createdAt"), createdAt);
+    }
+
+    private static Specification<Resale> filterByDeleted(Boolean deleted) {
+        return (root, query, cb) -> (deleted == null) ? null :
+                cb.equal(root.get("deleted"), deleted);
+    }
+
+    private static Specification<Resale> filterByDelayed(Boolean delayed) {
+        return (root, query, cb) -> (delayed == null) ? null :
+                cb.equal(root.get("delay"), delayed);
     }
 
     private static Specification<Resale> filterByAdminId(Long id) {
-        return (root, query, criteriaBuilder) -> {
-            if (id == null || id == 0) {
-                return null;
-            }
-            return criteriaBuilder.equal(root.get("admin").get("id"), id);
-        };
+        return (root, query, cb) -> (id == null || id == 0) ? null :
+                cb.equal(root.get("admin").get("id"), id);
     }
-
-
 }

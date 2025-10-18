@@ -23,7 +23,7 @@ public class SalesLeadSpecification<T extends SalesLead> {
         if (salesLeadCriteria.getSubordinates() != null) {
             ids.addAll(salesLeadCriteria.getSubordinates());
         }
-        specs.add(fetchData());
+        specs.add(fetchAllAssociations());
         ids.add(transition.getUserId());
         if (salesLeadCriteria != null) {
             specs.add(getOnlyForAdmin(transition));
@@ -53,8 +53,8 @@ public class SalesLeadSpecification<T extends SalesLead> {
             specs.add(filterByCreators(salesLeadCriteria.getCreator(), transition));
             specs.add(filterByLastActionDate(salesLeadCriteria.getLastActionDate()));
             specs.add(filterByNextActionDate(salesLeadCriteria.getNextActionDate()));
+            specs.add(filterByAssignFrom(salesLeadCriteria.getAssignFrom(),transition));
         }
-
         return Specification.allOf(specs);
     }
 
@@ -63,7 +63,7 @@ public class SalesLeadSpecification<T extends SalesLead> {
             if (query.getResultType() != Long.class && query.getResultType() != long.class) {
                 root.fetch("salesRep", JoinType.LEFT);
                 root.fetch("creator", JoinType.LEFT);
-                root.fetch("status",JoinType.LEFT);
+                root.fetch("status", JoinType.LEFT);
                 root.fetch("phoneNumbers", JoinType.LEFT);
             }
             query.distinct(true);
@@ -77,12 +77,12 @@ public class SalesLeadSpecification<T extends SalesLead> {
                 root.fetch("salesRep", JoinType.LEFT);
                 root.fetch("status", JoinType.LEFT);
                 root.fetch("phoneNumbers", JoinType.LEFT);
-                root.fetch("employee", JoinType.LEFT);
                 root.fetch("creator", JoinType.LEFT);
                 root.fetch("channel", JoinType.LEFT);
                 root.fetch("broker", JoinType.LEFT);
                 root.fetch("project", JoinType.LEFT);
                 root.fetch("stage", JoinType.LEFT);
+                root.fetch("assignFrom",JoinType.LEFT);
             }
             query.distinct(true);
             return cb.conjunction();
@@ -93,7 +93,6 @@ public class SalesLeadSpecification<T extends SalesLead> {
         return (root, query, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
             if (transition.getRole().equals("USER")) {
-
                 predicate = criteriaBuilder.and(predicate,
                         criteriaBuilder.equal(root.get("salesRep").get("id"), transition.getUserId())
                 );
@@ -120,13 +119,10 @@ public class SalesLeadSpecification<T extends SalesLead> {
         return (root, query, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
             if (transition.getRole().equals("USER")) {
-
                 predicate = criteriaBuilder.and(predicate,
                         criteriaBuilder.equal(root.get("salesRep").get("id"), transition.getUserId())
                 );
-            } else if (leadCriteria.getMyLead() != null && leadCriteria.getMyLead() && transition.getRole().equals(
-                    "ADMIN")) {
-
+            } else if (leadCriteria.getMyLead() != null && leadCriteria.getMyLead() && transition.getRole().equals("ADMIN")) {
                 predicate = criteriaBuilder.and(predicate,
                         criteriaBuilder.isNull(root.get("salesRep"))
                 );
@@ -135,12 +131,11 @@ public class SalesLeadSpecification<T extends SalesLead> {
         };
     }
 
-    private static <T extends SalesLead> Specification<T> filterByUser(List<Long> ids, Boolean isMyLead,
-                                                                       Transition transition) {
+    private static <T extends SalesLead> Specification<T> filterByUser(List<Long> ids, Boolean isMyLead, Transition transition) {
         return (root, query, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
             if (isMyLead == null && transition.getRole().equals("USER")) {
-                predicate = criteriaBuilder.and(predicate, root.join("salesRep", JoinType.INNER).get("id").in(ids));
+                predicate = criteriaBuilder.and(predicate, root.join("salesRep", JoinType.LEFT).get("id").in(ids));
             } else if (isMyLead != null && isMyLead && transition.getRole().equals("ADMIN")) {
                 predicate = criteriaBuilder.and(predicate,
                         criteriaBuilder.isNull(root.get("salesRep"))
@@ -154,26 +149,21 @@ public class SalesLeadSpecification<T extends SalesLead> {
         };
     }
 
-
-    // Full text search specification
     private static <T extends SalesLead> Specification<T> fullTextSearch(String keyword) {
         return (root, query, criteriaBuilder) -> {
             if (!StringUtils.hasText(keyword)) {
                 return criteriaBuilder.conjunction();
             }
-
             String lowerKeyword = "%" + keyword.toLowerCase() + "%";
-
             return criteriaBuilder.or(
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), lowerKeyword),
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("country")), lowerKeyword),
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), lowerKeyword),
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("jobTitle")), lowerKeyword),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.join("phoneNumbers").get("phone")), lowerKeyword)
+                    criteriaBuilder.like(criteriaBuilder.lower(root.join("phoneNumbers", JoinType.LEFT).get("phone")), lowerKeyword)
             );
         };
     }
-
 
     private static <T extends SalesLead> Specification<T> filterByStatus(Long statusId) {
         return (root, query, criteriaBuilder) -> {
@@ -189,8 +179,7 @@ public class SalesLeadSpecification<T extends SalesLead> {
             if (investmentGoals == null || investmentGoals.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-
-            return root.join("investmentGoal", JoinType.INNER).get("id").in(investmentGoals);
+            return root.join("investmentGoal", JoinType.LEFT).get("id").in(investmentGoals);
         };
     }
 
@@ -199,8 +188,7 @@ public class SalesLeadSpecification<T extends SalesLead> {
             if (communicateWays == null || communicateWays.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-
-            return root.join("communicateWay", JoinType.INNER).get("id").in(communicateWays);
+            return root.join("communicateWay", JoinType.LEFT).get("id").in(communicateWays);
         };
     }
 
@@ -209,8 +197,7 @@ public class SalesLeadSpecification<T extends SalesLead> {
             if (cancelReasons == null || cancelReasons.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-
-            return root.join("cancelReasons", JoinType.INNER).get("id").in(cancelReasons);
+            return root.join("cancelReasons", JoinType.LEFT).get("id").in(cancelReasons);
         };
     }
 
@@ -219,30 +206,34 @@ public class SalesLeadSpecification<T extends SalesLead> {
             if (salesReps == null || salesReps.isEmpty()) {
                 return null;
             }
-
-            return root.join("salesRep", JoinType.INNER).get("id").in(salesReps);
+            return root.join("salesRep", JoinType.LEFT).get("id").in(salesReps);
         };
     }
 
-    private static <T extends SalesLead> Specification<T> filterBySubSalesReps(List<Long> salesReps,
-                                                                               Transition transition) {
+    private static <T extends SalesLead> Specification<T> filterByAssignFrom(List<Long> salesReps,
+                                                                           Transition transition) {
         return (root, query, criteriaBuilder) -> {
             if (salesReps == null || salesReps.isEmpty()) {
                 return null;
             }
-
-            return root.join("salesRep", JoinType.INNER).get("id").in(salesReps);
+            return root.join("assignFrom", JoinType.LEFT).get("id").in(salesReps);
         };
     }
-
+    private static <T extends SalesLead> Specification<T> filterBySubSalesReps(List<Long> salesReps, Transition transition) {
+        return (root, query, criteriaBuilder) -> {
+            if (salesReps == null || salesReps.isEmpty()) {
+                return null;
+            }
+            return root.join("salesRep", JoinType.LEFT).get("id").in(salesReps);
+        };
+    }
 
     private static <T extends SalesLead> Specification<T> filterBySub(List<Long> salesReps, boolean isMyLeads) {
         return (root, query, criteriaBuilder) -> {
             if (salesReps == null || salesReps.isEmpty() || isMyLeads) {
                 return null;
             }
-
-            return root.join("salesRep", JoinType.INNER).get("id").in(salesReps);
+            return root.join("salesRep", JoinType.LEFT).get("id").in(salesReps);
         };
     }
 
@@ -251,27 +242,25 @@ public class SalesLeadSpecification<T extends SalesLead> {
             if (stage == null || stage.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-            return root.join("stage", JoinType.INNER).get("id").in(stage);
+            return root.join("stage", JoinType.LEFT).get("id").in(stage);
         };
     }
-
 
     private static <T extends SalesLead> Specification<T> filterByCreators(List<Long> creatorId, Transition transition) {
         return (root, query, criteriaBuilder) -> {
             if (creatorId == null || creatorId.isEmpty()) {
                 return null;
             }
-            return root.join("creator", JoinType.INNER).get("id").in(creatorId);
+            return root.join("creator", JoinType.LEFT).get("id").in(creatorId);
         };
     }
 
-    private static <T extends SalesLead> Specification<T> filterBySubCreators(List<Long> creatorId,
-                                                                              Transition transition) {
+    private static <T extends SalesLead> Specification<T> filterBySubCreators(List<Long> creatorId, Transition transition) {
         return (root, query, criteriaBuilder) -> {
             if (creatorId == null || creatorId.isEmpty()) {
                 return null;
             }
-            return root.join("creator", JoinType.INNER).get("id").in(creatorId);
+            return root.join("creator", JoinType.LEFT).get("id").in(creatorId);
         };
     }
 
@@ -280,8 +269,7 @@ public class SalesLeadSpecification<T extends SalesLead> {
             if (channels == null || channels.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-
-            return root.join("channel", JoinType.INNER).get("id").in(channels);
+            return root.join("channel", JoinType.LEFT).get("id").in(channels);
         };
     }
 
@@ -290,8 +278,7 @@ public class SalesLeadSpecification<T extends SalesLead> {
             if (brokers == null || brokers.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-
-            return root.join("broker", JoinType.INNER).get("id").in(brokers);
+            return root.join("broker", JoinType.LEFT).get("id").in(brokers);
         };
     }
 
@@ -300,8 +287,7 @@ public class SalesLeadSpecification<T extends SalesLead> {
             if (projects == null || projects.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-
-            return root.join("project", JoinType.INNER).get("id").in(projects);
+            return root.join("project", JoinType.LEFT).get("id").in(projects);
         };
     }
 
@@ -319,7 +305,6 @@ public class SalesLeadSpecification<T extends SalesLead> {
             if (delayed == null) {
                 return null;
             }
-
             return criteriaBuilder.equal(root.get("delay"), delayed);
         };
     }
@@ -329,7 +314,6 @@ public class SalesLeadSpecification<T extends SalesLead> {
             if (archived == null) {
                 return null;
             }
-
             return criteriaBuilder.equal(root.get("archive"), archived);
         };
     }
@@ -339,7 +323,6 @@ public class SalesLeadSpecification<T extends SalesLead> {
             if (deleted == null) {
                 return null;
             }
-
             return criteriaBuilder.equal(root.get("deleted"), deleted);
         };
     }
@@ -367,10 +350,8 @@ public class SalesLeadSpecification<T extends SalesLead> {
             if (createdAt == null || createdAt.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-
             LocalDateTime startDate = createdAt.size() > 0 ? createdAt.get(0) : null;
             LocalDateTime endDate = createdAt.size() > 1 ? createdAt.get(1) : null;
-
             if (startDate != null && endDate != null) {
                 return criteriaBuilder.between(root.get("createdAt"), startDate, endDate);
             } else if (startDate != null) {
@@ -378,7 +359,6 @@ public class SalesLeadSpecification<T extends SalesLead> {
             } else if (endDate != null) {
                 return criteriaBuilder.lessThanOrEqualTo(root.get("createdAt"), endDate);
             }
-
             return criteriaBuilder.conjunction();
         };
     }
@@ -388,10 +368,8 @@ public class SalesLeadSpecification<T extends SalesLead> {
             if (stageDate == null || stageDate.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-
             LocalDateTime startDate = stageDate.size() > 0 ? stageDate.get(0) : null;
             LocalDateTime endDate = stageDate.size() > 1 ? stageDate.get(1) : null;
-
             if (startDate != null && endDate != null) {
                 return criteriaBuilder.between(root.get("stageDate"), startDate, endDate);
             } else if (startDate != null) {
@@ -399,7 +377,6 @@ public class SalesLeadSpecification<T extends SalesLead> {
             } else if (endDate != null) {
                 return criteriaBuilder.lessThanOrEqualTo(root.get("stageDate"), endDate);
             }
-
             return criteriaBuilder.conjunction();
         };
     }
@@ -409,10 +386,8 @@ public class SalesLeadSpecification<T extends SalesLead> {
             if (actionDate == null || actionDate.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-
             LocalDateTime startDate = actionDate.size() > 0 ? actionDate.get(0) : null;
             LocalDateTime endDate = actionDate.size() > 1 ? actionDate.get(1) : null;
-
             if (startDate != null && endDate != null) {
                 return criteriaBuilder.between(root.get("actionDate"), startDate, endDate);
             } else if (startDate != null) {
@@ -420,7 +395,6 @@ public class SalesLeadSpecification<T extends SalesLead> {
             } else if (endDate != null) {
                 return criteriaBuilder.lessThanOrEqualTo(root.get("actionDate"), endDate);
             }
-
             return criteriaBuilder.conjunction();
         };
     }
@@ -430,10 +404,8 @@ public class SalesLeadSpecification<T extends SalesLead> {
             if (assignDate == null || assignDate.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-
             LocalDateTime startDate = assignDate.size() > 0 ? assignDate.get(0) : null;
             LocalDateTime endDate = assignDate.size() > 1 ? assignDate.get(1) : null;
-
             if (startDate != null && endDate != null) {
                 return criteriaBuilder.between(root.get("assignDate"), startDate, endDate);
             } else if (startDate != null) {
@@ -441,7 +413,6 @@ public class SalesLeadSpecification<T extends SalesLead> {
             } else if (endDate != null) {
                 return criteriaBuilder.lessThanOrEqualTo(root.get("assignDate"), endDate);
             }
-
             return criteriaBuilder.conjunction();
         };
     }
@@ -451,10 +422,8 @@ public class SalesLeadSpecification<T extends SalesLead> {
             if (lastActionDate == null || lastActionDate.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-
             LocalDateTime startDate = lastActionDate.size() > 0 ? lastActionDate.get(0) : null;
             LocalDateTime endDate = lastActionDate.size() > 1 ? lastActionDate.get(1) : null;
-
             if (startDate != null && endDate != null) {
                 return criteriaBuilder.between(root.get("lastActionDate"), startDate, endDate);
             } else if (startDate != null) {
@@ -462,7 +431,6 @@ public class SalesLeadSpecification<T extends SalesLead> {
             } else if (endDate != null) {
                 return criteriaBuilder.lessThanOrEqualTo(root.get("lastActionDate"), endDate);
             }
-
             return criteriaBuilder.conjunction();
         };
     }
@@ -472,10 +440,8 @@ public class SalesLeadSpecification<T extends SalesLead> {
             if (nextActionDate == null || nextActionDate.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-
             LocalDateTime startDate = nextActionDate.size() > 0 ? nextActionDate.get(0) : null;
             LocalDateTime endDate = nextActionDate.size() > 1 ? nextActionDate.get(1) : null;
-
             if (startDate != null && endDate != null) {
                 return criteriaBuilder.between(root.get("nextActionDate"), startDate, endDate);
             } else if (startDate != null) {
@@ -483,7 +449,6 @@ public class SalesLeadSpecification<T extends SalesLead> {
             } else if (endDate != null) {
                 return criteriaBuilder.lessThanOrEqualTo(root.get("nextActionDate"), endDate);
             }
-
             return criteriaBuilder.conjunction();
         };
     }

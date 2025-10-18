@@ -19,8 +19,6 @@ public class PhoneNumber {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String code;
-
     @Column(nullable = false)
     @org.hibernate.annotations.Index(name = "idx_phone")
     private String phone;
@@ -30,7 +28,4 @@ public class PhoneNumber {
     // @JsonBackReference
     private BaseLead lead;
 
-    public String getNumber() {
-        return code.concat(phone);
-    }
 }

@@ -17,9 +17,12 @@ public class ProjectController {
 
     @GetMapping
     public ResponseEntity<?> getProjects(@RequestParam(defaultValue = "0") int page,
-                                         @RequestParam(defaultValue = "10") int size, Transition transition) {
-        return projectService.getProjects(page, size, transition);
+                                         @RequestParam(defaultValue = "10") int size,
+                                         @RequestParam(name = "keyword", required = false) String keyword,
+                                         Transition transition) {
+        return projectService.getProjects(page, size, keyword, transition);
     }
+
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllProjects(Transition transition) {

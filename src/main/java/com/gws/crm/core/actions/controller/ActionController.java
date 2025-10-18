@@ -22,7 +22,7 @@ public abstract class ActionController<T extends BaseLead> {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             Transition transition) {
-
         return leadActionService.getActions(leadId, page, size, transition);
     }
+
 }

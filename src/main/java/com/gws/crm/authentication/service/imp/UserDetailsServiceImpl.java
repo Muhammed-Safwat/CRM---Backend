@@ -1,6 +1,7 @@
 package com.gws.crm.authentication.service.imp;
 
 import com.gws.crm.authentication.dto.UserDetailsDTO;
+import com.gws.crm.authentication.entity.User;
 import com.gws.crm.authentication.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,7 +19,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<UserDetailsDTO> optionalUserDetailsDTO = userRepository.findDTOByUsername(username);
+        Optional<User> optionalUserDetailsDTO = userRepository.findByUsername(username);
         if (optionalUserDetailsDTO.isEmpty()) {
             throw new UsernameNotFoundException("Invalid username or password !");
         }

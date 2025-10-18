@@ -13,5 +13,5 @@ import lombok.experimental.SuperBuilder;
 public class AreaDTO extends LookupDTO {
 
     @NotNull
-    private LookupDTO region;
+    private String region;
 }

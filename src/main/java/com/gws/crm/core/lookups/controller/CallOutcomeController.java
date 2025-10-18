@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/lookups/call-outcomes")
+@RequestMapping("api/lookups/next-action")
 public class CallOutcomeController extends BaseLookupController<CallOutcome, LookupDTO> {
 
     protected CallOutcomeController(CallOutcomeService service) {

@@ -52,7 +52,7 @@ public class CommonAuthServiceImp implements CommonAuthService {
                     signInRequest.getPassword()
             ));
             if (authentication.isAuthenticated()) {
-                UserDetailsDTO user = (UserDetailsDTO) authentication.getPrincipal();
+                User user =  (User) authentication.getPrincipal();
                 log.info("✅ Login successful for User: {}", user);
                 SignInResponse signInResponse = SignInResponse.builder()
                         .accessToken(jwtTokenService.generateAccessToken(user))
@@ -153,7 +153,7 @@ public class CommonAuthServiceImp implements CommonAuthService {
         if (isExpired) {
             return error("Token Expired");
         }
-        UserDetailsDTO user = userRepository.findDTOById(jwtTokenService.extractUserId(refreshToken))
+        User user = userRepository.findById(jwtTokenService.extractUserId(refreshToken))
                 .orElseThrow(NotFoundResourceException::new);
 
         SignInResponse signInResponse = SignInResponse.builder()

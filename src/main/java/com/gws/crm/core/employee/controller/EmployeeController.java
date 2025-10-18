@@ -10,6 +10,7 @@ import com.gws.crm.core.employee.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -77,6 +78,11 @@ public class EmployeeController {
     @PutMapping("restore/{employeeId}")
     public ResponseEntity<?> restoreEmployee(@PathVariable long employeeId, Transition transition) {
         return employeeService.restoreEmployee(employeeId, transition);
+    }
+
+    @GetMapping("count-by-jobTitle")
+    public ResponseEntity<?> countEmployeesByJobTitle(@Param("userId") Long userId , Transition transition){
+        return employeeService.countEmployeesByJobTitle(userId,transition);
     }
 
 }

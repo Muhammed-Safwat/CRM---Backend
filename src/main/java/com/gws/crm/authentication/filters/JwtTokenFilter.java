@@ -1,6 +1,7 @@
 package com.gws.crm.authentication.filters;
 
 import com.gws.crm.authentication.dto.UserDetailsDTO;
+import com.gws.crm.authentication.entity.User;
 import com.gws.crm.authentication.repository.UserRepository;
 import com.gws.crm.authentication.utils.JwtTokenService;
 import com.gws.crm.common.exception.NotFoundResourceException;
@@ -53,7 +54,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             long userId = jwtTokenService.extractUserId(token);
 //            UserDetails userDetails = userRepository.findByIdWithRoles(userId)
 //                    .orElseThrow(NotFoundResourceException::new);
-            UserDetailsDTO userDetails = userRepository.findUserDetailById(userId)
+            User userDetails = userRepository.findById(userId)
                     .orElseThrow(NotFoundResourceException::new);
             if (!isUserValid(userDetails)) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

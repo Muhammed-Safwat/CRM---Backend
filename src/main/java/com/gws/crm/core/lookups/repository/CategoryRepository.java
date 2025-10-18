@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CategoryRepository extends BaseLookupRepository<Category> {
@@ -13,5 +14,6 @@ public interface CategoryRepository extends BaseLookupRepository<Category> {
     @Query("SELECT c.name FROM Category c WHERE c.admin.id = :adminId")
     List<String> findAllNamesByAdminId(@Param("adminId") Long adminId);
 
+    Optional<Category> getByName(String name);
 
 }

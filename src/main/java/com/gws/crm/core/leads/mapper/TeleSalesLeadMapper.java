@@ -109,6 +109,8 @@ public class TeleSalesLeadMapper {
                 .project(projectDTO)
                 .deleted(lead.isDeleted())
                 .creator(creatorDTO)
+                .lastActionComment(lead.getLastActionComment())
+
                 .broker(brokerDTO)
                 .campaignId(lead.getCampaignId())
                 .lastStage(lead.getLastStage())
@@ -127,4 +129,49 @@ public class TeleSalesLeadMapper {
     public Page<LeadResponse> toDTOPage(Page<TeleSalesLead> leadPage) {
         return leadPage.map(this::toDTO);
     }
+
+    public Page<LeadResponse> toSimpleDTOPage(Page<TeleSalesLead> entityPage) {
+        return entityPage.map(this::toSimpleDTO);
+    }
+
+    public LeadResponse toSimpleDTO(TeleSalesLead lead){
+        if (lead == null) {
+            return null;
+        }
+
+        EmployeeSimpleDTO salesRepDTO = lead.getSalesRep() != null ?
+                EmployeeSimpleDTO.builder()
+                        .id(lead.getSalesRep().getId())
+                        .name(lead.getSalesRep().getName())
+                        .build()
+                : null;
+
+        LeadStatusDto leadStatusDto = lead.getStatus() != null ?
+                LeadStatusDto.builder()
+                        .name(lead.getStatus().getName())
+                        .id(lead.getStatus().getId())
+                        .build()
+                : null;
+
+        return LeadResponse.builder()
+                .id(lead.getId())
+                .phoneNumbers(phoneNumberMapper.toDtoList(lead.getPhoneNumbers()))
+                .name(lead.getName())
+                .status(leadStatusDto)
+                .whatsappNumber(lead.getWhatsappNumber())
+                .email(lead.getEmail())
+                .jobTitle(lead.getJobTitle())
+                .updatedAt(lead.getUpdatedAt())
+                .createdAt(lead.getCreatedAt())
+                .salesRep(salesRepDTO)
+                .deleted(lead.isDeleted())
+                .lastStage(lead.getLastStage())
+                .assignAt(lead.getAssignAt())
+                .lastActionComment(lead.getLastActionComment())
+                .delayed(lead.isDelay())
+                .archived(lead.isArchive())
+                .build();
+    }
+
+
 }

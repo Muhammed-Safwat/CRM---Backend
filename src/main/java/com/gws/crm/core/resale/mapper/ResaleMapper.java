@@ -18,7 +18,11 @@ public class ResaleMapper {
         if (resale == null) {
             return null;
         }
-
+        LookupDTO typeDTO = resale.getType() !=null ?
+                LookupDTO.builder()
+                        .id(resale.getType().getId())
+                        .name(resale.getType().getName())
+                        .build(): null;
 
         LookupDTO statusDTO = resale.getStatus() != null ?
                 LookupDTO.builder()
@@ -27,14 +31,14 @@ public class ResaleMapper {
                         .build() :
                 null;
 
-        /*ProjectDTO projectDTO = resale.getProject() != null ?
+         ProjectDTO projectDTO = resale.getProject() != null ?
                 ProjectDTO.builder()
                         .id(resale.getProject().getId())
                         .name(resale.getProject().getName())
                         .build()
                 : null;
 
-         */
+
 
         EmployeeSimpleDTO sealRep = resale.getSalesRep() != null ?
                 EmployeeSimpleDTO.builder()
@@ -48,23 +52,24 @@ public class ResaleMapper {
                 .id(resale.getId())
                 .phone(resale.getPhone())
                 .name(resale.getName())
-               // .project(projectDTO)
+                .project(projectDTO)
                 .status(statusDTO)
                 .salesRep(sealRep)
                 .deleted(resale.isDeleted())
                 .assignAt(resale.getAssignAt())
                 .delayed(resale.isDelay())
+                .type(typeDTO)
                 .build();
     }
 
     public List<ResaleResponse> toSimpleDTOList(List<Resale> leads) {
         return leads.stream()
-                .map(this::toDTO)
+                .map(this::toSimpleDTO)
                 .collect(Collectors.toList());
     }
 
     public Page<ResaleResponse> toSimpleDTOPage(Page<Resale> leadPage) {
-        return leadPage.map(this::toDTO);
+        return leadPage.map(this::toSimpleDTO);
     }
 
     public ResaleResponse toDTO(Resale resale) {

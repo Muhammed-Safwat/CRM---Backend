@@ -11,5 +11,5 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public class PropertyTypeDTO extends LookupDTO {
 
-    private LookupDTO category;
+    private String category;
 }
