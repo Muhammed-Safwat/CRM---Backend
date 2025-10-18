@@ -23,6 +23,7 @@ public class SalesLeadSpecification<T extends SalesLead> {
         if (salesLeadCriteria.getSubordinates() != null) {
             ids.addAll(salesLeadCriteria.getSubordinates());
         }
+        specs.add(fetchData());
         ids.add(transition.getUserId());
         if (salesLeadCriteria != null) {
             specs.add(getOnlyForAdmin(transition));
@@ -55,6 +56,37 @@ public class SalesLeadSpecification<T extends SalesLead> {
         }
 
         return Specification.allOf(specs);
+    }
+
+    public static <T extends SalesLead> Specification<T> fetchData() {
+        return (root, query, cb) -> {
+            if (query.getResultType() != Long.class && query.getResultType() != long.class) {
+                root.fetch("salesRep", JoinType.LEFT);
+                root.fetch("creator", JoinType.LEFT);
+                root.fetch("status",JoinType.LEFT);
+                root.fetch("phoneNumbers", JoinType.LEFT);
+            }
+            query.distinct(true);
+            return cb.conjunction();
+        };
+    }
+
+    public static <T extends SalesLead> Specification<T> fetchAllAssociations() {
+        return (root, query, cb) -> {
+            if (query.getResultType() != Long.class && query.getResultType() != long.class) {
+                root.fetch("salesRep", JoinType.LEFT);
+                root.fetch("status", JoinType.LEFT);
+                root.fetch("phoneNumbers", JoinType.LEFT);
+                root.fetch("employee", JoinType.LEFT);
+                root.fetch("creator", JoinType.LEFT);
+                root.fetch("channel", JoinType.LEFT);
+                root.fetch("broker", JoinType.LEFT);
+                root.fetch("project", JoinType.LEFT);
+                root.fetch("stage", JoinType.LEFT);
+            }
+            query.distinct(true);
+            return cb.conjunction();
+        };
     }
 
     public static <T extends SalesLead> Specification<T> getOnlyForAdmin(Transition transition) {

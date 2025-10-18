@@ -66,8 +66,18 @@ public class TelesalesLeadService extends SalesLeadServiceImp<TeleSalesLead, Add
     }
 
     @Override
+    protected LeadResponse mapEntityToSimpleDto(TeleSalesLead entity) {
+        return null;
+    }
+
+    @Override
     protected Page<LeadResponse> mapEntityToDto(Page<TeleSalesLead> entityPage) {
         return leadMapper.toDTOPage(entityPage);
+    }
+
+    @Override
+    protected Page<LeadResponse> mapEntityToSimpleDto(Page<TeleSalesLead> entityPage) {
+        return null;
     }
 
     @Override

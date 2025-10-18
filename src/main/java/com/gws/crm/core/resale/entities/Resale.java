@@ -40,17 +40,17 @@ public class Resale {
 
     private String email;
 
-    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
+    @ManyToOne(fetch = FetchType.LAZY,cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
             CascadeType.PERSIST, CascadeType.DETACH})
     private Project project;
 
-    @ManyToOne(
+    @ManyToOne(fetch = FetchType.LAZY,
             cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
                     CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(nullable = false)
     private ResaleType type;
 
-    @ManyToOne(
+    @ManyToOne(fetch = FetchType.LAZY,
             cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
                     CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(nullable = false)
@@ -62,12 +62,12 @@ public class Resale {
 
     private String code;
 
-    @ManyToOne(
+    @ManyToOne(fetch = FetchType.LAZY,
             cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
                     CascadeType.PERSIST, CascadeType.DETACH})
     private Category category;
 
-    @ManyToOne(
+    @ManyToOne(fetch = FetchType.LAZY,
             cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
                     CascadeType.PERSIST, CascadeType.DETACH})
     private PropertyType property;
@@ -76,13 +76,12 @@ public class Resale {
 
     private String budget;
 
-    @ManyToOne(
-            cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
+    @ManyToOne(fetch = FetchType.LAZY,cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
                     CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(name = "creator_id")
     private User creator;
 
-    @ManyToOne(
+    @ManyToOne(fetch = FetchType.LAZY,
             cascade = {CascadeType.REFRESH, CascadeType.REMOVE,
                     CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(name = "admin_id")

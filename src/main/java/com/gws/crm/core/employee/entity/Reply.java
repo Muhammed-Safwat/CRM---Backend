@@ -24,12 +24,7 @@ public class Reply {
 
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {
-            CascadeType.PERSIST,
-            CascadeType.DETACH,
-            CascadeType.MERGE,
-            CascadeType.REFRESH
-    })
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
 }

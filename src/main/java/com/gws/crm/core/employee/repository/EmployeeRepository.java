@@ -64,11 +64,11 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
     Optional<Employee> findWithSubordinatesById(@Param("id") Long id);
 
     @Query("""
-            SELECT DISTINCT e 
-            FROM Employee e 
+            SELECT DISTINCT e
+            FROM Employee e
             WHERE e.admin.id = :adminId
-              AND e.enabled = true 
-              AND e.deleted = false 
+              AND e.enabled = true
+              AND e.deleted = false
               AND e.locked = false
             """)
     List<Employee> getEmployeesByAdminId(@Param("adminId") long adminId);
@@ -79,5 +79,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
              LEFT JOIN FETCH e.subordinates s
             WHERE e.admin.id = :adminId 
             """)
-    Employee findByIdWithSubordinates(long adminId);
+    Optional<Employee> findByIdWithSubordinates(long adminId);
 }

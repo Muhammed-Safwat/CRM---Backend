@@ -97,8 +97,18 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
     }
 
     @Override
+    protected LeadResponse mapEntityToSimpleDto(Lead entity) {
+        return leadMapper.toSimpleDTO(entity);
+    }
+
+    @Override
     protected Page<LeadResponse> mapEntityToDto(Page<Lead> entityPage) {
         return leadMapper.toDTOPage(entityPage);
+    }
+
+    @Override
+    protected Page<LeadResponse> mapEntityToSimpleDto(Page<Lead> entityPage) {
+        return leadMapper.toSimpleDTOPage(entityPage);
     }
 
     @Override

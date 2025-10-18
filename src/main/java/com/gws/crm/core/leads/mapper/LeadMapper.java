@@ -124,6 +124,43 @@ public class LeadMapper {
                 .build();
     }
 
+    public LeadResponse toSimpleDTO(Lead lead){
+        if (lead == null) {
+            return null;
+        }
+
+        EmployeeSimpleDTO salesRepDTO = lead.getSalesRep() != null ?
+                EmployeeSimpleDTO.builder()
+                        .id(lead.getSalesRep().getId())
+                        .name(lead.getSalesRep().getName())
+                        .build()
+                : null;
+
+        LeadStatusDto leadStatusDto = lead.getStatus() != null ?
+                LeadStatusDto.builder()
+                        .name(lead.getStatus().getName())
+                        .id(lead.getStatus().getId())
+                        .build()
+                : null;
+
+        return LeadResponse.builder()
+                .id(lead.getId())
+                .phoneNumbers(phoneNumberMapper.toDtoList(lead.getPhoneNumbers()))
+                .name(lead.getName())
+                .status(leadStatusDto)
+                .whatsappNumber(lead.getWhatsappNumber())
+                .email(lead.getEmail())
+                .jobTitle(lead.getJobTitle())
+                .updatedAt(lead.getUpdatedAt())
+                .createdAt(lead.getCreatedAt())
+                .salesRep(salesRepDTO)
+                .deleted(lead.isDeleted())
+                .lastStage(lead.getLastStage())
+                .assignAt(lead.getAssignAt())
+                .delayed(lead.isDelay())
+                .archived(lead.isArchive())
+                .build();
+    }
 
     public List<LeadResponse> toDTOList(List<Lead> leads) {
         return leads.stream()
@@ -133,5 +170,9 @@ public class LeadMapper {
 
     public Page<LeadResponse> toDTOPage(Page<Lead> leadPage) {
         return leadPage.map(this::toDTO);
+    }
+
+    public Page<LeadResponse> toSimpleDTOPage(Page<Lead> entityPage) {
+        return entityPage.map(this::toSimpleDTO) ;
     }
 }

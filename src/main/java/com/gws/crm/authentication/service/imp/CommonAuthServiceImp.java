@@ -153,7 +153,7 @@ public class CommonAuthServiceImp implements CommonAuthService {
         if (isExpired) {
             return error("Token Expired");
         }
-        User user = userRepository.findById(jwtTokenService.extractUserId(refreshToken))
+        UserDetailsDTO user = userRepository.findDTOById(jwtTokenService.extractUserId(refreshToken))
                 .orElseThrow(NotFoundResourceException::new);
 
         SignInResponse signInResponse = SignInResponse.builder()

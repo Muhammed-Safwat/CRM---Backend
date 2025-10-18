@@ -17,6 +17,58 @@ public class PreLeadMapper {
 
     private final PhoneNumberMapper phoneNumberMapper;
 
+    public PreLeadResponse toSimpleDTO(PreLead lead) {
+        if (lead == null) {
+            return null;
+        }
+        EmployeeSimpleDTO creatorDTO = lead.getCreator() != null ?
+                EmployeeSimpleDTO.builder()
+                        .id(lead.getCreator().getId())
+                        .name(lead.getCreator().getName())
+                        .build()
+                : null;
+
+        LookupDTO channelDTO = lead.getChannel() != null ?
+                LookupDTO.builder()
+                        .id(lead.getChannel().getId())
+                        .name(lead.getChannel().getName())
+                        .build()
+                : null;
+
+        LookupDTO projectDTO = lead.getProject() != null ?
+                LookupDTO.builder()
+                        .id(lead.getProject().getId())
+                        .name(lead.getProject().getName())
+                        .build()
+                : null;
+
+        return PreLeadResponse.builder()
+                .id(lead.getId())
+                .phoneNumbers(phoneNumberMapper.toDtoList(lead.getPhoneNumbers()))
+                .name(lead.getName())
+                .importedAt(lead.getImportedAt())
+                .project(projectDTO)
+                .imported(lead.isImported())
+                .assignedTo(lead.getAssignedTo())
+                .deleted(lead.isDeleted())
+                .delayed(lead.isDelay())
+                .country(lead.getCountry())
+                .channel(channelDTO)
+                .creator(creatorDTO)
+                .build();
+    }
+
+
+    public List<PreLeadResponse> toSimpleDTOList(List<PreLead> leads) {
+        return leads.stream()
+                .map(this::toSimpleDTO)
+                .collect(Collectors.toList());
+    }
+
+    public Page<PreLeadResponse> toSimpleDTOPage(Page<PreLead> leadPage) {
+        return leadPage.map(this::toSimpleDTO);
+    }
+
     public PreLeadResponse toDTO(PreLead lead) {
         if (lead == null) {
             return null;
@@ -63,7 +115,6 @@ public class PreLeadMapper {
                 .delayed(lead.isDelay())
                 .build();
     }
-
 
     public List<PreLeadResponse> toDTOList(List<PreLead> leads) {
         return leads.stream()

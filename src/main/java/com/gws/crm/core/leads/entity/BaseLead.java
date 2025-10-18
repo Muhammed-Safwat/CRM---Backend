@@ -76,7 +76,7 @@ public class BaseLead {
 
     private LocalDateTime nextActionDate;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserAction> actions = new ArrayList<>();
 
     @Column(name = "delay")
