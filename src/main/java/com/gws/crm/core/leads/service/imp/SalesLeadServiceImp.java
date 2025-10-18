@@ -161,7 +161,7 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
         Page<LeadResponse> leadResponses = mapEntityToSimpleDto(leadPage);
         return success(leadResponses);
     }
-
+    // refactor
     @Override
     public ResponseEntity<?> countByStage(Long userId, Transition transition) {
         List<CountDTO> result = new ArrayList<>();
