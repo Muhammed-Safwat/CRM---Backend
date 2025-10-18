@@ -185,6 +185,36 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
         return success(result);
     }
 
+    @Transactional
+    @Override
+    public ResponseEntity<?> softDeleteLeads(List<Long> ids, Transition transition) {
+        if (ids == null || ids.isEmpty()) return badRequest();
+        repository.softDeleteByIds(ids,transition.getUserId());
+        return success("Leads Deleated");
+    }
+
+    @Override
+    public ResponseEntity<?> assignSalesToAllLeads(AssignAllDTO assignAllDTO, Transition transition) {
+        List<T> leads = repository.findAllById(assignAllDTO.getLeadsIds()) ;
+
+        Employee lastSalesRep = null;
+
+        Employee employee = employeeRepository.findById(assignAllDTO.getSalesId())
+                .orElseThrow(NotFoundResourceException::new);
+        for(T lead : leads){
+            lead.setSalesRep(employee);
+            lead.setAssignAt(LocalDateTime.now());
+            publishAssignLeadEvent(lead, lastSalesRep, transition);
+        }
+        // actionServiceImp.setAssignAction(lead, transition);
+        AssignResponse response = AssignResponse.builder()
+                .salesName(employee.getName())
+                .jobTitle(employee.getJobName())
+                .assignAt(LocalDateTime.now())
+                .build();
+        return success(response);
+    }
+
     protected abstract T mapDtoToEntity(D dto, Transition transition);
 
     protected abstract LeadResponse mapEntityToDto(T entity);

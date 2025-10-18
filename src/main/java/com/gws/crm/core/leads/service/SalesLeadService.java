@@ -1,10 +1,7 @@
 package com.gws.crm.core.leads.service;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.leads.dto.AddLeadDTO;
-import com.gws.crm.core.leads.dto.AssignDTO;
-import com.gws.crm.core.leads.dto.ImportLeadDTO;
-import com.gws.crm.core.leads.dto.SalesLeadCriteria;
+import com.gws.crm.core.leads.dto.*;
 import com.gws.crm.core.leads.entity.SalesLead;
 import org.springframework.http.ResponseEntity;
 
@@ -41,4 +38,8 @@ public interface SalesLeadService<T extends SalesLead, D extends AddLeadDTO> {
     ResponseEntity<?> lastUpdated(SalesLeadCriteria salesLeadCriteria, Transition transition);
 
     ResponseEntity<?> countBySalesRep(Long userId, Transition transition);
+
+    ResponseEntity<?> softDeleteLeads(List<Long> ids, Transition transition);
+
+    ResponseEntity<?> assignSalesToAllLeads(AssignAllDTO assignAllDTO, Transition transition);
 }
