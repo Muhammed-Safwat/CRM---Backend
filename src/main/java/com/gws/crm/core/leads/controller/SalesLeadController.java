@@ -1,10 +1,7 @@
 package com.gws.crm.core.leads.controller;
 
 import com.gws.crm.common.entities.Transition;
-import com.gws.crm.core.leads.dto.AddLeadDTO;
-import com.gws.crm.core.leads.dto.AssignDTO;
-import com.gws.crm.core.leads.dto.ImportLeadDTO;
-import com.gws.crm.core.leads.dto.SalesLeadCriteria;
+import com.gws.crm.core.leads.dto.*;
 import com.gws.crm.core.leads.entity.SalesLead;
 import com.gws.crm.core.leads.service.SalesLeadService;
 import jakarta.validation.Valid;
@@ -106,4 +103,13 @@ public abstract class SalesLeadController<T extends SalesLead, D extends AddLead
         return service.lastUpdated(salesLeadCriteria,transition);
     }
 
+    @PostMapping("delete/all")
+    public ResponseEntity<?> deleteLeads(@RequestBody List<Long> ids, Transition transition) {
+        return service.softDeleteLeads(ids,transition);
+    }
+
+    @PutMapping("/assign/all")
+    public ResponseEntity<?> assignSalesToAllLeads(@RequestBody AssignAllDTO assignAllDTO, Transition transition) {
+        return service.assignSalesToAllLeads(assignAllDTO, transition);
+    }
 }
