@@ -54,7 +54,6 @@ public interface LeadRepository extends GenericSalesLeadRepository<Lead> {
                         "LEFT JOIN FETCH l.channel " +
                         "LEFT JOIN FETCH l.creator " +
                         "LEFT JOIN FETCH l.admin " +
-                        // "LEFT JOIN FETCH l.phoneNumbers " +
                         "LEFT JOIN FETCH l.actions " +
                         "LEFT JOIN FETCH l.investmentGoal " +
                         "LEFT JOIN FETCH l.communicateWay " +
