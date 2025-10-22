@@ -6,14 +6,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("import")
 public class EngazImportController {
 
-    @PostMapping("/import-engaz-lead")
+    @PostMapping("engaz-leads")
     public ResponseEntity<?> importLeads(@RequestBody List<EngazLeadDto> leads) {
         leads.forEach(lead -> {
             System.out.println("Lead: " + lead.getFullName());
