@@ -7,10 +7,7 @@ import com.gws.crm.common.service.PhoneValidationService;
 import com.gws.crm.core.actions.event.lead.*;
 import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
-import com.gws.crm.core.leads.dto.AddLeadDTO;
-import com.gws.crm.core.leads.dto.ImportLeadDTO;
-import com.gws.crm.core.leads.dto.LeadResponse;
-import com.gws.crm.core.leads.dto.CountDTO;
+import com.gws.crm.core.leads.dto.*;
 import com.gws.crm.core.leads.entity.Lead;
 import com.gws.crm.core.leads.factory.LeadFactory;
 import com.gws.crm.core.leads.mapper.LeadMapper;
@@ -19,6 +16,10 @@ import com.gws.crm.core.notification.publisher.LeadNotificationEventPublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -32,6 +33,7 @@ import java.util.Set;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
 import static com.gws.crm.common.utils.ExcelFileUtils.generateHeader;
+import static com.gws.crm.core.leads.specification.SalesLeadSpecification.filter;
 
 @Service
 @Slf4j
@@ -69,7 +71,17 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
                 .dropdowns(excelSheetService.generateLeadExcelSheetMap(transition)).build();
         return success(excelFile);
     }
-
+    @Override
+    public ResponseEntity<?> lastUpdated(SalesLeadCriteria salesLeadCriteria, Transition transition) {
+        Pageable pageable = PageRequest.of(salesLeadCriteria.getPage(), salesLeadCriteria.getSize(),
+                Sort.by("updatedAt").descending());
+        salesLeadCriteria.setArchived(false);
+        salesLeadCriteria.setDeleted(false);
+        Specification<Lead> leadSpecification = filter(salesLeadCriteria, transition);
+        Page<Lead> leadPage = leadRepository.findAll(leadSpecification, pageable);
+        Page<LeadResponse> leadResponses = mapEntityToSimpleDto(leadPage);
+        return success(leadResponses);
+    }
     @Override
     public ResponseEntity<?> importLead(List<ImportLeadDTO> leads, Transition transition) {
         List<Lead> leadList = createLeadsList(leads, transition);
