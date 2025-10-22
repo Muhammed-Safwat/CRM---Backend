@@ -7,6 +7,7 @@ import com.gws.crm.core.actions.event.telesales.*;
 import com.gws.crm.core.employee.entity.Employee;
 import com.gws.crm.core.employee.repository.EmployeeRepository;
 import com.gws.crm.core.leads.dto.*;
+import com.gws.crm.core.leads.entity.Lead;
 import com.gws.crm.core.leads.entity.TeleSalesLead;
 import com.gws.crm.core.leads.factory.TeleSalesLeadFactory;
 import com.gws.crm.core.leads.mapper.PhoneNumberMapper;
@@ -16,6 +17,10 @@ import com.gws.crm.core.notification.publisher.TeleSalesLeadNotificationEventPub
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +30,7 @@ import java.util.Set;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
 import static com.gws.crm.common.utils.ExcelFileUtils.generateHeader;
+import static com.gws.crm.core.leads.specification.SalesLeadSpecification.filter;
 
 @Service
 @Slf4j
@@ -72,7 +78,17 @@ public class  TelesalesLeadService extends SalesLeadServiceImp<TeleSalesLead, Ad
     protected LeadResponse mapEntityToSimpleDto(TeleSalesLead entity) {
         return null;
     }
-
+    @Override
+    public ResponseEntity<?> lastUpdated(SalesLeadCriteria salesLeadCriteria, Transition transition) {
+        Pageable pageable = PageRequest.of(salesLeadCriteria.getPage(), salesLeadCriteria.getSize(),
+                Sort.by("updatedAt").descending());
+        salesLeadCriteria.setArchived(false);
+        salesLeadCriteria.setDeleted(false);
+        Specification<TeleSalesLead> leadSpecification = filter(salesLeadCriteria, transition);
+        Page<TeleSalesLead> leadPage = leadRepository.findAll(leadSpecification, pageable);
+        Page<LeadResponse> leadResponses = mapEntityToSimpleDto(leadPage);
+        return success(leadResponses);
+    }
     @Override
     protected Page<LeadResponse> mapEntityToDto(Page<TeleSalesLead> entityPage) {
         return leadMapper.toDTOPage(entityPage);
