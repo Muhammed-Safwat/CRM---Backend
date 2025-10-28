@@ -99,7 +99,10 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
 
     @Override
     public ResponseEntity<?> getLeads(SalesLeadCriteria salesLeadCriteria, Transition transition) {
+        log.info("User Role ===========> {}", transition.getRole());
         if (transition.getRole().equals("USER")) {
+            log.info("in User Role ===========> {}", transition.getRole());
+
             Employee employee = employeeRepository.findByIdWithSubordinates(transition.getUserId())
                     .orElseThrow(NotFoundResourceException::new);
             salesLeadCriteria.setSubordinates(employee.getSubordinates()
@@ -165,13 +168,15 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
     @Override
     public ResponseEntity<?> countByStage(Long userId, Transition transition) {
         List<CountDTO> result = new ArrayList<>();
-
+        log.info("USER ===> Main Role {} ",transition.getRole());
         if ("ADMIN".equalsIgnoreCase(transition.getRole())) {
             result = repository.countAllStagesWithLeadCountForAdmin(transition.getUserId());
-        } else if (userId != null) {
-            Set<Long> userIds = employeeRepository.findSubordinateIds(userId);
-            userIds.add(userId);
-            result = repository.countAllStagesWithLeadCountForTeam(userIds);
+        } else  {
+            log.info("USER ===> Main Role {} ",transition.getRole());
+            Employee emp =
+                    employeeRepository.findById(transition.getUserId())
+                            .orElseThrow(NotFoundResourceException::new);
+            result = repository.countAllStagesWithLeadCountForEmployee(emp.getAdmin().getId(), transition.getUserId());
         }
         return success(result);
     }

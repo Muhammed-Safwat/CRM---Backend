@@ -1,28 +1,25 @@
 package com.gws.crm.core.leads.controller;
 
-
-import com.gws.crm.core.leads.dto.EngazLeadDto;
+import com.gws.crm.common.entities.Transition;
+import com.gws.crm.core.leads.service.imp.EngazImportLeadsService;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 
 @RestController
-@RequestMapping("import")
+@RequestMapping("/engaz-import")
+@RequiredArgsConstructor
 public class EngazImportController {
 
-    @PostMapping("engaz-leads")
-    public ResponseEntity<?> importLeads(@RequestBody List<EngazLeadDto> leads) {
-        leads.forEach(lead -> {
-            System.out.println("Lead: " + lead.getFullName());
-            lead.getActions().forEach(a ->
-                    System.out.println(" - Action: " + a.getStage() + " / " + a.getComment()));
-        });
-        return ResponseEntity.ok("Imported successfully");
+    private final EngazImportLeadsService engazImportLeadsService;
+
+    @PostMapping("/upload")
+    public ResponseEntity<?> uploadLeads(@RequestParam("file") MultipartFile file, HttpServletRequest request, Transition transition) {
+         return engazImportLeadsService.importLeads(file,request,transition);
     }
+
 
 }

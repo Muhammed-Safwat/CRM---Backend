@@ -21,4 +21,6 @@ public interface ProjectService {
     ResponseEntity<?> updateProject(ProjectDTO projectDTO, Transition transition);
 
     ResponseEntity<?> deleteProject(long id, Transition transition);
+
+    ResponseEntity<?> createAllProjects(List<ProjectDTO> projectsList, Transition transition);
 }

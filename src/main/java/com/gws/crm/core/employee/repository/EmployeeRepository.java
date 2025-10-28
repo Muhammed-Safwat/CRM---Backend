@@ -84,7 +84,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
             SELECT DISTINCT e 
             FROM Employee e
              LEFT JOIN FETCH e.subordinates s
-            WHERE e.admin.id = :adminId 
+            WHERE e.id = :adminId 
             """)
     Optional<Employee> findByIdWithSubordinates(long adminId);
 

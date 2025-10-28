@@ -202,10 +202,10 @@ public abstract class GenericSalesLeadActionServiceImp<T extends SalesLead>
         }
 
         String description;
-        CallOutcome outcome = null;
+        Stage outcome = null;
 
         if (actionType == ActionType.ANSWERED && actionDTO.getNextAction() != null) {
-            outcome = callOutcomeRepository.getReferenceById(actionDTO.getNextAction());
+            outcome = stageRepository.getReferenceById(actionDTO.getNextAction());
             description = "Answered call for lead: " + leadName + " - Outcome: " + outcome.getName();
         } else if (actionType == ActionType.NO_ANSWER) {
             description = "No answer from lead: " + leadName + ". Callback scheduled.";
@@ -245,6 +245,13 @@ public abstract class GenericSalesLeadActionServiceImp<T extends SalesLead>
             Stage stage = stageRepository.getReferenceById(actionDTO.getStage());
             leadDetails.setStage(stage.getName());
             lead.setLastStage(stage.getName());
+        }
+
+        if (actionDTO.getNextAction()  != null) {
+            Stage stage = stageRepository.getReferenceById(actionDTO.getNextAction());
+            leadDetails.setStage(stage.getName());
+            lead.setLastStage(stage.getName());
+            lead.setStage(stage);
         }
 
 

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("api/leads")
-@PreAuthorize("hasRole('ADMIN') or hasRole('SALES_ADMIN') or hasRole('SALES_REP')  or hasRole('SALES_MANGER')")
+@PreAuthorize("hasRole('ADMIN') or hasRole('SALES_ADMIN') or hasRole('TEAM_LEADER') or hasRole('SALES_REP')  or hasRole('SALES_MANGER')")
 public class LeadController extends SalesLeadController<Lead, AddLeadDTO> {
 
     public LeadController(LeadService service) {

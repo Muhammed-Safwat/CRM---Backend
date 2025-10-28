@@ -71,7 +71,9 @@ public class PreLeadServiceImp implements PreLeadService {
 
     @Override
     public ResponseEntity<?> getAllPreLead(PreLeadCriteria preLeadCriteria, Transition transition) {
+        log.info("User Role ===========> {}", transition.getRole());
         if (transition.getRole().equals("USER")) {
+            log.info("User Role ===========> {}", transition.getRole());
             Employee employee =
                     employeeRepository.findByIdWithSubordinates(transition.getUserId())
                             .orElseThrow(NotFoundResourceException::new);

@@ -3,6 +3,7 @@ package com.gws.crm.core.actions.entity;
 
 import com.gws.crm.core.leads.entity.BaseLead;
 import com.gws.crm.core.lookups.entity.CallOutcome;
+import com.gws.crm.core.lookups.entity.Stage;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
@@ -34,7 +35,7 @@ public class LeadActionDetails {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = true)
-    private CallOutcome callOutcome;
+    private Stage callOutcome;
 
     private LocalDateTime nextActionDate;
 
