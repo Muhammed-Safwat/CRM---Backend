@@ -11,4 +11,6 @@ import java.util.List;
 public interface PhoneNumberRepository extends JpaRepository<PhoneNumber, Long> {
 
    List<PhoneNumber> findAllByLeadId(Long leadId);
+
+    boolean existsByPhone(String mobile);
 }

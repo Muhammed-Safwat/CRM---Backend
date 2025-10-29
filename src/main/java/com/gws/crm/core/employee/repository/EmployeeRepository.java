@@ -117,5 +117,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
     List<CountDTO> countEmployeesByJobTitleForTeam(@Param("employeeIds") Set<Long> employeeIds);
 
 
-
+    Employee  findByName(String salesRep);
 }

@@ -1,9 +1,11 @@
 package com.gws.crm.core.lookups.repository;
 
+import com.gws.crm.core.lookups.entity.Region;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -37,6 +39,7 @@ public class LookupRepositoryUtils {
                 .orElseGet(() -> repository.save(creator.get()));
     }
 
+
     /**
      * Retrieves an entity by its ID or creates a new one if it does not exist.
      *
@@ -63,4 +66,16 @@ public class LookupRepositoryUtils {
         }
         return repository.save(creator.get());
     }
+
+    public static <T> T getOrCreateByNameAndAdmin(
+            JpaRepository<T, ?> repository,
+            String name,
+            Long adminId,
+            BiFunction<String, Long, Optional<T>> finder,
+            Supplier<T> creator
+    ) {
+        return finder.apply(name, adminId)
+                .orElseGet(() -> repository.save(creator.get()));
+    }
+
 }

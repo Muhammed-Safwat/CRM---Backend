@@ -153,9 +153,9 @@ public class EmployeeServiceImp implements EmployeeService {
             Set<Employee> subordinates = employeeRepository.findAllEmpById(employeeDto.getTeamIds());
             employee.setSubordinates(subordinates);
         }
-        employeeRepository.save(employee);
-
-        return success("User updated successfully.");
+        Employee updatedEmp = employeeRepository.save(employee);
+        EmployeeInfoResponse employeeResponse = employeeMapper.toDto(updatedEmp);
+        return success(employeeResponse);
     }
 
     @Override
