@@ -31,6 +31,7 @@ public class UserAction {
     @Column(length = 20)
     private ActionType type;
 
+    @Column(length = 1000)
     private String description;
 
     private LocalDateTime createdAt;

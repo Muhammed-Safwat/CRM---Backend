@@ -99,10 +99,8 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
 
     @Override
     public ResponseEntity<?> getLeads(SalesLeadCriteria salesLeadCriteria, Transition transition) {
-        log.info("User Role ===========> {}", transition.getRole());
-        if (transition.getRole().equals("USER")) {
-            log.info("in User Role ===========> {}", transition.getRole());
 
+        if (transition.getRole().equals("USER")) {
             Employee employee = employeeRepository.findByIdWithSubordinates(transition.getUserId())
                     .orElseThrow(NotFoundResourceException::new);
             salesLeadCriteria.setSubordinates(employee.getSubordinates()
@@ -164,6 +162,7 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
         Page<LeadResponse> leadResponses = mapEntityToSimpleDto(leadPage);
         return success(leadResponses);
     }
+
     // refactor
     @Override
     public ResponseEntity<?> countByStage(Long userId, Transition transition) {

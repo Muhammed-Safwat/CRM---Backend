@@ -183,16 +183,33 @@ public class  TelesalesLeadService extends SalesLeadServiceImp<TeleSalesLead, Ad
 
     @Override
     public ResponseEntity<?> countByStage(Long userId, Transition transition) {
-        List<CountDTO> result = new ArrayList<>();
-        log.info("USER ===> Main Role {} ",transition.getRole());
+        List<CountDTO> result;
+        log.info("USER ===> Main Role {}", transition.getRole());
+
         if ("ADMIN".equalsIgnoreCase(transition.getRole())) {
             result = leadRepository.countAllStagesWithLeadCountForAdmin(transition.getUserId());
-        } else  {
-            Employee emp =
-                    employeeRepository.findById(transition.getUserId())
-                            .orElseThrow(NotFoundResourceException::new);
-            result = leadRepository.countAllStagesWithLeadCountForEmployee(emp.getAdmin().getId(),emp.getId());
+        } else {
+            log.info("USER in ===> Main Role {}", transition.getRole());
+
+            Employee emp = employeeRepository.findById(transition.getUserId())
+                    .orElseThrow(NotFoundResourceException::new);
+
+            result = leadRepository.countAllStagesWithLeadCountForEmployee(
+                    emp.getAdmin().getId(), emp.getId()
+            );
         }
-        return success(result);
+
+        long totalCount = result.stream()
+                .mapToLong(CountDTO::getCount)
+                .sum();
+
+        CountDTO allCount = new CountDTO(0L, "All Leads", totalCount);
+
+        List<CountDTO> finalResult = new ArrayList<>();
+        finalResult.add(allCount);
+        finalResult.addAll(result);
+
+        return success(finalResult);
     }
+
 }
