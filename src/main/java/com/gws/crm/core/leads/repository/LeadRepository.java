@@ -81,4 +81,14 @@ public interface LeadRepository extends GenericSalesLeadRepository<Lead> {
                         "ORDER BY COUNT(s) DESC")
         List<SalesRepCountDTO> countAllSalesRepsWithLeadCountForTeam(@Param("userIds") Set<Long> userIds);
 
+
+        @Query("SELECT COUNT(l) FROM SalesLead l WHERE l.admin.id = :adminId AND l.salesRep.id = :employeeId")
+        long countAllByAdminIdAndEmployeeId(
+                @Param("adminId") Long adminId,
+                @Param("employeeId") Long employeeId
+        );
+
+        @Query("SELECT COUNT(l) FROM SalesLead l WHERE l.admin.id = :adminId")
+        long countAllByAdminId(@Param("adminId") Long adminId);
+
 }

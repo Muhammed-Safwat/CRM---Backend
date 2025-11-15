@@ -186,11 +186,18 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
     @Override
     public ResponseEntity<?> countByStage(Long userId, Transition transition) {
         List<CountDTO> result;
+        long totalCount;
+
         log.info("USER ===> Main Role {}", transition.getRole());
 
         if ("ADMIN".equalsIgnoreCase(transition.getRole())) {
+
             result = leadRepository.countAllStagesWithLeadCountForAdmin(transition.getUserId());
+
+            totalCount = leadRepository.countAllByAdminId(transition.getUserId());
+
         } else {
+
             log.info("USER in ===> Main Role {}", transition.getRole());
 
             Employee emp = employeeRepository.findById(transition.getUserId())
@@ -199,11 +206,11 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
             result = leadRepository.countAllStagesWithLeadCountForEmployee(
                     emp.getAdmin().getId(), emp.getId()
             );
-        }
 
-        long totalCount = result.stream()
-                .mapToLong(CountDTO::getCount)
-                .sum();
+            totalCount = leadRepository.countAllByAdminIdAndEmployeeId(
+                    emp.getAdmin().getId(), emp.getId()
+            );
+        }
 
         CountDTO allCount = new CountDTO(0L, "All Leads", totalCount);
 
@@ -213,6 +220,7 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
 
         return success(finalResult);
     }
+
 
 
 

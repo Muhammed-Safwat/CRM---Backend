@@ -14,6 +14,8 @@ public class ActionResponse {
 
     private EmployeeSimpleDTO creator;
 
+    private String creatorName ;
+
     private String type;
 
     private String description;

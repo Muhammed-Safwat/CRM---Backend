@@ -65,5 +65,4 @@ public interface BaseLeadRepository extends JpaRepository<BaseLead, Long>, JpaSp
             @Param("now") LocalDateTime now
     );
 
-
 }

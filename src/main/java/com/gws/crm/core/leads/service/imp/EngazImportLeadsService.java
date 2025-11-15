@@ -28,16 +28,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gws.crm.core.leads.dto.EngazLeadDto;
-import org.springframework.web.servlet.View;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.error;
@@ -62,10 +59,20 @@ public class EngazImportLeadsService {
     private final CancelReasonsRepository cancelReasonsRepository;
     private final List<EngazLeadDto> duplicatedLeads = new ArrayList<>();
     private final StageRepository stageRepository;
+    private final Map<Long ,Admin> adminCache = new HashMap<Long, Admin>();
+    private final Map<String ,User> userCache = new HashMap<String, User>();
+    private final Map<String ,Employee> employeeCache = new HashMap<String, Employee>();
+    private final Map<String ,Channel> channelCache = new HashMap<String, Channel>();
+    private final Map<String ,Region> regionCache = new HashMap<String, Region>();
+    private final Map<String ,InvestmentGoal> goalCache = new HashMap<String, InvestmentGoal>();
+    private final Map<String ,CancelReasons> cancelCache = new HashMap<String, CancelReasons>();
+    private final Map<String ,Project> projectCache = new HashMap<String, Project>();
+    private final Map<String ,Stage> stageCache = new HashMap<String, Stage>();
 
     @Transactional
     public ResponseEntity<?> importLeads(MultipartFile file, HttpServletRequest request, Transition transition) {
         try {
+
             Path savedFile = saveUploadedFile(file);
             List<EngazLeadDto> leadsDto = parseLeads(savedFile);
             logLeads(leadsDto);
@@ -95,42 +102,81 @@ public class EngazImportLeadsService {
             duplicatedLeads.add(dto);
             return null;
         }
-
-        Admin admin = adminRepository.findById(transition.getUserId())
-                .orElseThrow(NotFoundResourceException::new);
+        Admin admin ;
+        if(this.adminCache.containsKey(transition.getUserId())){
+            admin  = adminCache.get(transition.getUserId());
+        }else {
+            admin =  adminRepository.findById(transition.getUserId())
+                    .orElseThrow(NotFoundResourceException::new);
+            adminCache.put(transition.getUserId(),admin);
+        }
 
         Lead lead = new Lead();
         lead.setName(dto.getFullName());
         lead.setWhatsappNumber(dto.getWhatsappNumber());
-
-        if(dto.getInvestmentGoal() != null){
-            lead.setInvestmentGoal(resolveInvestmentGoal(dto.getInvestmentGoal(),admin));
-        }
-
-        if(dto.getRegion() != null){
-            lead.setRegion(resolveRegion(dto.getRegion(),admin));
-        }
-
-        if(dto.getProject() != null){
-            lead.setProject(resolveProject(dto.getProject(),admin));
-        }
 
         lead.setLastStage(dto.getLastStage());
         lead.setJobTitle(dto.getJobTitle());
         lead.setCountry(dto.getLivingCountry());
         lead.setBudget(dto.getBudget());
 
-        if(dto.getCancelReason() != null){
-            lead.setCancelReasons(resolveCancelReason(dto.getCancelReason(),admin));
+        if (dto.getInvestmentGoal() != null) {
+            if (goalCache.containsKey(dto.getInvestmentGoal())) {
+                lead.setInvestmentGoal(goalCache.get(dto.getInvestmentGoal()));
+            } else {
+                var goal = resolveInvestmentGoal(dto.getInvestmentGoal(), admin);
+                goalCache.put(dto.getInvestmentGoal(), goal);
+                lead.setInvestmentGoal(goal);
+            }
         }
 
-        if(dto.getChannel() != null){
-            lead.setChannel(resolveChannel(dto.getChannel(),admin));
+        if (dto.getRegion() != null) {
+            if (regionCache.containsKey(dto.getRegion())) {
+                lead.setRegion(regionCache.get(dto.getRegion()));
+            } else {
+                var region = resolveRegion(dto.getRegion(), admin);
+                regionCache.put(dto.getRegion(), region);
+                lead.setRegion(region);
+            }
+        }
+
+        if (dto.getProject() != null) {
+            if (projectCache.containsKey(dto.getProject())) {
+                lead.setProject(projectCache.get(dto.getProject()));
+            } else {
+                var project = resolveProject(dto.getProject(), admin);
+                projectCache.put(dto.getProject(), project);
+                lead.setProject(project);
+            }
+        }
+
+        if (dto.getCancelReason() != null) {
+            if (cancelCache.containsKey(dto.getCancelReason())) {
+                lead.setCancelReasons(cancelCache.get(dto.getCancelReason()));
+            } else {
+                var reason = resolveCancelReason(dto.getCancelReason(), admin);
+                cancelCache.put(dto.getCancelReason(), reason);
+                lead.setCancelReasons(reason);
+            }
+        }
+
+        if (dto.getChannel() != null) {
+            if (channelCache.containsKey(dto.getChannel())) {
+                lead.setChannel(channelCache.get(dto.getChannel()));
+            } else {
+                var channel = resolveChannel(dto.getChannel(), admin);
+                channelCache.put(dto.getChannel(), channel);
+                lead.setChannel(channel);
+            }
         }
 
         if(dto.getSalesRep() != null){
             Employee sales =
                     employeeRepository.findByNameAndAdminId(dto.getSalesRep(),admin.getId()) ;
+            if(sales==null){
+                  sales =
+                        employeeRepository.findByNameAndAdminId("Unknown User",admin.getId()) ;
+            }
             lead.setSalesRep(sales);
         }
 
@@ -270,14 +316,32 @@ public class EngazImportLeadsService {
         if(dto.getSalesRep() == null){
             return null;
         }
-        User creator = userRepository.findByName(dto.getSalesRep());
-        Stage stage =  resolveStage(dto.getStage(),admin);
+
+        User creator;
+        if (userCache.containsKey(dto.getSalesRep())) {
+            creator = userCache.get(dto.getSalesRep());
+        } else {
+            creator = userRepository.findByName(dto.getSalesRep());
+            if (creator == null) {
+                creator = userRepository.findByName("Unknown User");
+            }
+            userCache.put(dto.getSalesRep(), creator);
+        }
+
+        Stage stage;
+        if (stageCache.containsKey(dto.getStage())) {
+            stage = stageCache.get(dto.getStage());
+        } else {
+            stage = resolveStage(dto.getStage(), admin);
+            stageCache.put(dto.getStage(), stage);
+        }
+
         lead.setStage(stage);
         leadRepository.save(lead);
         UserAction action = UserAction.builder()
                 .creator(creator)
+                .creatorName(dto.getSalesRep())
                 .type(resolveActionType(dto.getStage()))
-                .description(dto.getComment())
                 .createdAt(parseDate(dto.getFollowDate()))
                 .build();
 

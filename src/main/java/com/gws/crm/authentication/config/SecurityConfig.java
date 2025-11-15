@@ -52,7 +52,9 @@ public class SecurityConfig {
                 "https://www.estshir.com",
                 "https://estshir.com",
                 "https://www.rnbinvesment.com",
-                "https://rnbinvesment.com"
+                "https://rnbinvesment.com",
+                "capacitor://localhost",
+                "ionic://localhost"
         ));
         config.setAllowCredentials(true);
         config.setExposedHeaders(List.of("*"));
