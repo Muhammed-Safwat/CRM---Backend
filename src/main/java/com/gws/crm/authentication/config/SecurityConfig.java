@@ -49,6 +49,8 @@ public class SecurityConfig {
         config.setAllowedOrigins(Arrays.asList(
                 "http://localhost:4200",
                 "http://localhost:8080",
+                "http://localhost:8100",
+                "http://10.0.2.2:8080",
                 "https://www.estshir.com",
                 "https://estshir.com",
                 "https://www.rnbinvesment.com",
