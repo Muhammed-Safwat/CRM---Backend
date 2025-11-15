@@ -54,7 +54,9 @@ public class SecurityConfig {
                 "https://www.rnbinvesment.com",
                 "https://rnbinvesment.com",
                 "capacitor://localhost",
-                "ionic://localhost"
+                "ionic://localhost"  ,
+                "http://localhost",
+                "https://localhost"
         ));
         config.setAllowCredentials(true);
         config.setExposedHeaders(List.of("*"));
@@ -69,8 +71,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // cors configuration
-        //http.cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource()));
-        http.cors(AbstractHttpConfigurer::disable);
+         http.cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource()));
+        //http.cors(AbstractHttpConfigurer::disable);
         http.csrf(AbstractHttpConfigurer::disable);
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
