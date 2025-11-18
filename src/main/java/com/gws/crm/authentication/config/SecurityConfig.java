@@ -43,6 +43,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    /*
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -68,13 +69,13 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
-    }
+    }*/
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // cors configuration
-         http.cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource()));
-        //http.cors(AbstractHttpConfigurer::disable);
+        // http.cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource()));
+        http.cors(AbstractHttpConfigurer::disable);
         http.csrf(AbstractHttpConfigurer::disable);
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
