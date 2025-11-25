@@ -22,5 +22,5 @@ public class StatisticsDTO {
     private long totalInvestmentGoals;
     private long totalLeadStatuses;
     private long totalPropertyType;
-
+    private long totalNextActions;
 }
