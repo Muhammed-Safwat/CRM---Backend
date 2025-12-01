@@ -27,9 +27,9 @@ public class JwtTokenService {
     @Value("${security.jwt.secret.key}")
     private String jwtSecretKey;
     @Value("${security.jwt.refresh.expiration}")
-    private int refreshExpirationTime;
+    private long refreshExpirationTime;
     @Value("${security.jwt.access.expiration}")
-    private int accessExpirationTime;
+    private long accessExpirationTime;
 
     public String generateRefreshToken(User user) {
         return generateToken(user, generateExtraClaims(user), refreshExpirationTime);
@@ -111,7 +111,7 @@ public class JwtTokenService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    private String generateToken(User user, Map<String, Object> extraClaims, int expirationTime) {
+    private String generateToken(User user, Map<String, Object> extraClaims, long expirationTime) {
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setId(String.valueOf(user.getId()))
@@ -123,7 +123,7 @@ public class JwtTokenService {
                 .compact();
     }
 
-    private String generateToken(UserDetailsDTO user, Map<String, Object> extraClaims, int expirationTime) {
+    private String generateToken(UserDetailsDTO user, Map<String, Object> extraClaims, long expirationTime) {
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setId(String.valueOf(user.getId()))

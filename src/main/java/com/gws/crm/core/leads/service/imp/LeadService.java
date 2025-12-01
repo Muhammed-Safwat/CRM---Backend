@@ -87,7 +87,7 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
     public ResponseEntity<?> importLead(List<ImportLeadDTO> leads, Transition transition) {
         List<Lead> leadList = createLeadsList(leads, transition);
         List<Lead> savedLeads = leadRepository.saveAll(leadList);
-        // leadActionService.setImportLeads(savedLeads,transition);
+        //leadActionService.setImportLeads(savedLeads,transition);
         return success("Lead Imported Successfully");
     }
 
@@ -140,6 +140,7 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
         eventPublisher.publishEvent(new LeadCreatedEvent(lead, transition));
         // create lead but not admin
         leadNotificationEventPublisher.publishCreateLeadEvent(lead, transition);
+        log.info("After create Lead");
     }
 
     @Override

@@ -16,28 +16,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
 public class CrmApplication {
 
-   /* @Async
-    @EventListener
-    public void testAsync(TestEvent event) {
-        log.info("🧵 Current Thread: " + Thread.currentThread().getName());
-    }*/
-
-    /*
-        @Autowired
-        private SuperAdminRepository superAdminRepository;
-
-        @Autowired
-        private PasswordEncoder passwordEncoder;
-    */
-
     public static void main(String[] args) {
         SpringApplication.run(CrmApplication.class, args);
     }
 
-    /*
-    @Override
-    public void run(String... args) throws Exception {
-
-    }
-    */
 }
