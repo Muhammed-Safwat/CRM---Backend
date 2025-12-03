@@ -154,16 +154,24 @@ public class SalesLeadSpecification<T extends SalesLead> {
             if (!StringUtils.hasText(keyword)) {
                 return criteriaBuilder.conjunction();
             }
-            String lowerKeyword = "%" + keyword.toLowerCase() + "%";
+
+            String lowerKeyword = "%" + keyword.toLowerCase().trim() + "%";
+
             return criteriaBuilder.or(
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), lowerKeyword),
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("country")), lowerKeyword),
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), lowerKeyword),
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("jobTitle")), lowerKeyword),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.join("phoneNumbers", JoinType.LEFT).get("phone")), lowerKeyword)
+                    criteriaBuilder.like(
+                            criteriaBuilder.lower(
+                                    root.join("phoneNumbers", JoinType.LEFT).get("phone")
+                            ),
+                            lowerKeyword
+                    )
             );
         };
     }
+
 
     private static <T extends SalesLead> Specification<T> filterByStatus(Long statusId) {
         return (root, query, criteriaBuilder) -> {

@@ -12,7 +12,7 @@ public interface NotificationService {
 
     ResponseEntity<?> countClientNotification(Transition transition);
 
-    ResponseEntity<?> sendNot();
+    ResponseEntity<?> sendNot(String token);
 
     ResponseEntity<?> markAllAsRead(Transition transition);
 

@@ -33,4 +33,6 @@ public interface GenericBaseLeadRepository<T extends BaseLead> extends JpaReposi
     @Transactional
     @Query("update Lead l set l.deleted = true where l.id in :ids and l.admin.id = :adminId")
     int softDeleteByIds(@Param("ids") List<Long> ids, Long adminId);
+
+
 }

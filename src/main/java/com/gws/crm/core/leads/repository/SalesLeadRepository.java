@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SalesLeadRepository<T extends SalesLead> extends JpaRepository<T, Long> {
+
 }

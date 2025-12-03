@@ -18,16 +18,16 @@ public interface LeadRepository extends GenericSalesLeadRepository<Lead> {
 
         @Query("SELECT new com.gws.crm.core.leads.dto.CountDTO(st.id, st.name, COUNT(s)) " +
                         "FROM Stage st " +
-                        "LEFT JOIN Lead s ON s.stage = st AND s.admin.id = :userId where st.admin.id = :userId " +
+                        "LEFT JOIN Lead s ON s.stage = st AND s.admin.id = :adminId where st.admin.id = :adminId " +
                         "GROUP BY st.id, st.name")
-        List<CountDTO> countAllStagesWithLeadCountForAdmin(Long userId);
+        List<CountDTO> countAllStagesWithLeadCountForAdmin(Long adminId);
 
         @Query("SELECT new com.gws.crm.core.leads.dto.CountDTO(st.id, st.name, COUNT(s)) " +
                         "FROM Stage st " +
-                        "LEFT JOIN SalesLead s ON s.stage = st AND s.salesRep.id IN :userIds " +
-                        "WHERE st.admin.id IN :userIds " +
+                        "LEFT JOIN SalesLead s ON s.stage = st AND s.salesRep.id = :userId " +
+                        "WHERE st.admin.id = :adminId " +
                         "GROUP BY st.id, st.name")
-        List<CountDTO> countAllStagesWithLeadCountForTeam(@Param("userIds") Set<Long> userIds);
+        List<CountDTO> countAllStagesWithLeadCountForEmployee(Long adminId , Long userId);
 
         @Query("SELECT l FROM Lead l " +
                         "LEFT JOIN FETCH l.status " +
@@ -54,7 +54,6 @@ public interface LeadRepository extends GenericSalesLeadRepository<Lead> {
                         "LEFT JOIN FETCH l.channel " +
                         "LEFT JOIN FETCH l.creator " +
                         "LEFT JOIN FETCH l.admin " +
-                        // "LEFT JOIN FETCH l.phoneNumbers " +
                         "LEFT JOIN FETCH l.actions " +
                         "LEFT JOIN FETCH l.investmentGoal " +
                         "LEFT JOIN FETCH l.communicateWay " +
@@ -81,5 +80,15 @@ public interface LeadRepository extends GenericSalesLeadRepository<Lead> {
                         "GROUP BY e.id, e.name, e.image " +
                         "ORDER BY COUNT(s) DESC")
         List<SalesRepCountDTO> countAllSalesRepsWithLeadCountForTeam(@Param("userIds") Set<Long> userIds);
+
+
+        @Query("SELECT COUNT(l) FROM SalesLead l WHERE l.admin.id = :adminId AND l.salesRep.id = :employeeId")
+        long countAllByAdminIdAndEmployeeId(
+                @Param("adminId") Long adminId,
+                @Param("employeeId") Long employeeId
+        );
+
+        @Query("SELECT COUNT(l) FROM SalesLead l WHERE l.admin.id = :adminId")
+        long countAllByAdminId(@Param("adminId") Long adminId);
 
 }

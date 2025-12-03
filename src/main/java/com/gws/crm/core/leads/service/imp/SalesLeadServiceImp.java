@@ -99,6 +99,7 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
 
     @Override
     public ResponseEntity<?> getLeads(SalesLeadCriteria salesLeadCriteria, Transition transition) {
+
         if (transition.getRole().equals("USER")) {
             Employee employee = employeeRepository.findByIdWithSubordinates(transition.getUserId())
                     .orElseThrow(NotFoundResourceException::new);
@@ -161,17 +162,20 @@ public abstract class SalesLeadServiceImp<T extends SalesLead, D extends AddLead
         Page<LeadResponse> leadResponses = mapEntityToSimpleDto(leadPage);
         return success(leadResponses);
     }
+
     // refactor
     @Override
     public ResponseEntity<?> countByStage(Long userId, Transition transition) {
         List<CountDTO> result = new ArrayList<>();
-
+        log.info("USER ===> Main Role {} ",transition.getRole());
         if ("ADMIN".equalsIgnoreCase(transition.getRole())) {
             result = repository.countAllStagesWithLeadCountForAdmin(transition.getUserId());
-        } else if (userId != null) {
-            Set<Long> userIds = employeeRepository.findSubordinateIds(userId);
-            userIds.add(userId);
-            result = repository.countAllStagesWithLeadCountForTeam(userIds);
+        } else  {
+            log.info("USER ===> Main Role {} ",transition.getRole());
+            Employee emp =
+                    employeeRepository.findById(transition.getUserId())
+                            .orElseThrow(NotFoundResourceException::new);
+            result = repository.countAllStagesWithLeadCountForEmployee(emp.getAdmin().getId(), transition.getUserId());
         }
         return success(result);
     }

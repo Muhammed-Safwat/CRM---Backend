@@ -41,6 +41,13 @@ public interface GenericSalesLeadRepository<T extends SalesLead> extends Generic
                         "GROUP BY st.id, st.name")
         List<CountDTO> countAllStagesWithLeadCountForTeam(@Param("userIds") Set<Long> userIds);
 
+        @Query("SELECT new com.gws.crm.core.leads.dto.CountDTO(st.id, st.name, COUNT(s)) " +
+                "FROM Stage st " +
+                "LEFT JOIN SalesLead s ON s.stage = st AND s.salesRep.id = :userId " +
+                "WHERE st.admin.id = :adminId " +
+                "GROUP BY st.id, st.name")
+        List<CountDTO> countAllStagesWithLeadCountForEmployee(Long adminId , Long userId);
+
         @Query("SELECT new com.gws.crm.core.leads.dto.SalesRepCountDTO(e.id, e.name, e.image, COUNT(s)) " +
                         "FROM Employee e " +
                         "LEFT JOIN SalesLead s ON s.salesRep = e AND s.admin.id = :userId AND s.deleted = false " +

@@ -43,16 +43,23 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    /*
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(Arrays.asList(
                 "http://localhost:4200",
                 "http://localhost:8080",
+                "http://localhost:8100",
+                "http://10.0.2.2:8080",
                 "https://www.estshir.com",
                 "https://estshir.com",
                 "https://www.rnbinvesment.com",
-                "https://rnbinvesment.com"
+                "https://rnbinvesment.com",
+                "capacitor://localhost",
+                "ionic://localhost"  ,
+                "http://localhost",
+                "https://localhost"
         ));
         config.setAllowCredentials(true);
         config.setExposedHeaders(List.of("*"));
@@ -62,12 +69,13 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
-    }
+    }*/
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // cors configuration
-        http.cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource()));
+        // http.cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource()));
+        http.cors(AbstractHttpConfigurer::disable);
         http.csrf(AbstractHttpConfigurer::disable);
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

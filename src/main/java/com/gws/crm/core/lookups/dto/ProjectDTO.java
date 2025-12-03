@@ -1,8 +1,5 @@
 package com.gws.crm.core.lookups.dto;
 
-import com.gws.crm.core.lookups.entity.Category;
-import com.gws.crm.core.lookups.entity.DevCompany;
-import com.gws.crm.core.lookups.entity.Region;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -29,12 +26,9 @@ public class ProjectDTO {
         private DevCompany devCompany;
     */
 
-    @NotNull
     private String region;
 
-    @NotNull
     private String category;
 
-    @NotNull
     private String devCompany;
 }

@@ -27,10 +27,13 @@ public class UserAction {
     @ManyToOne(fetch = FetchType.LAZY)
     private User creator;
 
+    private String creatorName ;
+
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private ActionType type;
 
+    @Column(length = 1000)
     private String description;
 
     private LocalDateTime createdAt;

@@ -125,15 +125,19 @@ public class SuperAdminManagementServiceImp implements SuperAdminManagementServi
         Set<Role> roles = new HashSet<>();
         roles.add(adminRole);
 
-        ImageUploadRequest imageUploadReq = ImageUploadRequest.builder()
-                .base64Image(adminRegistrationDto.getCompanyLogo()).fileName(null).build();
         String companyUrl = null;
-        try {
-            companyUrl = imageHelperService.uploadImage(imageUploadReq, transition);
+        /*
+        if(adminRegistrationDto.getCompanyLogo() != null ){
+            ImageUploadRequest imageUploadReq = ImageUploadRequest.builder()
+                    .base64Image(adminRegistrationDto.getCompanyLogo()).fileName(null).build();
+            try {
+                companyUrl = imageHelperService.uploadImage(imageUploadReq, transition);
 
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            } catch (Exception e) {
+                throw new RuntimeException(e.getMessage());
+            }
         }
+        */
         Company company = Company.builder()
                 .email(adminRegistrationDto.getCompanyEmail())
                 .address(adminRegistrationDto.getCompanyAddress())

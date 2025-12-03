@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/lookups/projects")
 @RequiredArgsConstructor
@@ -37,6 +39,11 @@ public class ProjectController {
     @PostMapping
     public ResponseEntity<?> createProject(@Valid @RequestBody ProjectDTO projectDTO, Transition transition) {
         return projectService.createProject(projectDTO, transition);
+    }
+
+    @PostMapping("all")
+    public ResponseEntity<?> createAllProjects(@RequestBody List<ProjectDTO> projectsList, Transition transition) {
+        return projectService.createAllProjects(projectsList, transition);
     }
 
     @PutMapping

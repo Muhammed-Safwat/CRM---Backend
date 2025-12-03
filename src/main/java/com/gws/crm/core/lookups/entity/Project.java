@@ -31,15 +31,15 @@ public class Project {
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,optional = true)
     @JoinFormula("(select r.id from region r where r.id = region_id)")
     private Region region;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,optional = true)
     @JoinFormula("(select c.id from category c where c.id = category_id)")
     private Category category;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,optional = true)
     @JoinFormula("(select d.id from dev_company d where d.id = dev_company_id)")
     private DevCompany devCompany;
 

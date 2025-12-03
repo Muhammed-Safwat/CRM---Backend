@@ -50,4 +50,11 @@ public class NotificationController {
     public ResponseEntity<?> deleteNotification(@PathVariable long notificationId, Transition transition) {
         return notificationService.deleteNotification(notificationId, transition);
     }
+
+    @PostMapping("/send")
+    public ResponseEntity<?> sendNotification(@RequestParam String token) {
+        return notificationService.sendNot(token);
+    }
+
+
 }

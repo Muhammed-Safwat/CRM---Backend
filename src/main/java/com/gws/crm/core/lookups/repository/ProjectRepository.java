@@ -41,6 +41,9 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     Project findByNameAndAdminId(String name, Long userId);
 
+    @Query("select p from Project p where p.name =:name and p.admin.id = :adminId")
+    Optional<Project> findByName(String name, Long adminId);
+
     long countByAdminIdAndDeletedFalse(long id);
 
     @Query("SELECT new com.gws.crm.core.lookups.dto.SimpleProjectDto(p.id,p.name) " +
@@ -53,5 +56,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Query("update Project p set p.deleted = true where p.id = :id")
     void deleteProject(@Param("id") long id);
 
+    // Project findByNameAndAdminId(@Param("name") String name,@Param("id") long adminId);
 
 }

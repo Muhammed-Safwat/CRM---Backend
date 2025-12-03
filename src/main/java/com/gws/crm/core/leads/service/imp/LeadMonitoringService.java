@@ -2,17 +2,21 @@ package com.gws.crm.core.leads.service.imp;
 
 import com.gws.crm.core.leads.entity.BaseLead;
 import com.gws.crm.core.leads.repository.BaseLeadRepository;
+import com.gws.crm.core.notification.entities.CrmNotification;
+import com.gws.crm.core.notification.enums.NotificationCode;
+import com.gws.crm.core.notification.event.NotificationEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
 public class LeadMonitoringService {
-
+/*
     private final BaseLeadRepository leadRepository;
 
     public LeadMonitoringService(BaseLeadRepository leadRepository) {
@@ -29,10 +33,10 @@ public class LeadMonitoringService {
         if (updatedLeads > 0) {
             log.info("Marked {} leads as delayed", updatedLeads);
 
-            // الحصول على قائمة الـ delayed leads لإرسال الإشعارات
+
             List<BaseLead> delayedLeads = getDelayedLeads();
 
-            // i will send notification here
+
             // delayedLeads.forEach(this::sendDelayedNotification);
         }
     }
@@ -65,4 +69,32 @@ public class LeadMonitoringService {
 
         return leadRepository.findLeadsNearingDelay(createdAfter, warningThreshold, now);
     }
+
+    private void sendDelayedNotification(BaseLead lead) {
+        try {
+            NotificationEvent event = NotificationEvent.builder()
+                    .code(NotificationCode.LEAD_DELAYED)
+                    .senderId(0L) // system BOT
+                    .senderName("System")
+                    .recipientId(lead.get().getId())
+                    .recipientName(lead.getAssignedTo().getFullName())
+                    .recipientEmail(lead.getAssignedTo().getEmail())
+                    .referenceId(lead.getId())
+                    .referenceType("LEAD")
+                    .data(Map.of(
+                            "leadName", lead.getName(),
+                            "leadId", String.valueOf(lead.getId())
+                    ))
+                    .build();
+
+            CrmNotification notification = notificationBuilder.build(event);
+            notificationRepository.save(notification);
+
+            log.info("Sent delayed notification for lead {}", lead.getId());
+
+        } catch (Exception e) {
+            log.error("Error sending delayed notification for lead {}", lead.getId(), e);
+        }
+    }*/
+
 }

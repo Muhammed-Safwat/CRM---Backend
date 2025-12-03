@@ -17,7 +17,6 @@ import static com.gws.crm.common.handler.ApiResponseHandler.success;
 @Slf4j
 public class StatisticsServiceImp implements StatisticsService {
 
-
     private final AreaRepository areaRepository;
     private final RegionRepository regionRepository;
     private final StageRepository stageRepository;
@@ -32,9 +31,11 @@ public class StatisticsServiceImp implements StatisticsService {
     private final InvestmentGoalRepository investmentGoalRepository;
     private final LeadStatusRepository leadStatusRepository;
     private final PropertyTypeRepository propertyTypeRepository;
+    private final CallOutcomeRepository callOutcomeRepository;
 
     public ResponseEntity<?> getStatistics(Transition transition) {
         StatisticsDTO statisticsDTO = StatisticsDTO.builder()
+                .totalNextActions(callOutcomeRepository.countByAdminIdAndDeletedFalse(transition.getUserId()))
                 .totalChannels(channelRepository.countByAdminIdAndDeletedFalse(transition.getUserId()))
                 .totalStage(stageRepository.countByAdminIdAndDeletedFalse(transition.getUserId()))
                 .totalRegions(regionRepository.countByAdminIdAndDeletedFalse(transition.getUserId()))

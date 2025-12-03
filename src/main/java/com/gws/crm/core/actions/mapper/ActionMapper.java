@@ -22,6 +22,7 @@ public class ActionMapper {
         return ActionResponse.builder()
                 .id(userAction.getId())
                 .type(userAction.getType().getDisplayValue())
+                .creatorName(userAction.getCreatorName())
                 .description(userAction.getDescription())
                 .createdAt(userAction.getCreatedAt())
                 .creator(employeeMapper.toSimpleDto(userAction.getCreator()))

@@ -1,6 +1,5 @@
 package com.gws.crm.authentication.repository;
 
-import com.gws.crm.authentication.dto.UserDetailsDTO;
 import com.gws.crm.authentication.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,4 +24,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByUsername(String username);
 
+    User findByName(String salesRep);
 }

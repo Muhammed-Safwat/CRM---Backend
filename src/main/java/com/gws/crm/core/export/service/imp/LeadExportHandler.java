@@ -4,8 +4,10 @@ import com.gws.crm.core.export.service.ExportHandler;
 import com.gws.crm.core.leads.entity.BaseLead;
 import com.gws.crm.core.leads.entity.Lead;
 import com.gws.crm.core.leads.entity.PhoneNumber;
+import com.gws.crm.core.leads.entity.SalesLead;
 import com.gws.crm.core.leads.repository.LeadRepository;
 import com.gws.crm.core.actions.entity.UserAction;
+import com.gws.crm.core.leads.repository.PhoneNumberRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.*;
@@ -24,6 +26,7 @@ public class LeadExportHandler implements ExportHandler {
 
   private final LeadRepository leadRepository;
   private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+  private final PhoneNumberRepository phoneNumberRepository;
 
   @Override
   public boolean supports(String referenceType) {
@@ -139,7 +142,7 @@ public class LeadExportHandler implements ExportHandler {
     Cell titleCell = titleRow.createCell(0);
     titleCell.setCellValue("🏢 CRM Leads Export Report");
     titleCell.setCellStyle(styles.get("title"));
-    dashboard.addMergedRegion(new CellRangeAddress(0, 0, 0, 8));
+    dashboard.addMergedRegion(new CellRangeAddress(0, 0, 0, 11));
 
     // Summary Row
     Row summaryRow = dashboard.createRow(1);
@@ -154,7 +157,9 @@ public class LeadExportHandler implements ExportHandler {
 
     // Headers
     Row headerRow = dashboard.createRow(3);
-    String[] columns = { "🆔 ID", "👤 Name", "📧 Email", "📞 Phone", "📊 Status", "🏗️ Project", "📅 Next Action",
+    String[] columns = {"ID" ,"👤 Name", "📞 Whatsapp number", "📞 Phone", "👤 Sales Rep", "📊 Status", "🏗️ Project", "📅 " +
+            "Next Action",
+            "Last Comment",
         "🔗 Details", "📝 Actions" };
 
     for (int i = 0; i < columns.length; i++) {
@@ -165,7 +170,7 @@ public class LeadExportHandler implements ExportHandler {
 
     // Data rows
     int rowIdx = 4;
-    for (BaseLead lead : leads) {
+    for (SalesLead lead : leads) {
       Row row = dashboard.createRow(rowIdx++);
 
       // ID
@@ -175,32 +180,38 @@ public class LeadExportHandler implements ExportHandler {
       row.createCell(1).setCellValue(lead.getName());
 
       // Email
-      row.createCell(2).setCellValue(lead.getEmail() != null ? lead.getEmail() : "N/A");
+      row.createCell(2).setCellValue(lead.getWhatsappNumber() != null ? lead.getWhatsappNumber() : "N/A");
 
       // Phone
-      /*
-       * String phoneNumbers = getPhoneNumbers(lead);
-       * row.createCell(3).setCellValue(phoneNumbers);
-       * 
-       */
+
+        String phoneNumbers = getPhoneNumbers(lead);
+        row.createCell(3).setCellValue(phoneNumbers);
+
+
+
+
+      // Sales Rep
+      row.createCell(4).setCellValue(lead.getSalesRep() != null ? lead.getSalesRep().getName() : "N/A");
 
       // Status
       String status = getLeadStatus(lead);
-      row.createCell(4).setCellValue(status);
+      row.createCell(5).setCellValue(status);
 
       // Project
-      row.createCell(5).setCellValue(lead.getProject() != null ? lead.getProject().getName() : "N/A");
+      row.createCell(6).setCellValue(lead.getProject() != null ? lead.getProject().getName() : "N/A");
 
       // Next Action
-      row.createCell(6)
+      row.createCell(7)
           .setCellValue(lead.getNextActionDate() != null ? lead.getNextActionDate().format(DATE_FORMATTER) : "N/A");
 
+      row.createCell(8)
+              .setCellValue(lead.getLastActionComment() != null ?lead.getLastActionComment() : "N/A" );
       // Details Link
       String sheetName = "Lead-" + lead.getId();
       CreationHelper createHelper = workbook.getCreationHelper();
       Hyperlink detailsLink = createHelper.createHyperlink(HyperlinkType.DOCUMENT);
       detailsLink.setAddress("'" + sheetName + "'!A1");
-      Cell detailsCell = row.createCell(7);
+      Cell detailsCell = row.createCell(9);
       detailsCell.setCellValue("👁️ View Details");
       detailsCell.setHyperlink(detailsLink);
       detailsCell.setCellStyle(styles.get("link"));
@@ -208,7 +219,7 @@ public class LeadExportHandler implements ExportHandler {
       // Actions Link
       Hyperlink actionsLink = createHelper.createHyperlink(HyperlinkType.DOCUMENT);
       actionsLink.setAddress("'" + sheetName + "'!A50");
-      Cell actionsCell = row.createCell(8);
+      Cell actionsCell = row.createCell(10);
       actionsCell.setCellValue("📝 View Actions");
       actionsCell.setHyperlink(actionsLink);
       actionsCell.setCellStyle(styles.get("link"));
@@ -442,17 +453,19 @@ public class LeadExportHandler implements ExportHandler {
     valueCell.setCellStyle(dataStyle);
   }
 
-  /*
-   * private String getPhoneNumbers(BaseLead lead) {
-   * if (lead.getPhoneNumbers() != null && !lead.getPhoneNumbers().isEmpty()) {
-   * return lead.getPhoneNumbers().stream()
-   * .map(PhoneNumber::getNumber)
-   * .reduce((a, b) -> a + ", " + b)
-   * .orElse("N/A");
-   * }
-   * return "N/A";
-   * }
-   */
+
+  private String getPhoneNumbers(SalesLead lead) {
+    List<PhoneNumber> phoneNumbers = phoneNumberRepository.findAllByLeadId(lead.getId());
+    if (phoneNumbers == null || phoneNumbers.isEmpty()) {
+      return "N/A";
+    }
+    return phoneNumbers.stream()
+            .map(PhoneNumber::getPhone)
+            .filter(num -> num != null && !num.isBlank())
+            .reduce((a, b) -> a + "\n" + b)
+            .orElse("N/A");
+  }
+
   private String getLeadStatus(BaseLead lead) {
     if (lead instanceof com.gws.crm.core.leads.entity.SalesLead salesLead) {
       return salesLead.getStatus() != null ? salesLead.getStatus().getName() : "N/A";

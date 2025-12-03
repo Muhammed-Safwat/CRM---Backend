@@ -1,5 +1,8 @@
 package com.gws.crm.core.notification.services.imp;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.firebase.messaging.Message;
 import com.gws.crm.authentication.repository.UserRepository;
 import com.gws.crm.common.entities.Transition;
 import com.gws.crm.common.exception.NotFoundResourceException;
@@ -36,7 +39,6 @@ public class NotificationServiceImp implements NotificationService {
     private final NotificationTokenRepository notificationTokenRepository;
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
-
 
     @Override
     public ResponseEntity<?> registerToken(RegistrationTokenReq registrationTokenReq, Transition transition) {
@@ -78,8 +80,23 @@ public class NotificationServiceImp implements NotificationService {
     }
 
     @Override
-    public ResponseEntity<?> sendNot() {
-        return null;
+    public ResponseEntity<?> sendNot(String token) {
+        try {
+            Message message = Message.builder()
+                    .setToken(token)
+                            .setNotification(com.google.firebase.messaging.Notification.builder()
+                            .setTitle("Test Notification")
+                            .setBody("This is a test message")
+                            .build())
+                    .putData("referenceId", "0")
+                    .putData("referenceType", "TEST")
+                    .build();
+
+            String response = FirebaseMessaging.getInstance().send(message);
+            return ResponseEntity.ok(response);
+        } catch (FirebaseMessagingException e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
     }
 
     @Override

@@ -12,4 +12,6 @@ public interface InvestmentGoalRepository extends BaseLookupRepository<Investmen
 
     @Query("SELECT ig.name FROM InvestmentGoal ig WHERE ig.admin.id = :adminId")
     List<String> findAllNamesByAdminId(@Param("adminId") Long adminId);
+
+
 }

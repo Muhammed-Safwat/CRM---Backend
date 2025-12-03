@@ -2,6 +2,7 @@ package com.gws.crm.core.leads.service.imp;
 
 import com.gws.crm.common.entities.ExcelFile;
 import com.gws.crm.common.entities.Transition;
+import com.gws.crm.common.exception.NotFoundResourceException;
 import com.gws.crm.common.service.ExcelSheetService;
 import com.gws.crm.common.service.PhoneValidationService;
 import com.gws.crm.core.actions.event.lead.*;
@@ -86,7 +87,7 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
     public ResponseEntity<?> importLead(List<ImportLeadDTO> leads, Transition transition) {
         List<Lead> leadList = createLeadsList(leads, transition);
         List<Lead> savedLeads = leadRepository.saveAll(leadList);
-        // leadActionService.setImportLeads(savedLeads,transition);
+        //leadActionService.setImportLeads(savedLeads,transition);
         return success("Lead Imported Successfully");
     }
 
@@ -139,6 +140,7 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
         eventPublisher.publishEvent(new LeadCreatedEvent(lead, transition));
         // create lead but not admin
         leadNotificationEventPublisher.publishCreateLeadEvent(lead, transition);
+        log.info("After create Lead");
     }
 
     @Override
@@ -184,17 +186,43 @@ public class LeadService extends SalesLeadServiceImp<Lead, AddLeadDTO> {
 
     @Override
     public ResponseEntity<?> countByStage(Long userId, Transition transition) {
-        List<CountDTO> result = new ArrayList<>();
+        List<CountDTO> result;
+        long totalCount;
+
+        log.info("USER ===> Main Role {}", transition.getRole());
 
         if ("ADMIN".equalsIgnoreCase(transition.getRole())) {
+
             result = leadRepository.countAllStagesWithLeadCountForAdmin(transition.getUserId());
-        } else if (userId != null) {
-            Set<Long> userIds = employeeRepository.findSubordinateIds(userId);
-            userIds.add(userId);
-            result = leadRepository.countAllStagesWithLeadCountForTeam(userIds);
+
+            totalCount = leadRepository.countAllByAdminId(transition.getUserId());
+
+        } else {
+
+            log.info("USER in ===> Main Role {}", transition.getRole());
+
+            Employee emp = employeeRepository.findById(transition.getUserId())
+                    .orElseThrow(NotFoundResourceException::new);
+
+            result = leadRepository.countAllStagesWithLeadCountForEmployee(
+                    emp.getAdmin().getId(), emp.getId()
+            );
+
+            totalCount = leadRepository.countAllByAdminIdAndEmployeeId(
+                    emp.getAdmin().getId(), emp.getId()
+            );
         }
-        return success(result);
+
+        CountDTO allCount = new CountDTO(0L, "All Leads", totalCount);
+
+        List<CountDTO> finalResult = new ArrayList<>();
+        finalResult.add(allCount);
+        finalResult.addAll(result);
+
+        return success(finalResult);
     }
+
+
 
 
 }

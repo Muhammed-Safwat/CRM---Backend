@@ -70,5 +70,9 @@ public abstract class SalesLead extends BaseLead {
     @JoinColumn
     private Stage stage;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.DETACH})
+    @JoinColumn(nullable = true)
+    private Region region;
+
     private String lastActionComment;
 }

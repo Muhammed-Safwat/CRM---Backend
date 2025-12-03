@@ -23,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.gws.crm.common.handler.ApiResponseHandler.success;
@@ -102,6 +103,9 @@ public class ProjectServiceImpl implements ProjectService {
 
 
     private Region resolveRegion(String name,Admin admin) {
+        if(name == null){
+            return null ;
+        }
         return LookupRepositoryUtils.getOrCreateByAttribute(
                 regionRepository,
                 name,
@@ -116,6 +120,9 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private Category resolveCategory(String name,Admin admin) {
+        if(name == null){
+            return null ;
+        }
         return LookupRepositoryUtils.getOrCreateByAttribute(
                 categoryRepository,
                 name,
@@ -130,6 +137,9 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private DevCompany resolveDevCompany(String name,Admin admin) {
+        if(name == null){
+            return null ;
+        }
         return LookupRepositoryUtils.getOrCreateByAttribute(
                 devCompanyRepository,
                 name,
@@ -147,5 +157,25 @@ public class ProjectServiceImpl implements ProjectService {
     public ResponseEntity<?> deleteProject(long id, Transition transition) {
         projectRepository.deleteProject(id);
         return success("Project deleted successfully");
+    }
+
+    @Override
+    public ResponseEntity<?> createAllProjects(List<ProjectDTO> projectsList, Transition transition) {
+        Admin admin = adminRepository.findById(transition.getUserId())
+                .orElseThrow(NotFoundResourceException::new);
+        List<Project> projects  = projectsList.stream().map(p -> buildProject(p,admin)).toList();
+        List<Project> savedProjects = projectRepository.saveAll(projects);
+        return success(ProjectMapper.toDTO(savedProjects));
+    }
+
+    private Project buildProject(ProjectDTO projectDTO,Admin admin){
+        return Project.builder()
+                .admin(admin)
+                .name(projectDTO.getName())
+                .region(resolveRegion(projectDTO.getRegion(),admin))
+                .category(resolveCategory(projectDTO.getCategory(),admin))
+                .devCompany(resolveDevCompany(projectDTO.getDevCompany(),admin))
+                .deleted(false)
+                .build();
     }
 }
